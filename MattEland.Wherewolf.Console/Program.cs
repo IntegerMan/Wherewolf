@@ -1,5 +1,6 @@
 ﻿using MattEland.Wherewolf;
 using MattEland.Wherewolf.Controllers;
+using MattEland.Wherewolf.Roles;
 using Spectre.Console;
 
 // Header
@@ -9,7 +10,13 @@ AnsiConsole.WriteLine();
 
 // Game setup
 Game game = new();
-game.AddPlayer(new Player("Matt", new HumanController()));
-game.AddPlayer(new Player("Rufus", new RandomController()));
-game.AddPlayer(new Player("Jimothy", new RandomController()));
-
+game.AddPlayers(
+        new Player("Matt", new HumanController()),
+        new Player("Rufus", new RandomController()),
+        new Player("Jimothy", new RandomController())
+    );
+game.AddRoles(
+        new VillagerRole(), new VillagerRole(), new VillagerRole(), new VillagerRole(), 
+        new WerewolfRole(), new WerewolfRole()
+    );
+    
