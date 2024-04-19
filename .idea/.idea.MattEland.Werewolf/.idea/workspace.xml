@@ -4,22 +4,14 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="72b7108f-303d-4216-9e3b-a68ab5a7a195" name="Changes" comment="Added project">
-      <change afterPath="$PROJECT_DIR$/MattEland.Wherewolf.Tests/StartGameTests.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/MattEland.Wherewolf/GameSlot.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/MattEland.Wherewolf/GameState.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/MattEland.Wherewolf/RandomShuffler.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/MattEland.Wherewolf.Console/Program.cs" beforeDir="false" afterPath="$PROJECT_DIR$/MattEland.Wherewolf.Console/Program.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/MattEland.Wherewolf/Game.cs" beforeDir="false" afterPath="$PROJECT_DIR$/MattEland.Wherewolf/Game.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/MattEland.Wherewolf/Player.cs" beforeDir="false" afterPath="$PROJECT_DIR$/MattEland.Wherewolf/Player.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/MattEland.Wherewolf/Roles/GameRole.cs" beforeDir="false" afterPath="$PROJECT_DIR$/MattEland.Wherewolf/Roles/GameRole.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/MattEland.Wherewolf/Roles/VillagerRole.cs" beforeDir="false" afterPath="$PROJECT_DIR$/MattEland.Wherewolf/Roles/VillagerRole.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/MattEland.Wherewolf/Roles/WerewolfRole.cs" beforeDir="false" afterPath="$PROJECT_DIR$/MattEland.Wherewolf/Roles/WerewolfRole.cs" afterDir="false" />
-    </list>
+    <list default="true" id="72b7108f-303d-4216-9e3b-a68ab5a7a195" name="Changes" comment="Added project" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
     <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="DpaMonitoringSettings">
+    <option name="autoShow" value="false" />
   </component>
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
@@ -49,6 +41,7 @@
     ".NET Project.MattEland.Werewolf.Console.executor": "Run",
     "1c83bbc5-03ab-4ea3-8295-5d0c4ceca376.executor": "Debug",
     "ASKED_ADD_EXTERNAL_FILES": "true",
+    "ASKED_SHARE_PROJECT_CONFIGURATION_FILES": "true",
     "RunOnceActivity.ShowReadmeOnStart": "true",
     "git-widget-placeholder": "main",
     "last_opened_file_path": "/home/matteland/Documents/MattEland.Werewolf",
@@ -114,7 +107,7 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1713491310054</updated>
-      <workItem from="1713491311097" duration="4948000" />
+      <workItem from="1713491311097" duration="6044000" />
     </task>
     <task id="LOCAL-00001" summary="Added project">
       <option name="closed" value="true" />
@@ -135,24 +128,5 @@
   <component name="VcsManagerConfiguration">
     <MESSAGE value="Added project" />
     <option name="LAST_COMMIT_MESSAGE" value="Added project" />
-  </component>
-  <component name="XDebuggerManager">
-    <breakpoint-manager>
-      <breakpoints>
-        <line-breakpoint enabled="true" type="DotNet Breakpoints">
-          <url>file://$PROJECT_DIR$/MattEland.Wherewolf.Tests/StartGameTests.cs</url>
-          <line>119</line>
-          <properties documentPath="$PROJECT_DIR$/MattEland.Wherewolf.Tests/StartGameTests.cs" containingFunctionPresentation="Method 'StartGameShouldResultInOneSlotPerPlayer'">
-            <startOffsets>
-              <option value="3293" />
-            </startOffsets>
-            <endOffsets>
-              <option value="3317" />
-            </endOffsets>
-          </properties>
-          <option name="timeStamp" value="1" />
-        </line-breakpoint>
-      </breakpoints>
-    </breakpoint-manager>
   </component>
 </project>
