@@ -1,0 +1,158 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="AutoImportSettings">
+    <option name="autoReloadType" value="SELECTIVE" />
+  </component>
+  <component name="ChangeListManager">
+    <list default="true" id="72b7108f-303d-4216-9e3b-a68ab5a7a195" name="Changes" comment="Added project">
+      <change afterPath="$PROJECT_DIR$/MattEland.Wherewolf.Tests/StartGameTests.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/MattEland.Wherewolf/GameSlot.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/MattEland.Wherewolf/GameState.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/MattEland.Wherewolf/RandomShuffler.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/MattEland.Wherewolf.Console/Program.cs" beforeDir="false" afterPath="$PROJECT_DIR$/MattEland.Wherewolf.Console/Program.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/MattEland.Wherewolf/Game.cs" beforeDir="false" afterPath="$PROJECT_DIR$/MattEland.Wherewolf/Game.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/MattEland.Wherewolf/Player.cs" beforeDir="false" afterPath="$PROJECT_DIR$/MattEland.Wherewolf/Player.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/MattEland.Wherewolf/Roles/GameRole.cs" beforeDir="false" afterPath="$PROJECT_DIR$/MattEland.Wherewolf/Roles/GameRole.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/MattEland.Wherewolf/Roles/VillagerRole.cs" beforeDir="false" afterPath="$PROJECT_DIR$/MattEland.Wherewolf/Roles/VillagerRole.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/MattEland.Wherewolf/Roles/WerewolfRole.cs" beforeDir="false" afterPath="$PROJECT_DIR$/MattEland.Wherewolf/Roles/WerewolfRole.cs" afterDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="HighlightingSettingsPerFile">
+    <setting file="file://$PROJECT_DIR$/MattEland.Wherewolf.Console/Program.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/MattEland.Wherewolf/Controllers/HumanController.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/MattEland.Wherewolf/Controllers/PlayerController.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/MattEland.Wherewolf/Controllers/RandomController.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/MattEland.Wherewolf/Game.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/MattEland.Wherewolf/Player.cs" root0="FORCE_HIGHLIGHTING" />
+  </component>
+  <component name="MetaFilesCheckinStateConfiguration" checkMetaFiles="true" />
+  <component name="ProjectColorInfo"><![CDATA[{
+  "associatedIndex": 2
+}]]></component>
+  <component name="ProjectId" id="2fIazXYbtQ1rY4ijBbLXpJiZDhq" />
+  <component name="ProjectLevelVcsManager" settingsEditedManually="true">
+    <ConfirmationsSetting value="2" id="Add" />
+  </component>
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    ".NET Project.MattEland.Werewolf.Console.executor": "Run",
+    "1c83bbc5-03ab-4ea3-8295-5d0c4ceca376.executor": "Debug",
+    "ASKED_ADD_EXTERNAL_FILES": "true",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "git-widget-placeholder": "main",
+    "last_opened_file_path": "/home/matteland/Documents/MattEland.Werewolf",
+    "node.js.detected.package.eslint": "true",
+    "node.js.detected.package.tslint": "true",
+    "node.js.selected.package.eslint": "(autodetect)",
+    "node.js.selected.package.tslint": "(autodetect)",
+    "nodejs_package_manager_path": "npm",
+    "settings.editor.selected.configurable": "preferences.keymap",
+    "vue.rearranger.settings.migration": "true"
+  },
+  "keyToStringList": {
+    "rider.external.source.directories": [
+      "/home/matteland/.config/JetBrains/Rider2024.1/resharper-host/DecompilerCache",
+      "/home/matteland/.config/JetBrains/Rider2024.1/resharper-host/SourcesCache",
+      "/home/matteland/.local/share/Symbols/src"
+    ]
+  }
+}]]></component>
+  <component name="RunManager" selected=".NET Project.MattEland.Werewolf.Console">
+    <configuration name="MattEland.Werewolf.Benchmarking" type="DotNetProject" factoryName=".NET Project">
+      <option name="EXE_PATH" value="" />
+      <option name="PROGRAM_PARAMETERS" value="" />
+      <option name="WORKING_DIRECTORY" value="" />
+      <option name="PASS_PARENT_ENVS" value="1" />
+      <option name="USE_EXTERNAL_CONSOLE" value="0" />
+      <option name="USE_MONO" value="0" />
+      <option name="RUNTIME_ARGUMENTS" value="" />
+      <option name="PROJECT_PATH" value="$PROJECT_DIR$/MattEland.Wherewolf.Benchmarking/MattEland.Wherewolf.Benchmarking.csproj" />
+      <option name="PROJECT_EXE_PATH_TRACKING" value="1" />
+      <option name="PROJECT_ARGUMENTS_TRACKING" value="1" />
+      <option name="PROJECT_WORKING_DIRECTORY_TRACKING" value="1" />
+      <option name="PROJECT_KIND" value="DotNetCore" />
+      <option name="PROJECT_TFM" value="" />
+      <method v="2">
+        <option name="Build" />
+      </method>
+    </configuration>
+    <configuration name="MattEland.Werewolf.Console" type="DotNetProject" factoryName=".NET Project">
+      <option name="EXE_PATH" value="" />
+      <option name="PROGRAM_PARAMETERS" value="" />
+      <option name="WORKING_DIRECTORY" value="" />
+      <option name="PASS_PARENT_ENVS" value="1" />
+      <option name="USE_EXTERNAL_CONSOLE" value="0" />
+      <option name="USE_MONO" value="0" />
+      <option name="RUNTIME_ARGUMENTS" value="" />
+      <option name="PROJECT_PATH" value="$PROJECT_DIR$/MattEland.Wherewolf.Console/MattEland.Wherewolf.Console.csproj" />
+      <option name="PROJECT_EXE_PATH_TRACKING" value="1" />
+      <option name="PROJECT_ARGUMENTS_TRACKING" value="1" />
+      <option name="PROJECT_WORKING_DIRECTORY_TRACKING" value="1" />
+      <option name="PROJECT_KIND" value="DotNetCore" />
+      <option name="PROJECT_TFM" value="" />
+      <method v="2">
+        <option name="Build" />
+      </method>
+    </configuration>
+  </component>
+  <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="72b7108f-303d-4216-9e3b-a68ab5a7a195" name="Changes" comment="" />
+      <created>1713491310054</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1713491310054</updated>
+      <workItem from="1713491311097" duration="4948000" />
+    </task>
+    <task id="LOCAL-00001" summary="Added project">
+      <option name="closed" value="true" />
+      <created>1713492464108</created>
+      <option name="number" value="00001" />
+      <option name="presentableId" value="LOCAL-00001" />
+      <option name="project" value="LOCAL" />
+      <updated>1713492464108</updated>
+    </task>
+    <option name="localTasksCounter" value="2" />
+    <servers />
+  </component>
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="version" value="3" />
+  </component>
+  <component name="UnityCheckinConfiguration" checkUnsavedScenes="true" />
+  <component name="UnityProjectConfiguration" hasMinimizedUI="false" />
+  <component name="VcsManagerConfiguration">
+    <MESSAGE value="Added project" />
+    <option name="LAST_COMMIT_MESSAGE" value="Added project" />
+  </component>
+  <component name="XDebuggerManager">
+    <breakpoint-manager>
+      <breakpoints>
+        <line-breakpoint enabled="true" type="DotNet Breakpoints">
+          <url>file://$PROJECT_DIR$/MattEland.Wherewolf.Tests/StartGameTests.cs</url>
+          <line>119</line>
+          <properties documentPath="$PROJECT_DIR$/MattEland.Wherewolf.Tests/StartGameTests.cs" containingFunctionPresentation="Method 'StartGameShouldResultInOneSlotPerPlayer'">
+            <startOffsets>
+              <option value="3293" />
+            </startOffsets>
+            <endOffsets>
+              <option value="3317" />
+            </endOffsets>
+          </properties>
+          <option name="timeStamp" value="1" />
+        </line-breakpoint>
+      </breakpoints>
+    </breakpoint-manager>
+  </component>
+</project>

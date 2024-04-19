@@ -20,3 +20,34 @@ game.AddRoles(
         new WerewolfRole(), new WerewolfRole()
     );
     
+GameState gameState = game.StartGame();
+
+Table centerTable = new Table();
+centerTable.Title("[Yellow]Game Summary[/]");
+centerTable.AddColumn(string.Empty);
+List<string> values = new() { "[Cyan]Started as[/]"};
+foreach (var slot in gameState.AllSlots)
+{
+    if (slot.Player is null)
+    {
+        centerTable.AddColumn($"[Cyan]{slot.Name}[/]");
+    }
+    else
+    {
+        centerTable.AddColumn($"[Orange1]{slot.Name}[/]");
+    }
+
+    values.Add(GetRoleMarkdown(slot.StartRole));
+}
+centerTable.AddRow(values.ToArray());
+AnsiConsole.Write(centerTable);
+
+string GetRoleMarkdown(GameRole role)
+{
+    return role.Team switch
+    {
+        Team.Villager => $"[Blue]{role.Name}[/]",
+        Team.Werewolf => $"[Red1]{role.Name}[/]",
+        _ => role.Name
+    };
+}

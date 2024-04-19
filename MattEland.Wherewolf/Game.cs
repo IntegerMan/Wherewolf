@@ -40,4 +40,11 @@ public class Game
             AddRole(role);
         }
     }
+
+    public GameState StartGame(ISlotShuffler? slotShuffler = null)
+    {
+        slotShuffler ??= new RandomShuffler();
+        
+        return new GameState(this.Players, this.Roles, slotShuffler);
+    }
 }
