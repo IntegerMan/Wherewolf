@@ -1,11 +1,9 @@
-using MattEland.Wherewolf.Controllers;
 using MattEland.Wherewolf.Events;
 using MattEland.Wherewolf.Roles;
-using Shouldly;
 
 namespace MattEland.Wherewolf.Tests;
 
-public class StartGameTests
+public class StartGameTests : GameTestsBase
 {
     [Fact]
     public void StartGameShouldErrorIfNoPlayersOrRoles()
@@ -104,6 +102,8 @@ public class StartGameTests
         state.PlayerSlots.Length.ShouldBe(3);
         state.Players.Count().ShouldBe(3);
         state.Roles.Count().ShouldBe(6);
+        state.Phases.ShouldNotBeEmpty();
+        state.IsGameOver.ShouldBeFalse();
     }
     
     [Fact]
@@ -163,7 +163,7 @@ public class StartGameTests
         state.CenterSlots[0].Name.ShouldBe("Center 1");
         state.CenterSlots[1].Name.ShouldBe("Center 2");
         state.CenterSlots[2].Name.ShouldBe("Center 3");
-    }       
+    }  
 
     [Fact]
     public void StartGameShouldResultInRoleBeingAssignedToOnlyOneSlot()
@@ -206,20 +206,4 @@ public class StartGameTests
             state.Events.OfType<DealtCardEvent>().ShouldContain(e => e.Slot == slot);
         }
     }
-    
-    private static void AddMinimumRequiredPlayers(Game game)
-    {
-        game.AddPlayers(
-            new Player("A", new RandomController()), 
-            new Player("B", new RandomController()), 
-            new Player("C", new RandomController()));
-    }
-    
-    private static void AddMinimumRequiredRoles(Game game)
-    {
-        game.AddRoles(
-                new VillagerRole(), new VillagerRole(), new VillagerRole(), new VillagerRole(), 
-                new WerewolfRole(), new WerewolfRole()
-            );
-    }    
 }

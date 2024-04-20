@@ -23,6 +23,7 @@ game.AddRoles(
     );
     
 GameState gameState = game.StartGame();
+gameState = gameState.RunToEnd();
 
 DisplayHelpers.DisplaySummaryTable(gameState);
 AnsiConsole.WriteLine();

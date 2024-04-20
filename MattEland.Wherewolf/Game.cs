@@ -45,7 +45,7 @@ public class Game
     {
         slotShuffler ??= new RandomShuffler();
 
-        GameState startGame = new GameState(this.Players, this.Roles, slotShuffler);
+        GameState startGame = new GameState(_players, _roles, slotShuffler);
         
         return startGame;
     }

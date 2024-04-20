@@ -1,23 +1,25 @@
 using MattEland.Wherewolf.Events;
 using MattEland.Wherewolf.Roles;
 
+
 namespace MattEland.Wherewolf.Tests.Roles;
 
-public class VillagerRoleTests : RoleTestBase
+public class WerewolfRoleTests : RoleTestBase
 {
     [Fact]
-    public void VillagerShouldGetDealtVillagerEvent()
+    public void SoloWerewolfShouldHaveSoloWerewolfEvent()
     {
         // Arrange
         GameState gameState = CreateTestGameState(            
-            new VillagerRole(), // This will go to our player
+            new WerewolfRole(), // This will go to our player
             new VillagerRole(),
             new VillagerRole(),
             // Center Cards
             new VillagerRole(),
             new WerewolfRole(),
-            new WerewolfRole()
+            new VillagerRole()
         );
+        gameState = gameState.RunToEnd();
         Player player = gameState.Players.First();
 
         // Act
@@ -25,12 +27,7 @@ public class VillagerRoleTests : RoleTestBase
 
         // Assert
         playerState.ShouldNotBeNull();
-        playerState.Player.ShouldBe(player);
         playerState.ObservedEvents.ShouldNotBeNull();
-        playerState.ObservedEvents.ShouldNotBeEmpty();
-        DealtCardEvent dealtCardEvent = playerState.ObservedEvents.OfType<DealtCardEvent>().Single();
-        dealtCardEvent.Card.GetType().ShouldBe(typeof(VillagerRole));
-        dealtCardEvent.Player.ShouldBe(player);
+        playerState.ObservedEvents.OfType<SoloWolfEvent>().Count().ShouldBe(1);
     }
-
 }

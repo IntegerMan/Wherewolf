@@ -1,5 +1,4 @@
 using MattEland.Wherewolf.Roles;
-using Shouldly;
 
 namespace MattEland.Wherewolf.Tests;
 

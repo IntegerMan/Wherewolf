@@ -9,20 +9,21 @@ public class GameState
     private readonly Player[] _players;
     private readonly GameSlot[] _centerSlots;
     private readonly GameSlot[] _playerSlots;
+    private readonly GamePhase[] _allPhases;
+    private readonly Queue<GamePhase> _remainingPhases;
     private readonly List<GameEvent> _events = new();
 
-    public GameState(IEnumerable<Player> players, IEnumerable<GameRole> roles, ISlotShuffler shuffler)
+    internal GameState(IList<Player> players, IList<GameRole> roles, ISlotShuffler shuffler)
     {
         // Validation
-        if (players.Count() + 3 != roles.Count())
+        if (players.Count + 3 != roles.Count)
         {
-            throw new InvalidOperationException($"There must be exactly 3 more roles allocated to the game than players. Roles: {roles.Count()}, Players: {players.Count()}");
+            throw new InvalidOperationException($"There must be exactly 3 more roles allocated to the game than players. Roles: {roles.Count}, Players: {players.Count}");
         }
-        if (players.Count() < 3)
+        if (players.Count < 3)
         {
-            throw new InvalidOperationException($"There must be at least 3 players in the game, Players: {players.Count()}");
+            throw new InvalidOperationException($"There must be at least 3 players in the game, Players: {players.Count}");
         }
-
         if (roles.Select(r => r.Team).Distinct().Count() == 1)
         {
             throw new InvalidOperationException("All roles were on the same team");
@@ -38,6 +39,30 @@ public class GameState
 
         AssignOrderIndexToEachPlayer(players);
         RegisterStartingCards();
+        _allPhases = BuildGamePhases(roles);
+        _remainingPhases = new Queue<GamePhase>(_allPhases);
+    }
+
+    private GameState(GameState oldState, IEnumerable<GamePhase> remainigPhases)
+    {
+        _remainingPhases = new Queue<GamePhase>(remainigPhases);
+        _players = oldState._players.ToArray();
+        _roles = oldState.Roles.ToArray();
+        _allPhases = oldState._allPhases.ToArray();
+        _events.AddRange(oldState.Events);
+        _centerSlots = oldState.CenterSlots.ToArray();
+        _playerSlots = oldState.PlayerSlots.ToArray();
+    }
+
+    private GamePhase[] BuildGamePhases(IEnumerable<GameRole> roles)
+    {
+        List<GamePhase> phases = new();
+        foreach (var role in roles.Where(r => r.HasNightPhases).DistinctBy(r => r.GetType()))
+        {
+            phases.AddRange(role.BuildNightPhases());
+        }
+
+        return phases.OrderBy(p => p.Order).ToArray();
     }
 
     private static void AssignOrderIndexToEachPlayer(IEnumerable<Player> players)
@@ -65,7 +90,7 @@ public class GameState
     {
         foreach (var slot in AllSlots)
         {
-            _events.Add(new DealtCardEvent(slot.StartRole, slot));
+            AddEvent(new DealtCardEvent(slot.StartRole, slot));
         }
     }
 
@@ -100,9 +125,34 @@ public class GameState
 
         return state;
     }
-}
 
-public interface ISlotShuffler
-{
-    IEnumerable<GameRole> Shuffle(IEnumerable<GameRole> roles);
+    public GameState RunToEnd()
+    {
+        if (IsGameOver)
+        {
+            return this;
+        }
+
+        GameState nextState = RunNext();
+        return nextState.RunToEnd();
+    }
+
+    private GameState RunNext()
+    {
+        if (CurrentPhase is null)
+            throw new InvalidOperationException("Cannot run the next phase; no current phase");
+
+        GameState nextState = new(this, _remainingPhases.Skip(1));
+        
+        return CurrentPhase.Run(nextState);
+    }
+
+    public bool IsGameOver => _remainingPhases.Count == 0;
+    public GamePhase? CurrentPhase => IsGameOver ? null : _remainingPhases.Peek();
+    public IEnumerable<GamePhase> Phases => _remainingPhases.ToArray();
+
+    public void AddEvent(GameEvent newEvent)
+    {
+        _events.Add(newEvent);
+    }
 }
