@@ -1,5 +1,7 @@
 ﻿using MattEland.Wherewolf;
+using MattEland.Wherewolf.Console;
 using MattEland.Wherewolf.Controllers;
+using MattEland.Wherewolf.Events;
 using MattEland.Wherewolf.Roles;
 using Spectre.Console;
 
@@ -22,32 +24,54 @@ game.AddRoles(
     
 GameState gameState = game.StartGame();
 
-Table centerTable = new Table();
-centerTable.Title("[Yellow]Game Summary[/]");
-centerTable.AddColumn(string.Empty);
-List<string> values = new() { "[Cyan]Started as[/]"};
-foreach (var slot in gameState.AllSlots)
-{
-    if (slot.Player is null)
-    {
-        centerTable.AddColumn($"[Cyan]{slot.Name}[/]");
-    }
-    else
-    {
-        centerTable.AddColumn($"[Orange1]{slot.Name}[/]");
-    }
+DisplayHelpers.DisplaySummaryTable(gameState);
+AnsiConsole.WriteLine();
 
-    values.Add(GetRoleMarkdown(slot.StartRole));
+Tree eventTree = new("[Yellow]Game Events[/]");
+foreach (var gameEvent in gameState.Events)
+{
+    AddGameEventNodeToTree(gameEvent, eventTree, gameState.AllSlots, gameState.Roles, gameState.Players);
 }
-centerTable.AddRow(values.ToArray());
-AnsiConsole.Write(centerTable);
+AnsiConsole.Write(eventTree);
+AnsiConsole.WriteLine();
 
-string GetRoleMarkdown(GameRole role)
+foreach (var player in game.Players)
 {
-    return role.Team switch
+    PlayerState playerState = gameState.GetPlayerStates(player);
+    Tree playerTree = new($"[Yellow]Observed Events for {player.GetPlayerMarkup()}[/]");
+    
+    foreach (var gameEvent in playerState.ObservedEvents)
     {
-        Team.Villager => $"[Blue]{role.Name}[/]",
-        Team.Werewolf => $"[Red1]{role.Name}[/]",
-        _ => role.Name
-    };
+        AddGameEventNodeToTree(gameEvent, playerTree, gameState.AllSlots, gameState.Roles, gameState.Players, includeObservedBy: false);
+    }
+    
+    AnsiConsole.Write(playerTree);
+    AnsiConsole.WriteLine();
+}
+
+void AddGameEventNodeToTree(GameEvent evt, Tree tree, IEnumerable<GameSlot> slots, IEnumerable<GameRole> roles, IEnumerable<Player> players, bool includeObservedBy = true)
+{
+    // Make descriptions referencing slots or roles stand out more
+    string description = evt.Description;
+    foreach (var slot in slots)
+    {
+        description = description.Replace(slot.Name, slot.GetSlotMarkup(), StringComparison.OrdinalIgnoreCase);
+    }
+    foreach (var role in roles)
+    {
+        description = description.Replace(role.Name, role.AsMarkdown(), StringComparison.OrdinalIgnoreCase);
+    }
+    
+    // Add the event node
+    TreeNode eventNode = tree.AddNode($"[Cyan]{evt.GetType().Name}[/]: {description}");
+    
+    // Add observed by node as needed
+    if (includeObservedBy)
+    {
+        string observedBy = string.Join(", ", players.Where(evt.IsObservedBy).Select(p => p.GetPlayerMarkup()));
+        if (!string.IsNullOrWhiteSpace(observedBy))
+        {
+            eventNode.AddNode($"Observed by {observedBy}");
+        }
+    }
 }

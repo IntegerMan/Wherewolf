@@ -1,3 +1,4 @@
+using MattEland.Wherewolf.Events;
 using MattEland.Wherewolf.Roles;
 
 namespace MattEland.Wherewolf;
@@ -8,6 +9,7 @@ public class GameState
     private readonly Player[] _players;
     private readonly GameSlot[] _centerSlots;
     private readonly GameSlot[] _playerSlots;
+    private readonly List<GameEvent> _events = new();
 
     public GameState(IEnumerable<Player> players, IEnumerable<GameRole> roles, ISlotShuffler shuffler)
     {
@@ -29,13 +31,42 @@ public class GameState
         _roles = roles.ToArray();
         _players = players.ToArray();
 
-        int i = 0;
         List<GameRole> shuffledRoles = shuffler.Shuffle(roles).ToList();
 
-        _playerSlots = players.Select(p => new GameSlot(p.Name, shuffledRoles[i++]) { Player = p}).ToArray();
+        _playerSlots = BuildPlayerSlots(players, shuffledRoles);
+        _centerSlots = BuildCenterSlots(players, shuffledRoles);
 
+        AssignOrderIndexToEachPlayer(players);
+        RegisterStartingCards();
+    }
+
+    private static void AssignOrderIndexToEachPlayer(IEnumerable<Player> players)
+    {
+        int order = 0;
+        foreach (var player in players)
+        {
+            player.Order = order++;
+        }
+    }
+
+    private static GameSlot[] BuildCenterSlots(IEnumerable<Player> players, IEnumerable<GameRole> shuffledRoles)
+    {
         int c = 1;
-        _centerSlots = shuffledRoles.Skip(players.Count()).Select(r => new GameSlot("Center " + (c++), r)).ToArray();
+        return shuffledRoles.Skip(players.Count()).Select(r => new GameSlot("Center " + (c++), r)).ToArray();
+    }
+
+    private static GameSlot[] BuildPlayerSlots(IEnumerable<Player> players, IReadOnlyList<GameRole> shuffledRoles)
+    {
+        int i = 0;
+        return players.Select(p => new GameSlot(p.Name, shuffledRoles[i++]) { Player = p}).ToArray();
+    }
+
+    private void RegisterStartingCards()
+    {
+        foreach (var slot in AllSlots)
+        {
+            _events.Add(new DealtCardEvent(slot.StartRole, slot));
+        }
     }
 
     public GameSlot[] PlayerSlots => _playerSlots;
@@ -59,6 +90,16 @@ public class GameState
 
     public IEnumerable<Player> Players => _players;
     public IEnumerable<GameRole> Roles => _roles;
+    public IEnumerable<GameEvent> Events => _events.AsReadOnly();
+
+    public PlayerState GetPlayerStates(Player player)
+    {
+        PlayerState state = new(player);
+        
+        state.AddEvents(_events.Where(e => e.IsObservedBy(player)));
+
+        return state;
+    }
 }
 
 public interface ISlotShuffler

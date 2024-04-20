@@ -1,4 +1,5 @@
 using MattEland.Wherewolf.Controllers;
+using MattEland.Wherewolf.Events;
 using MattEland.Wherewolf.Roles;
 using Shouldly;
 
@@ -99,11 +100,31 @@ public class StartGameTests
 
         // Assert
         state.ShouldNotBeNull();
-        state.CenterSlots.Count().ShouldBe(3);
-        state.PlayerSlots.Count().ShouldBe(3);
+        state.CenterSlots.Length.ShouldBe(3);
+        state.PlayerSlots.Length.ShouldBe(3);
         state.Players.Count().ShouldBe(3);
         state.Roles.Count().ShouldBe(6);
-    }   
+    }
+    
+    [Fact]
+    public void StartGameShouldResultInCorrectIndexesPerPlayer()
+    {
+        // Arrange
+        Game game = new();
+        AddMinimumRequiredPlayers(game);
+        AddMinimumRequiredRoles(game);
+        
+        // Act
+        GameState state = game.StartGame();
+
+        // Assert
+        state.ShouldNotBeNull();
+        List<Player> players = state.Players.ToList();
+        for (int i = 0; i < players.Count; i++)
+        {
+            players[i].Order.ShouldBe(i);
+        }
+    }
     
     [Fact]
     public void StartGameShouldResultInOneSlotPerPlayer()
@@ -165,7 +186,27 @@ public class StartGameTests
             Math.Max(playerRoles, centerRoles).ShouldBe(1);
             (playerRoles + centerRoles).ShouldBe(1);
         }
-    }       
+    }
+
+    [Fact]
+    public void StartGameShouldGenerateCardDealtEventsToAllSlots()
+    {
+        // Arrange
+        Game game = new();
+        AddMinimumRequiredPlayers(game);
+        AddMinimumRequiredRoles(game);
+        
+        // Act
+        GameState state = game.StartGame();
+
+        // Assert
+        state.ShouldNotBeNull();
+        foreach (var slot in state.AllSlots)
+        {
+            state.Events.OfType<DealtCardEvent>().ShouldContain(e => e.Slot == slot);
+        }
+    }
+    
     private static void AddMinimumRequiredPlayers(Game game)
     {
         game.AddPlayers(
