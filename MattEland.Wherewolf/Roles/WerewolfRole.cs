@@ -1,3 +1,5 @@
+using MattEland.Wherewolf.Phases;
+
 namespace MattEland.Wherewolf.Roles;
 
 public class WerewolfRole : GameRole

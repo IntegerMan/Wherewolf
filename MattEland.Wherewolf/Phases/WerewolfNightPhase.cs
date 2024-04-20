@@ -1,6 +1,7 @@
 using MattEland.Wherewolf.Events;
+using MattEland.Wherewolf.Roles;
 
-namespace MattEland.Wherewolf.Roles;
+namespace MattEland.Wherewolf.Phases;
 
 public class WerewolfNightPhase : GamePhase
 {
@@ -10,6 +11,10 @@ public class WerewolfNightPhase : GamePhase
         if (werewolves.Count == 1)
         {
             newState.AddEvent(new SoloWolfEvent(werewolves.First().Player!));
+        } 
+        else if (werewolves.Count > 1)
+        {
+            newState.AddEvent(new SawOtherWolvesEvent(werewolves.Select(w => w.Player!)));
         }
 
         return newState;

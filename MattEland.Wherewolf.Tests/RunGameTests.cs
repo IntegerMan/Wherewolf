@@ -1,3 +1,5 @@
+using MattEland.Wherewolf.Tests.Helpers;
+
 namespace MattEland.Wherewolf.Tests;
 
 public class RunGameTests : GameTestsBase
@@ -9,7 +11,7 @@ public class RunGameTests : GameTestsBase
         Game game = new();
         AddMinimumRequiredPlayers(game);
         AddMinimumRequiredRoles(game);
-        GameState startState = game.StartGame();
+        GameState startState = game.StartGame(new NonShuffler());
         int originalEventCount = startState.Events.Count();
 
         // Act

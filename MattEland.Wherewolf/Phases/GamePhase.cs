@@ -1,4 +1,4 @@
-namespace MattEland.Wherewolf;
+namespace MattEland.Wherewolf.Phases;
 
 public abstract class GamePhase
 {
