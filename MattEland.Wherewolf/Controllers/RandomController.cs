@@ -6,4 +6,8 @@ public class RandomController : PlayerController
     
     public override string SelectLoneWolfCenterCard(string[] centerSlotNames) 
         => centerSlotNames.ElementAt(_rand.Next(centerSlotNames.Length));
+
+    public override string SelectRobberTarget(string[] otherPlayerNames)
+        => otherPlayerNames.ElementAt(_rand.Next(otherPlayerNames.Length));
+
 }

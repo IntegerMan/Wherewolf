@@ -18,7 +18,8 @@ gameSetup.AddPlayers(
         new Player("Jimothy", new RandomController())
     );
 gameSetup.AddRoles(
-        new VillagerRole(), new VillagerRole(), new VillagerRole(), new VillagerRole(), 
+        new VillagerRole(), new VillagerRole(), new VillagerRole(), 
+        new RobberRole(), 
         new WerewolfRole(), new WerewolfRole()
     );
     
@@ -67,7 +68,7 @@ foreach (var player in gameSetup.Players)
         SlotRoleProbabilities slotProbabilities = probabilities.GetSlotProbabilities(otherSlot);
         
         List<string> values = [otherSlot.GetSlotMarkup()];
-        foreach (var (_, probability) in slotProbabilities.OrderBy(r => r.Key))
+        foreach (var (_, probability) in slotProbabilities.StartRole.OrderBy(r => r.Key))
         {
             switch (probability)
             {

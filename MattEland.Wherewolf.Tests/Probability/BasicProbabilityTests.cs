@@ -20,8 +20,8 @@ public class BasicProbabilityTests : GameTestsBase
         SlotRoleProbabilities slotProbabilities = probabilities.GetSlotProbabilities(state.GetSlot(player.Name));
         
         // Assert
-        slotProbabilities["Werewolf"].ShouldBe(1);
-        slotProbabilities["Villager"].ShouldBe(0);
+        slotProbabilities.StartRole["Werewolf"].ShouldBe(1);
+        slotProbabilities.StartRole["Villager"].ShouldBe(0);
     }
     
     [Fact]
@@ -42,8 +42,8 @@ public class BasicProbabilityTests : GameTestsBase
 
         // Assert
         // Calculating probabilities of roles based on remaining roles since the villager knows they're a villager
-        slotProbabilities["Werewolf"].ShouldBe(2/5d);
-        slotProbabilities["Villager"].ShouldBe(3/5d);
+        slotProbabilities.StartRole["Werewolf"].ShouldBe(2/5d);
+        slotProbabilities.StartRole["Villager"].ShouldBe(3/5d);
     }
     
     [Fact]
@@ -63,8 +63,8 @@ public class BasicProbabilityTests : GameTestsBase
         SlotRoleProbabilities slotProbabilities = probabilities.GetSlotProbabilities(state.GetSlot(villager.Name));
 
         // Assert
-        slotProbabilities["Werewolf"].ShouldBe(0);
-        slotProbabilities["Villager"].ShouldBe(1);
+        slotProbabilities.StartRole["Werewolf"].ShouldBe(0);
+        slotProbabilities.StartRole["Villager"].ShouldBe(1);
     }
     
     [Fact]
@@ -84,7 +84,7 @@ public class BasicProbabilityTests : GameTestsBase
         SlotRoleProbabilities slotProbabilities = probabilities.GetSlotProbabilities(state.GetSlot(ww2.Name));
 
         // Assert
-        slotProbabilities["Werewolf"].ShouldBe(1);
-        slotProbabilities["Villager"].ShouldBe(0);
+        slotProbabilities.StartRole["Werewolf"].ShouldBe(1);
+        slotProbabilities.StartRole["Villager"].ShouldBe(0);
     }
 }

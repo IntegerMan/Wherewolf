@@ -1,24 +1,20 @@
 using System.Collections;
+using System.Collections.ObjectModel;
 
 namespace MattEland.Wherewolf;
 
-public class SlotRoleProbabilities : IEnumerable<KeyValuePair<string, double>>
+public class SlotRoleProbabilities
 {
-    private readonly Dictionary<string, double> _roleProbabilities = new();
+    private readonly Dictionary<string, double> _startProbabilities = new();
+    private readonly Dictionary<string, double> _currentProbabilities = new();
     
-    public void SetRoleProbabilities(string role, int support, int population)
+    public void SetStartRoleProbabilities(string role, int support, int population)
     {
         if (population <= 0) throw new ArgumentOutOfRangeException(nameof(population)); 
         
-        _roleProbabilities[role] = (double)support / population;
+        _startProbabilities[role] = (double)support / population;
     }
 
-    public double this[string role] => _roleProbabilities[role];
-
-    public IEnumerator<KeyValuePair<string, double>> GetEnumerator()
-    {
-        return _roleProbabilities.GetEnumerator();
-    }
-
-    IEnumerator IEnumerable.GetEnumerator() => ((IEnumerable)_roleProbabilities).GetEnumerator();
+    public ReadOnlyDictionary<string, double> StartRole => _startProbabilities.AsReadOnly();
+    public ReadOnlyDictionary<string, double> CurrentRole => _currentProbabilities.AsReadOnly();
 }

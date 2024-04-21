@@ -11,4 +11,8 @@ public class FixedSelectionController : PlayerController
     
     public override string SelectLoneWolfCenterCard(string[] centerSlotNames) 
         => centerSlotNames.Single(s => s == _selection);
+
+    public override string SelectRobberTarget(string[] otherPlayerNames)
+        => otherPlayerNames.Single(s => s == _selection);
+
 }

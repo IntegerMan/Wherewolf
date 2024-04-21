@@ -18,7 +18,7 @@ public class PlayerProbabilities
             _slotRoleProbabilities[slot] = new SlotRoleProbabilities();
         }
         
-        _slotRoleProbabilities[slot].SetRoleProbabilities(role, support, population);
+        _slotRoleProbabilities[slot].SetStartRoleProbabilities(role, support, population);
     }
 
     public SlotRoleProbabilities GetSlotProbabilities(GameSlot slot) 

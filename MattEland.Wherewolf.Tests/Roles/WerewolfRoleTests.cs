@@ -1,6 +1,7 @@
 using MattEland.Wherewolf.Controllers;
 using MattEland.Wherewolf.Events;
 using MattEland.Wherewolf.Roles;
+using MattEland.Wherewolf.Tests.Helpers;
 
 namespace MattEland.Wherewolf.Tests.Roles;
 
@@ -76,16 +77,17 @@ public class WerewolfRoleTests : RoleTestBase
             new Player("B", new RandomController()),
             new Player("C", new RandomController())
         );
-        GameState gameState = setup.StartGame().RunToEnd();
-        Player player = gameState.Players.First();
+        GameState gameState = setup.StartGame(new NonShuffler()).RunToEnd();
+        Player player = gameState.Players.Single(p => p.Name == "A");
         PlayerState playerState = gameState.GetPlayerStates(player);
 
         // Act
-        var slotProbabilities = playerState.Probabilities.GetSlotProbabilities(gameState.GetSlot("Center 2"));
+        SlotRoleProbabilities slotProbabilities = playerState.Probabilities.GetSlotProbabilities(gameState.GetSlot("Center 2"));
 
         // Assert
-        slotProbabilities["Werewolf"].ShouldBe(0);
-        slotProbabilities["Villager"].ShouldBe(1);
+        playerState.ObservedEvents.OfType<LoneWolfLookedAtSlotEvent>().Single().Slot.Name.ShouldBe("Center 2");
+        slotProbabilities.StartRole["Werewolf"].ShouldBe(0);
+        slotProbabilities.StartRole["Villager"].ShouldBe(1);
     }    
     
     [Fact]

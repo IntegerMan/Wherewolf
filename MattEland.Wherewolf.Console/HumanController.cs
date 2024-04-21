@@ -11,4 +11,11 @@ public class HumanController : PlayerController
             .Title("Select a card to look at from the center as the lone wolf")
             .AddChoices(centerSlotNames));
     }
+
+    public override string SelectRobberTarget(string[] otherPlayerNames)
+    {
+        return AnsiConsole.Prompt(new SelectionPrompt<string>()
+            .Title("Select a player to rob")
+            .AddChoices(otherPlayerNames));
+    }
 }
