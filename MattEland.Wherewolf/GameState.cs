@@ -13,11 +13,15 @@ public class GameState
     private readonly Queue<GamePhase> _remainingPhases;
     private readonly List<GameEvent> _events = new();
 
-    internal GameState(GameSetup setup, ISlotShuffler shuffler)
+    internal GameState(GameSetup setup, ISlotShuffler shuffler) 
+        :this(setup, shuffler.Shuffle(setup.Roles).ToList())
+    {
+    }
+    
+    internal GameState(GameSetup setup, IReadOnlyList<GameRole> shuffledRoles)
     {
         setup.Validate();
         _gameSetup = setup;
-        List<GameRole> shuffledRoles = shuffler.Shuffle(setup.Roles).ToList();
 
         _playerSlots = BuildPlayerSlots(setup.Players, shuffledRoles);
         _centerSlots = BuildCenterSlots(setup.Players, shuffledRoles);
@@ -26,7 +30,7 @@ public class GameState
         RegisterStartingCards();
         _allPhases = BuildGamePhases(setup.Roles);
         _remainingPhases = new Queue<GamePhase>(_allPhases);
-    }
+    }    
 
     private GameState(GameState oldState, IEnumerable<GamePhase> remainingPhases)
     {

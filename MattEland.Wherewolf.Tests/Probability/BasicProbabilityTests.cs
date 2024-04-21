@@ -1,6 +1,6 @@
 using MattEland.Wherewolf.Tests.Helpers;
 
-namespace MattEland.Wherewolf.Tests;
+namespace MattEland.Wherewolf.Tests.Probability;
 
 public class BasicProbabilityTests : GameTestsBase
 {
