@@ -10,7 +10,14 @@ public class WerewolfNightPhase : GamePhase
         List<GameSlot> werewolves = newState.PlayerSlots.Where(p => p.StartRole.Team == Team.Werewolf).ToList();
         if (werewolves.Count == 1)
         {
-            newState.AddEvent(new SoloWolfEvent(werewolves.First().Player!));
+            Player loneWolfPlayer = werewolves.First().Player!;
+            
+            newState.AddEvent(new LoneWolfEvent(loneWolfPlayer));
+            
+            // If the lone wolf is the only werewolf, let them pick which center card to look at
+            string centerSlotChoice = loneWolfPlayer.Controller.SelectLoneWolfCenterCard(newState.CenterSlots.Select(c => c.Name).ToArray());
+            GameSlot centerSlot = newState.GetSlot(centerSlotChoice);
+            newState.AddEvent(new LoneWolfLookedAtSlotEvent(loneWolfPlayer, centerSlot));
         } 
         else if (werewolves.Count > 1)
         {

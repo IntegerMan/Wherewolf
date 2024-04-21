@@ -6,11 +6,11 @@ namespace MattEland.Wherewolf.Events;
 /// An event that occurs when a werewolf player wakes during the night phase and discovers they
 /// are the only werewolf player.
 /// </summary>
-public class SoloWolfEvent : GameEvent
+public class LoneWolfEvent : GameEvent
 {
     public Player Player { get; }
 
-    public SoloWolfEvent(Player player)
+    public LoneWolfEvent(Player player)
     {
         this.Player = player;
     }

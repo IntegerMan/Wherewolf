@@ -62,12 +62,11 @@ foreach (var player in gameSetup.Players)
     }
     
     var probabilities = playerState.Probabilities;
-    foreach (var otherPlayer in gameSetup.Players)
+    foreach (var otherSlot in gameState.AllSlots)
     {
-        GameSlot otherSlot = gameState.GetSlot(otherPlayer.Name);
         SlotRoleProbabilities slotProbabilities = probabilities.GetSlotProbabilities(otherSlot);
         
-        List<string> values = [otherPlayer.GetPlayerMarkup()];
+        List<string> values = [otherSlot.GetSlotMarkup()];
         foreach (var (_, probability) in slotProbabilities.OrderBy(r => r.Key))
         {
             switch (probability)
