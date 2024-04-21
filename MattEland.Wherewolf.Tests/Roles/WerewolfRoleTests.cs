@@ -1,3 +1,4 @@
+using MattEland.Wherewolf.Controllers;
 using MattEland.Wherewolf.Events;
 using MattEland.Wherewolf.Roles;
 
@@ -54,6 +55,38 @@ public class WerewolfRoleTests : RoleTestBase
         playerState.ObservedEvents.ShouldNotBeNull();
         playerState.ObservedEvents.OfType<LoneWolfLookedAtSlotEvent>().Count().ShouldBe(1);
     }
+    
+
+    [Fact]
+    public void LoneWerewolfShouldHaveCertainKnowledgeOfStartingRoleOfTheCardTheyLookedAt()
+    {
+        // Arrange
+        GameSetup setup = new GameSetup();
+        setup.AddRoles(            
+            new WerewolfRole(), // This will go to our player
+            new VillagerRole(),
+            new VillagerRole(),
+            // Center Cards
+            new WerewolfRole(),
+            new VillagerRole(),
+            new VillagerRole()
+        );
+        setup.AddPlayers(
+            new Player("A", new FixedSelectionController("Center 2")),
+            new Player("B", new RandomController()),
+            new Player("C", new RandomController())
+        );
+        GameState gameState = setup.StartGame().RunToEnd();
+        Player player = gameState.Players.First();
+        PlayerState playerState = gameState.GetPlayerStates(player);
+
+        // Act
+        var slotProbabilities = playerState.Probabilities.GetSlotProbabilities(gameState.GetSlot("Center 2"));
+
+        // Assert
+        slotProbabilities["Werewolf"].ShouldBe(0);
+        slotProbabilities["Villager"].ShouldBe(1);
+    }    
     
     [Fact]
     public void DualWerewolfShouldHaveSawOtherWerewolvesEvent()
