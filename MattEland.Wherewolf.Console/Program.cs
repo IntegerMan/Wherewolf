@@ -38,6 +38,7 @@ AnsiConsole.WriteLine();
 
 foreach (var player in gameSetup.Players)
 {
+    // Observed events tree
     PlayerState playerState = gameState.GetPlayerStates(player);
     Tree playerTree = new($"[Yellow]Observed Events for {player.GetPlayerMarkup()}[/]");
     
@@ -47,6 +48,42 @@ foreach (var player in gameSetup.Players)
     }
     
     AnsiConsole.Write(playerTree);
+    AnsiConsole.WriteLine();
+    
+    // Probabilities table
+    Table probabilitiesTable = new();
+    probabilitiesTable.Title($"[Yellow]{player.GetPlayerMarkup()}'s Start Role Perceptions[/]");
+    probabilitiesTable.AddColumn("Player");
+
+    foreach (var role in gameSetup.Roles.DistinctBy(r => r.Name).OrderBy(r => r.Name))
+    {
+        probabilitiesTable.AddColumn(role.AsMarkdown());
+    }
+    
+    foreach (var otherPlayer in gameSetup.Players)
+    {
+        IDictionary<string, double> probabilities = playerState.CalculateStartingCardProbabilities(otherPlayer);
+        
+        List<string> values = new() { otherPlayer.GetPlayerMarkup() };
+        foreach (var (_, probability) in probabilities.OrderBy(r => r.Key))
+        {
+            switch (probability)
+            {
+                case 0:
+                    values.Add("[Gray39]0.0%[/]");
+                    break;
+                case 1:
+                    values.Add("[White]100.0%[/]");
+                    break;
+                default:
+                    values.Add($"[Grey62]{probability:P1}[/]");
+                    break;
+            }
+        }
+        probabilitiesTable.AddRow(values.ToArray());
+    }
+    
+    AnsiConsole.Write(probabilitiesTable);
     AnsiConsole.WriteLine();
 }
 
