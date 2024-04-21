@@ -13,14 +13,15 @@ public class BasicProbabilityTests : GameTestsBase
         AddMinimumRequiredRoles(gameSetup);
         Player player = gameSetup.Players.First();
         GameState state = gameSetup.StartGame(new NonShuffler()).RunToEnd();
+        PlayerState playerState = state.GetPlayerStates(player);
 
         // Act
-        PlayerState playerState = state.GetPlayerStates(player);
-        IDictionary<string, double> probabilities = playerState.CalculateStartingCardProbabilities(player);
-
+        PlayerProbabilities probabilities = playerState.Probabilities;
+        SlotRoleProbabilities slotProbabilities = probabilities.GetSlotProbabilities(state.GetSlot(player.Name));
+        
         // Assert
-        probabilities["Werewolf"].ShouldBe(1);
-        probabilities["Villager"].ShouldBe(0);
+        slotProbabilities["Werewolf"].ShouldBe(1);
+        slotProbabilities["Villager"].ShouldBe(0);
     }
     
     [Fact]
@@ -36,13 +37,13 @@ public class BasicProbabilityTests : GameTestsBase
 
         // Act
         PlayerState playerState = state.GetPlayerStates(villager);
-        IDictionary<string, double> probabilities = playerState.CalculateStartingCardProbabilities(werewolf);
+        PlayerProbabilities probabilities = playerState.Probabilities;
+        SlotRoleProbabilities slotProbabilities = probabilities.GetSlotProbabilities(state.GetSlot(werewolf.Name));
 
         // Assert
-        probabilities.Count.ShouldBe(2);
         // Calculating probabilities of roles based on remaining roles since the villager knows they're a villager
-        probabilities["Werewolf"].ShouldBe(2/5d);
-        probabilities["Villager"].ShouldBe(3/5d);
+        slotProbabilities["Werewolf"].ShouldBe(2/5d);
+        slotProbabilities["Villager"].ShouldBe(3/5d);
     }
     
     [Fact]
@@ -58,11 +59,12 @@ public class BasicProbabilityTests : GameTestsBase
 
         // Act
         PlayerState playerState = state.GetPlayerStates(werewolf);
-        IDictionary<string, double> probabilities = playerState.CalculateStartingCardProbabilities(villager);
+        PlayerProbabilities probabilities = playerState.Probabilities;
+        SlotRoleProbabilities slotProbabilities = probabilities.GetSlotProbabilities(state.GetSlot(villager.Name));
 
         // Assert
-        probabilities["Werewolf"].ShouldBe(0);
-        probabilities["Villager"].ShouldBe(1);
+        slotProbabilities["Werewolf"].ShouldBe(0);
+        slotProbabilities["Villager"].ShouldBe(1);
     }
     
     [Fact]
@@ -78,10 +80,11 @@ public class BasicProbabilityTests : GameTestsBase
 
         // Act
         PlayerState playerState = state.GetPlayerStates(ww1);
-        IDictionary<string, double> probabilities = playerState.CalculateStartingCardProbabilities(ww2);
+        PlayerProbabilities probabilities = playerState.Probabilities;
+        SlotRoleProbabilities slotProbabilities = probabilities.GetSlotProbabilities(state.GetSlot(ww2.Name));
 
         // Assert
-        probabilities["Werewolf"].ShouldBe(1);
-        probabilities["Villager"].ShouldBe(0);
+        slotProbabilities["Werewolf"].ShouldBe(1);
+        slotProbabilities["Villager"].ShouldBe(0);
     }
 }

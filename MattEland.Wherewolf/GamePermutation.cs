@@ -10,4 +10,7 @@ public class GamePermutation
         State = state;
         Support = support;
     }
+
+    public bool IsPossibleGivenPlayerState(PlayerState playerState) 
+        => playerState.ObservedEvents.All(e => e.IsPossibleInGameState(State));
 }

@@ -107,7 +107,7 @@ public class GameState
 
     public PlayerState GetPlayerStates(Player player)
     {
-        PlayerState state = new(player, _gameSetup);
+        PlayerState state = new(player, this);
         
         state.AddEvents(_events.Where(e => e.IsObservedBy(player)));
 
@@ -138,6 +138,7 @@ public class GameState
     public bool IsGameOver => _remainingPhases.Count == 0;
     public GamePhase? CurrentPhase => IsGameOver ? null : _remainingPhases.Peek();
     public IEnumerable<GamePhase> Phases => _remainingPhases.ToArray();
+    public GameSetup Setup => _gameSetup;
 
     public void AddEvent(GameEvent newEvent)
     {

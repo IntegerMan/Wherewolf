@@ -36,6 +36,7 @@ foreach (var gameEvent in gameState.Events)
 AnsiConsole.Write(eventTree);
 AnsiConsole.WriteLine();
 
+// Display Player States
 foreach (var player in gameSetup.Players)
 {
     // Observed events tree
@@ -60,12 +61,14 @@ foreach (var player in gameSetup.Players)
         probabilitiesTable.AddColumn(role.AsMarkdown());
     }
     
+    var probabilities = playerState.Probabilities;
     foreach (var otherPlayer in gameSetup.Players)
     {
-        IDictionary<string, double> probabilities = playerState.CalculateStartingCardProbabilities(otherPlayer);
+        GameSlot otherSlot = gameState.GetSlot(otherPlayer.Name);
+        SlotRoleProbabilities slotProbabilities = probabilities.GetSlotProbabilities(otherSlot);
         
-        List<string> values = new() { otherPlayer.GetPlayerMarkup() };
-        foreach (var (_, probability) in probabilities.OrderBy(r => r.Key))
+        List<string> values = [otherPlayer.GetPlayerMarkup()];
+        foreach (var (_, probability) in slotProbabilities.OrderBy(r => r.Key))
         {
             switch (probability)
             {
@@ -86,6 +89,33 @@ foreach (var player in gameSetup.Players)
     AnsiConsole.Write(probabilitiesTable);
     AnsiConsole.WriteLine();
 }
+
+// Display all possible worlds
+Tree possibleStatesTree = new("[Yellow]Possible Worlds[/]");
+foreach (var permutations in gameSetup.Permutations.GroupBy(p => string.Join(" ", p.State.PlayerSlots.Select(s => $"{s.GetSlotMarkup()}:{s.StartRole.AsMarkdown()}"))))
+{
+    string possibleForPlayers = "Possible for: ";
+    int totalSupport = 0;
+    foreach (var player in gameSetup.Players)
+    {
+        PlayerState playerState = gameState.GetPlayerStates(player);
+        
+        int support = permutations.Where(p => p.IsPossibleGivenPlayerState(playerState)).Sum(p => p.Support);
+        if (support > 0)
+        {
+            possibleForPlayers += $"{player.GetPlayerMarkup()} ({support}) ";
+            totalSupport += support;
+        }
+    }
+
+    if (totalSupport > 0)
+    {
+        TreeNode permutationNode = possibleStatesTree.AddNode(permutations.Key);
+        permutationNode.AddNode(possibleForPlayers);
+    }
+}
+AnsiConsole.Write(possibleStatesTree);
+AnsiConsole.WriteLine();
 
 void AddGameEventNodeToTree(GameEvent evt, Tree tree, IEnumerable<GameSlot> slots, IEnumerable<GameRole> roles, IEnumerable<Player> players, bool includeObservedBy = true)
 {

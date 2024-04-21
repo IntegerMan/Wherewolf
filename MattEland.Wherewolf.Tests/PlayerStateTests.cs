@@ -1,6 +1,7 @@
 using MattEland.Wherewolf.Controllers;
 using MattEland.Wherewolf.Events;
 using MattEland.Wherewolf.Roles;
+using MattEland.Wherewolf.Tests.Helpers;
 
 namespace MattEland.Wherewolf.Tests;
 
@@ -10,10 +11,11 @@ public class PlayerStateTests
     public void PlayerStateShouldHavePlayer()
     {
         // Arrange
-        Player player = new("A", new RandomController());
+        GameState startState = TestingSetups.VillagersOnlyGame().StartGame();
+        Player player = startState.Players.First();
         
         // Act
-        PlayerState playerState = new(player, new GameSetup());
+        PlayerState playerState = new(player, startState);
         
         // Assert
         playerState.Player.ShouldBe(player);
@@ -23,8 +25,9 @@ public class PlayerStateTests
     public void PlayerStateObservingEventShouldListItInObservedEvents()
     {
         // Arrange
-        Player player = new Player("A", new RandomController());
-        PlayerState playerState = new(player, new GameSetup());
+        GameState startState = TestingSetups.VillagersOnlyGame().StartGame();
+        Player player = startState.Players.First();
+        PlayerState playerState = new(player, startState);
         VillagerRole villagerRole = new VillagerRole();
         GameSlot slot = new GameSlot(player.Name, villagerRole);
         DealtCardEvent dealtEvent = new DealtCardEvent(villagerRole, slot);
