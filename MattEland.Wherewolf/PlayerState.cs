@@ -17,8 +17,10 @@ public record PlayerState(Player Player, GameSetup GameSetup)
         _events.Add(gameEvent);
     }
 
-    public IEnumerable<CardProbability> CalculateStartingCardProbabilities(Player player)
+    public IDictionary<string, double> CalculateStartingCardProbabilities(Player player)
     {
+        Dictionary<string, double> probabilities = new();
+        
         // Start with all permutations
         IEnumerable<GamePermutation> permutations = GameSetup.Permutations;
         
@@ -30,12 +32,10 @@ public record PlayerState(Player Player, GameSetup GameSetup)
         {
             // Figure out the number of possible worlds where the player had the role at the start
             int roleSupport = permutations.Where(p => p.State.GetPlayerSlot(player).StartRole.Name == role.Name).Sum(p => p.Support);
-
-            // Only yield a role if we think it could be possible
-            if (roleSupport > 0)
-            {
-                yield return new CardProbability(role, (double)roleSupport / totalSupport); // Calculate probability based on role support and overall scenario support
-            }
+            
+            probabilities[role.Name] = (double)roleSupport / totalSupport;
         }
+
+        return probabilities;
     }
 }
