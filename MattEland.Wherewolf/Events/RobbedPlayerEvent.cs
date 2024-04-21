@@ -23,6 +23,15 @@ public class RobbedPlayerEvent : GameEvent
         => Player == player;
 
     public override string Description => $"{Player.Name} robbed {Target.Name} and saw their new role is {NewRole.Name}";
-    public override bool IsPossibleInGameState(GameState state) 
-        => state.GetPlayerSlot(Player).StartRole.Name == "Robber" && Player != Target;
+    public override bool IsPossibleInGameState(GameState state)
+    {
+        // Robbers can't rob themselves
+        if (Target == Player) return false;
+
+        // Any setup that didn't start with the target having the robbed card cannot be considered
+        if (state.GetPlayerSlot(Target).CurrentRole.Name != this.NewRole.Name) return false;
+        
+        // The robbing player has to be the robber
+        return state.GetPlayerSlot(Player).StartRole.Name == "Robber";
+    }
 }
