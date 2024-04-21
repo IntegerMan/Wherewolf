@@ -146,4 +146,7 @@ public class GameState
 
     public GameSlot GetPlayerSlot(Player player) 
         => _playerSlots.First(s => s.Player == player);
+
+    public GameSlot GetSlot(string slotName)
+        => AllSlots.First(s => s.Name == slotName);
 }

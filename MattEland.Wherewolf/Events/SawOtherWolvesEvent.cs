@@ -1,3 +1,5 @@
+using MattEland.Wherewolf.Roles;
+
 namespace MattEland.Wherewolf.Events;
 
 /// <summary>
@@ -19,4 +21,18 @@ public class SawOtherWolvesEvent : GameEvent
 
     public override string Description
         => $"{string.Join(" and ", Players.Select(p => p.Name))} saw that each other were on the werewolf team";
+
+    public override bool IsPossibleInGameState(GameState state)
+    {
+        foreach (var player in Players)
+        {
+            GameSlot playerSlot = state.GetPlayerSlot(player);
+            if (playerSlot.StartRole.Team != Team.Werewolf)
+            {
+                return false;
+            }
+        }
+
+        return true;
+    }
 }

@@ -20,4 +20,11 @@ public class DealtCardEvent : GameEvent
 
     public override bool IsObservedBy(Player player) => Player == player;
     public override string Description => $"{Slot.Name} was dealt {Role.Name}";
+    
+    public override bool IsPossibleInGameState(GameState state)
+    {
+        GameSlot stateSlot = state.GetSlot(Slot.Name);
+        
+        return stateSlot.StartRole.Name == this.Role.Name;
+    }
 }

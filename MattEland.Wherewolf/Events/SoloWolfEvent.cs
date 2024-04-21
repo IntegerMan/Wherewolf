@@ -1,3 +1,5 @@
+using MattEland.Wherewolf.Roles;
+
 namespace MattEland.Wherewolf.Events;
 
 /// <summary>
@@ -18,4 +20,25 @@ public class SoloWolfEvent : GameEvent
 
     public override string Description 
         => $"{Player.Name} saw that they were the only werewolf";
+
+    public override bool IsPossibleInGameState(GameState state)
+    {
+        foreach (var player in state.Players)
+        {
+            GameSlot playerSlot = state.GetPlayerSlot(player);
+            
+            // If the involved player isn't a werewolf, they wouldn't have gotten this event
+            if (player == Player && playerSlot.StartRole.Team != Team.Werewolf)
+            {
+                return false;
+            }
+
+            // If other players were werewolves, this solo event wouldn't be possible
+            if (player != Player && playerSlot.StartRole.Team == Team.Werewolf)
+            {
+                return false;
+            }
+        }
+        return true;
+    }
 }

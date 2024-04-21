@@ -18,7 +18,7 @@ public class GameSetupPermutationTests
         
         // Assert
         permutations.ShouldNotBeEmpty();
-        permutations.Count.ShouldBe(15); // Unique combinations
-        permutations.Sum(p => p.Support).ShouldBe(720); // Combinations with duplicates - for example, player could get either WW card or any of the villagers
+        permutations.Count.ShouldBe(15); // Unique combinations of 2 WW's and 4 villagers
+        permutations.Sum(p => p.Support).ShouldBe(720); // Total possible game states including identical states for different WW / Villager cards. This is calculated as number of cards factorial, which is 6 in this case
     }
 }
