@@ -7,17 +7,17 @@ namespace MattEland.Wherewolf.Events;
 /// </summary>
 public class DealtCardEvent : GameEvent
 {
-    public GameRole Card { get; }
+    public GameRole Role { get; }
     public GameSlot Slot { get; }
     public Player? Player { get; }
 
-    public DealtCardEvent(GameRole card, GameSlot slot)
+    public DealtCardEvent(GameRole role, GameSlot slot)
     {
-        this.Card = card;
+        this.Role = role;
         this.Slot = slot;
         this.Player = slot.Player;
     }
 
     public override bool IsObservedBy(Player player) => Player == player;
-    public override string Description => $"{Slot.Name} was dealt {Card.Name}";
+    public override string Description => $"{Slot.Name} was dealt {Role.Name}";
 }

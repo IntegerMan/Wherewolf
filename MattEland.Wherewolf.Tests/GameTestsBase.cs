@@ -5,17 +5,17 @@ namespace MattEland.Wherewolf.Tests;
 
 public abstract class GameTestsBase
 {
-    protected static void AddMinimumRequiredPlayers(Game game)
+    protected static void AddMinimumRequiredPlayers(GameSetup gameSetup)
     {
-        game.AddPlayers(
+        gameSetup.AddPlayers(
             new Player("A", new RandomController()), 
             new Player("B", new RandomController()), 
             new Player("C", new RandomController()));
     }
     
-    protected static void AddMinimumRequiredRoles(Game game)
+    protected static void AddMinimumRequiredRoles(GameSetup gameSetup)
     {
-        game.AddRoles(
+        gameSetup.AddRoles(
             new WerewolfRole(), new WerewolfRole(),
             new VillagerRole(), new VillagerRole(), new VillagerRole(), new VillagerRole() 
         );

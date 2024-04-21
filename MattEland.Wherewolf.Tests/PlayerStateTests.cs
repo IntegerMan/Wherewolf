@@ -13,7 +13,7 @@ public class PlayerStateTests
         Player player = new("A", new RandomController());
         
         // Act
-        PlayerState playerState = new(player);
+        PlayerState playerState = new(player, new GameSetup());
         
         // Assert
         playerState.Player.ShouldBe(player);
@@ -24,7 +24,7 @@ public class PlayerStateTests
     {
         // Arrange
         Player player = new Player("A", new RandomController());
-        PlayerState playerState = new(player);
+        PlayerState playerState = new(player, new GameSetup());
         VillagerRole villagerRole = new VillagerRole();
         GameSlot slot = new GameSlot(player.Name, villagerRole);
         DealtCardEvent dealtEvent = new DealtCardEvent(villagerRole, slot);

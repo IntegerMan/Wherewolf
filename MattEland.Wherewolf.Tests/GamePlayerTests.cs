@@ -10,44 +10,44 @@ public class GamePlayerTests
         // Arrange
         
         // Act
-        Game game = new();
+        GameSetup gameSetup = new();
 
         // Assert
-        game.Players.ShouldBeEmpty();
+        gameSetup.Players.ShouldBeEmpty();
     }
     
     [Fact]
     public void AddingAPlayerShouldAddThePlayer()
     {
         // Arrange
-        Game game = new();
+        GameSetup gameSetup = new();
         Player player = new Player("Test", new RandomController());
         
         // Act
-        game.AddPlayer(player);
+        gameSetup.AddPlayer(player);
 
         // Assert
-        game.Players.ShouldNotBeEmpty();
-        game.Players.ShouldContain(player);
+        gameSetup.Players.ShouldNotBeEmpty();
+        gameSetup.Players.ShouldContain(player);
     }    
     
     [Fact]
     public void AddingAPlayerShouldAddThePlayerOnlyOnce()
     {
         // Arrange
-        Game game = new();
+        GameSetup gameSetup = new();
         Player player = new Player("Test", new RandomController());
-        game.AddPlayer(player);
+        gameSetup.AddPlayer(player);
         
         // Act
         ShouldThrowExtensions.ShouldThrow<InvalidOperationException>(() =>
         {
-            game.AddPlayer(player);
+            gameSetup.AddPlayer(player);
         });
 
         // Assert
-        game.Players.ShouldNotBeEmpty();
-        game.Players.ShouldContain(player);
-        game.Players.Count().ShouldBe(1);
+        gameSetup.Players.ShouldNotBeEmpty();
+        gameSetup.Players.ShouldContain(player);
+        gameSetup.Players.Count().ShouldBe(1);
     }        
 }

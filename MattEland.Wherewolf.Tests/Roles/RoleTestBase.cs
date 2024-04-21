@@ -6,25 +6,25 @@ namespace MattEland.Wherewolf.Tests.Roles;
 
 public abstract class RoleTestBase
 {
-    protected static Game CreateTestGame(params GameRole[] roles)
+    protected static GameSetup CreateTestGame(params GameRole[] roles)
     {
-        Game game = new();
-        AddPlayersToGame(game);
-        game.AddRoles(roles);
+        GameSetup gameSetup = new();
+        AddPlayersToGame(gameSetup);
+        gameSetup.AddRoles(roles);
         
-        return game;
+        return gameSetup;
     }
     
     protected static GameState CreateTestGameState(params GameRole[] roles)
     {
-        Game game = CreateTestGame(roles);
+        GameSetup gameSetup = CreateTestGame(roles);
 
-        return game.StartGame(new NonShuffler());
+        return gameSetup.StartGame(new NonShuffler());
     }    
 
-    private static void AddPlayersToGame(Game game)
+    private static void AddPlayersToGame(GameSetup gameSetup)
     {
-        game.AddPlayers(
+        gameSetup.AddPlayers(
             new Player("A", new RandomController()), 
             new Player("B", new RandomController()), 
             new Player("C", new RandomController()));

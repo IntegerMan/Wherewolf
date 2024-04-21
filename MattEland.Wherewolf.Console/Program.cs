@@ -11,18 +11,18 @@ AnsiConsole.MarkupLine("A social deduction simulation for computers, by [Cyan]Ma
 AnsiConsole.WriteLine();
 
 // Game setup
-Game game = new();
-game.AddPlayers(
+GameSetup gameSetup = new();
+gameSetup.AddPlayers(
         new Player("Matt", new HumanController()),
         new Player("Rufus", new RandomController()),
         new Player("Jimothy", new RandomController())
     );
-game.AddRoles(
+gameSetup.AddRoles(
         new VillagerRole(), new VillagerRole(), new VillagerRole(), new VillagerRole(), 
         new WerewolfRole(), new WerewolfRole()
     );
     
-GameState gameState = game.StartGame();
+GameState gameState = gameSetup.StartGame();
 gameState = gameState.RunToEnd();
 
 DisplayHelpers.DisplaySummaryTable(gameState);
@@ -36,7 +36,7 @@ foreach (var gameEvent in gameState.Events)
 AnsiConsole.Write(eventTree);
 AnsiConsole.WriteLine();
 
-foreach (var player in game.Players)
+foreach (var player in gameSetup.Players)
 {
     PlayerState playerState = gameState.GetPlayerStates(player);
     Tree playerTree = new($"[Yellow]Observed Events for {player.GetPlayerMarkup()}[/]");

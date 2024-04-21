@@ -29,7 +29,7 @@ public class VillagerRoleTests : RoleTestBase
         playerState.ObservedEvents.ShouldNotBeNull();
         playerState.ObservedEvents.ShouldNotBeEmpty();
         DealtCardEvent dealtCardEvent = playerState.ObservedEvents.OfType<DealtCardEvent>().Single();
-        dealtCardEvent.Card.GetType().ShouldBe(typeof(VillagerRole));
+        dealtCardEvent.Role.GetType().ShouldBe(typeof(VillagerRole));
         dealtCardEvent.Player.ShouldBe(player);
     }
 

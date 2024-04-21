@@ -9,10 +9,10 @@ public class StartGameTests : GameTestsBase
     public void StartGameShouldErrorIfNoPlayersOrRoles()
     {
         // Arrange
-        Game game = new();
+        GameSetup gameSetup = new();
         
         // Act
-        ShouldThrowExtensions.ShouldThrow<InvalidOperationException>(() => game.StartGame());
+        ShouldThrowExtensions.ShouldThrow<InvalidOperationException>(() => gameSetup.StartGame());
         
         // Assert (already asserted)
     }
@@ -21,11 +21,11 @@ public class StartGameTests : GameTestsBase
     public void StartGameShouldErrorIfNoPlayers()
     {
         // Arrange
-        Game game = new();
-        AddMinimumRequiredRoles(game);
+        GameSetup gameSetup = new();
+        AddMinimumRequiredRoles(gameSetup);
         
         // Act
-        ShouldThrowExtensions.ShouldThrow<InvalidOperationException>(() => game.StartGame());
+        ShouldThrowExtensions.ShouldThrow<InvalidOperationException>(() => gameSetup.StartGame());
         
         // Assert (already asserted)
     }
@@ -34,11 +34,11 @@ public class StartGameTests : GameTestsBase
     public void StartGameShouldErrorIfNoRoles()
     {
         // Arrange
-        Game game = new();
-        AddMinimumRequiredPlayers(game);
+        GameSetup gameSetup = new();
+        AddMinimumRequiredPlayers(gameSetup);
         
         // Act
-        ShouldThrowExtensions.ShouldThrow<InvalidOperationException>(() => game.StartGame());
+        ShouldThrowExtensions.ShouldThrow<InvalidOperationException>(() => gameSetup.StartGame());
         
         // Assert (already asserted)
     }
@@ -47,12 +47,12 @@ public class StartGameTests : GameTestsBase
     public void StartGameShouldErrorIfNotEnoughRoles()
     {
         // Arrange
-        Game game = new();
-        AddMinimumRequiredPlayers(game);
-        game.AddRoles(new VillagerRole(), new WerewolfRole(), new VillagerRole());
+        GameSetup gameSetup = new();
+        AddMinimumRequiredPlayers(gameSetup);
+        gameSetup.AddRoles(new VillagerRole(), new WerewolfRole(), new VillagerRole());
         
         // Act
-        ShouldThrowExtensions.ShouldThrow<InvalidOperationException>(() => game.StartGame());
+        ShouldThrowExtensions.ShouldThrow<InvalidOperationException>(() => gameSetup.StartGame());
         
         // Assert (already asserted)
     }    
@@ -61,12 +61,12 @@ public class StartGameTests : GameTestsBase
     public void StartGameShouldErrorIfNoEvilRoles()
     {
         // Arrange
-        Game game = new();
-        AddMinimumRequiredPlayers(game);
-        game.AddRoles(new VillagerRole(), new VillagerRole(), new VillagerRole(), new VillagerRole(), new VillagerRole(), new VillagerRole());
+        GameSetup gameSetup = new();
+        AddMinimumRequiredPlayers(gameSetup);
+        gameSetup.AddRoles(new VillagerRole(), new VillagerRole(), new VillagerRole(), new VillagerRole(), new VillagerRole(), new VillagerRole());
         
         // Act
-        ShouldThrowExtensions.ShouldThrow<InvalidOperationException>(() => game.StartGame());
+        ShouldThrowExtensions.ShouldThrow<InvalidOperationException>(() => gameSetup.StartGame());
         
         // Assert (already asserted)
     }    
@@ -75,12 +75,12 @@ public class StartGameTests : GameTestsBase
     public void StartGameShouldErrorIfNoGoodRoles()
     {
         // Arrange
-        Game game = new();
-        AddMinimumRequiredPlayers(game);
-        game.AddRoles(new WerewolfRole(), new WerewolfRole(), new WerewolfRole(), new WerewolfRole(), new WerewolfRole(), new WerewolfRole());
+        GameSetup gameSetup = new();
+        AddMinimumRequiredPlayers(gameSetup);
+        gameSetup.AddRoles(new WerewolfRole(), new WerewolfRole(), new WerewolfRole(), new WerewolfRole(), new WerewolfRole(), new WerewolfRole());
         
         // Act
-        ShouldThrowExtensions.ShouldThrow<InvalidOperationException>(() => game.StartGame());
+        ShouldThrowExtensions.ShouldThrow<InvalidOperationException>(() => gameSetup.StartGame());
         
         // Assert (already asserted)
     }        
@@ -89,12 +89,12 @@ public class StartGameTests : GameTestsBase
     public void StartGameShouldProduceGameStateWhenValid()
     {
         // Arrange
-        Game game = new();
-        AddMinimumRequiredPlayers(game);
-        AddMinimumRequiredRoles(game);
+        GameSetup gameSetup = new();
+        AddMinimumRequiredPlayers(gameSetup);
+        AddMinimumRequiredRoles(gameSetup);
         
         // Act
-        GameState state = game.StartGame();
+        GameState state = gameSetup.StartGame();
 
         // Assert
         state.ShouldNotBeNull();
@@ -110,12 +110,12 @@ public class StartGameTests : GameTestsBase
     public void StartGameShouldResultInCorrectIndexesPerPlayer()
     {
         // Arrange
-        Game game = new();
-        AddMinimumRequiredPlayers(game);
-        AddMinimumRequiredRoles(game);
+        GameSetup gameSetup = new();
+        AddMinimumRequiredPlayers(gameSetup);
+        AddMinimumRequiredRoles(gameSetup);
         
         // Act
-        GameState state = game.StartGame();
+        GameState state = gameSetup.StartGame();
 
         // Assert
         state.ShouldNotBeNull();
@@ -130,16 +130,16 @@ public class StartGameTests : GameTestsBase
     public void StartGameShouldResultInOneSlotPerPlayer()
     {
         // Arrange
-        Game game = new();
-        AddMinimumRequiredPlayers(game);
-        AddMinimumRequiredRoles(game);
+        GameSetup gameSetup = new();
+        AddMinimumRequiredPlayers(gameSetup);
+        AddMinimumRequiredRoles(gameSetup);
         
         // Act
-        GameState state = game.StartGame();
+        GameState state = gameSetup.StartGame();
 
         // Assert
         state.ShouldNotBeNull();
-        foreach (var player in game.Players)
+        foreach (var player in gameSetup.Players)
         {
             state.PlayerSlots.Count(s => s.Player == player).ShouldBe(1);
             state.PlayerSlots.Count(s => s.Name == player.Name).ShouldBe(1);
@@ -151,12 +151,12 @@ public class StartGameTests : GameTestsBase
     public void StartGameShouldResultInCorrectCenterSlotNames()
     {
         // Arrange
-        Game game = new();
-        AddMinimumRequiredPlayers(game);
-        AddMinimumRequiredRoles(game);
+        GameSetup gameSetup = new();
+        AddMinimumRequiredPlayers(gameSetup);
+        AddMinimumRequiredRoles(gameSetup);
         
         // Act
-        GameState state = game.StartGame();
+        GameState state = gameSetup.StartGame();
 
         // Assert
         state.ShouldNotBeNull();
@@ -169,16 +169,16 @@ public class StartGameTests : GameTestsBase
     public void StartGameShouldResultInRoleBeingAssignedToOnlyOneSlot()
     {
         // Arrange
-        Game game = new();
-        AddMinimumRequiredPlayers(game);
-        AddMinimumRequiredRoles(game);
+        GameSetup gameSetup = new();
+        AddMinimumRequiredPlayers(gameSetup);
+        AddMinimumRequiredRoles(gameSetup);
         
         // Act
-        GameState state = game.StartGame();
+        GameState state = gameSetup.StartGame();
 
         // Assert
         state.ShouldNotBeNull();
-        foreach (var role in game.Roles)
+        foreach (var role in gameSetup.Roles)
         {
             int playerRoles = state.PlayerSlots.Count(s => s.StartRole == role);
             int centerRoles = state.CenterSlots.Count(s => s.StartRole == role);
@@ -192,12 +192,12 @@ public class StartGameTests : GameTestsBase
     public void StartGameShouldGenerateCardDealtEventsToAllSlots()
     {
         // Arrange
-        Game game = new();
-        AddMinimumRequiredPlayers(game);
-        AddMinimumRequiredRoles(game);
+        GameSetup gameSetup = new();
+        AddMinimumRequiredPlayers(gameSetup);
+        AddMinimumRequiredRoles(gameSetup);
         
         // Act
-        GameState state = game.StartGame();
+        GameState state = gameSetup.StartGame();
 
         // Assert
         state.ShouldNotBeNull();

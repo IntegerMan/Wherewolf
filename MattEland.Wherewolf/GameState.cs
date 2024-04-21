@@ -6,49 +6,32 @@ namespace MattEland.Wherewolf;
 
 public class GameState
 {
-    private readonly GameRole[] _roles;
-    private readonly Player[] _players;
+    private readonly GameSetup _gameSetup;
     private readonly GameSlot[] _centerSlots;
     private readonly GameSlot[] _playerSlots;
     private readonly GamePhase[] _allPhases;
     private readonly Queue<GamePhase> _remainingPhases;
     private readonly List<GameEvent> _events = new();
 
-    internal GameState(IList<Player> players, IList<GameRole> roles, ISlotShuffler shuffler)
+    internal GameState(GameSetup setup, ISlotShuffler shuffler)
     {
-        // Validation
-        if (players.Count + 3 != roles.Count)
-        {
-            throw new InvalidOperationException($"There must be exactly 3 more roles allocated to the game than players. Roles: {roles.Count}, Players: {players.Count}");
-        }
-        if (players.Count < 3)
-        {
-            throw new InvalidOperationException($"There must be at least 3 players in the game, Players: {players.Count}");
-        }
-        if (roles.Select(r => r.Team).Distinct().Count() == 1)
-        {
-            throw new InvalidOperationException("All roles were on the same team");
-        }
-        
-        _roles = roles.ToArray();
-        _players = players.ToArray();
+        setup.Validate();
+        _gameSetup = setup;
+        List<GameRole> shuffledRoles = shuffler.Shuffle(setup.Roles).ToList();
 
-        List<GameRole> shuffledRoles = shuffler.Shuffle(roles).ToList();
+        _playerSlots = BuildPlayerSlots(setup.Players, shuffledRoles);
+        _centerSlots = BuildCenterSlots(setup.Players, shuffledRoles);
 
-        _playerSlots = BuildPlayerSlots(players, shuffledRoles);
-        _centerSlots = BuildCenterSlots(players, shuffledRoles);
-
-        AssignOrderIndexToEachPlayer(players);
+        AssignOrderIndexToEachPlayer(setup.Players);
         RegisterStartingCards();
-        _allPhases = BuildGamePhases(roles);
+        _allPhases = BuildGamePhases(setup.Roles);
         _remainingPhases = new Queue<GamePhase>(_allPhases);
     }
 
-    private GameState(GameState oldState, IEnumerable<GamePhase> remainigPhases)
+    private GameState(GameState oldState, IEnumerable<GamePhase> remainingPhases)
     {
-        _remainingPhases = new Queue<GamePhase>(remainigPhases);
-        _players = oldState._players.ToArray();
-        _roles = oldState.Roles.ToArray();
+        _remainingPhases = new Queue<GamePhase>(remainingPhases);
+        _gameSetup = oldState._gameSetup;
         _allPhases = oldState._allPhases.ToArray();
         _events.AddRange(oldState.Events);
         _centerSlots = oldState.CenterSlots.ToArray();
@@ -114,13 +97,13 @@ public class GameState
         }
     }
 
-    public IEnumerable<Player> Players => _players;
-    public IEnumerable<GameRole> Roles => _roles;
+    public IEnumerable<Player> Players => _gameSetup.Players;
+    public IEnumerable<GameRole> Roles => _gameSetup.Roles;
     public IEnumerable<GameEvent> Events => _events.AsReadOnly();
 
     public PlayerState GetPlayerStates(Player player)
     {
-        PlayerState state = new(player);
+        PlayerState state = new(player, _gameSetup);
         
         state.AddEvents(_events.Where(e => e.IsObservedBy(player)));
 
@@ -156,4 +139,7 @@ public class GameState
     {
         _events.Add(newEvent);
     }
+
+    public GameSlot GetPlayerSlot(Player player) 
+        => _playerSlots.First(s => s.Player == player);
 }
