@@ -83,7 +83,7 @@ public class GameSetup
                 foreach (var group in permutations.GroupBy(p => string.Join(",", p.Select(z => z.Name))))
                 {
                     // Represent multiple similar states merged together using the Support property to indicate merged probabilities
-                    GameState state = new GameState(this, group.First().ToList());
+                    GameState state = new GameState(this, group.First().ToList(), false);
                     _permutations.Add(new GamePermutation(state, support: group.Count()));
                 }            
             }

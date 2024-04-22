@@ -1,4 +1,5 @@
 using MattEland.Wherewolf.Controllers;
+using MattEland.Wherewolf.Events;
 using Spectre.Console;
 
 namespace MattEland.Wherewolf.Console;
@@ -17,5 +18,11 @@ public class HumanController : PlayerController
         return AnsiConsole.Prompt(new SelectionPrompt<string>()
             .Title("Select a player to rob")
             .AddChoices(otherPlayerNames));
+    }
+
+    public override void ObservedEvent(GameEvent gameEvent, GameState state)
+    {
+        string message = DisplayHelpers.StylizeEventMessage(gameEvent.Description, state.AllSlots, state.Roles);
+        AnsiConsole.MarkupLine(message);
     }
 }

@@ -87,4 +87,25 @@ public class BasicProbabilityTests : GameTestsBase
         slotProbabilities.StartRole["Werewolf"].ShouldBe(1);
         slotProbabilities.StartRole["Villager"].ShouldBe(0);
     }
+    
+    [Fact]
+    public void PlayersShouldBeCertainOfTheirEndRoleWhenNoRoleChangersExist()
+    {
+        // Arrange
+        GameSetup gameSetup = new GameSetup();
+        AddMinimumRequiredPlayers(gameSetup);
+        AddMinimumRequiredRoles(gameSetup);
+        Player player = gameSetup.Players.First();
+        GameState state = gameSetup.StartGame(new NonShuffler()).RunToEnd();
+        PlayerState playerState = state.GetPlayerStates(player);
+
+        // Act
+        PlayerProbabilities probabilities = playerState.Probabilities;
+        SlotRoleProbabilities slotProbabilities = probabilities.GetSlotProbabilities(state.GetSlot(player.Name));
+        
+        // Assert
+        slotProbabilities.CurrentRole.Count.ShouldBe(gameSetup.Roles.DistinctBy(r => r.Name).Count());
+        slotProbabilities.CurrentRole["Werewolf"].ShouldBe(1);
+        slotProbabilities.CurrentRole["Villager"].ShouldBe(0);
+    }
 }

@@ -29,23 +29,30 @@ public record PlayerState(Player Player, GameState GameState)
     {
         PlayerProbabilities probabilities = new(this);
 
+        // Start with all permutations
+        List<GamePermutation> startingPermutations = GameState.Setup.Permutations.ToList();
+
+        List<GamePermutation> endPermutations = startingPermutations.SelectMany(p => p.ExtrapolateEndPermutations()).ToList();
+        
+        // Filter down to a set of permutations where the observed events are possible
+        endPermutations = endPermutations.Where(p => p.IsPossibleGivenPlayerState(this)).ToList();
+        
+        double startPopulation = startingPermutations.Sum(p => p.Support);
+        
+        // Calculate starting role probabilities
         foreach (var slot in GameState.AllSlots)
         {
-            // Start with all permutations
-            IEnumerable<GamePermutation> permutations = GameState.Setup.Permutations;
-        
-            // Filter down to a set of permutations where the observed events are possible
-            permutations = permutations.Where(p => p.IsPossibleGivenPlayerState(this));
-            int totalSupport = permutations.Sum(p => p.Support);
-        
             foreach (var role in GameState.Roles.DistinctBy(r => r.Name))
             {
-                // Figure out the number of possible worlds where the player had the role at the start
-                int roleSupport = permutations.Where(p => p.State.GetSlot(slot.Name).StartRole.Name == role.Name).Sum(p => p.Support);
+                // Figure out the number of possible worlds where the slot had the role at the start
+                double roleSupport = startingPermutations.Where(p => p.State.GetSlot(slot.Name).StartRole.Name == role.Name)
+                                              .Sum(p => p.Support);
 
-                probabilities.RegisterSlotRoleProbabilities(slot, role.Name, roleSupport, totalSupport);
-            }            
+                probabilities.RegisterSlotRoleProbabilities(slot, isStarting: true, role.Name, roleSupport, startPopulation);
+            }
         }
+        
+        // Given our valid start permutations, simulate all possible game states that could arise from the next night phase
         
         return probabilities;
     }

@@ -6,4 +6,6 @@ public abstract class GameEvent
     public abstract string Description { get; }
 
     public abstract bool IsPossibleInGameState(GameState state);
+
+    public override string ToString() => Description;
 }

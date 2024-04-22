@@ -3,9 +3,9 @@ namespace MattEland.Wherewolf;
 public class GamePermutation
 {
     public GameState State { get; }
-    public int Support { get; }
+    public double Support { get; }
     
-    public GamePermutation(GameState state, int support)
+    public GamePermutation(GameState state, double support)
     {
         State = state;
         Support = support;
@@ -13,4 +13,31 @@ public class GamePermutation
 
     public bool IsPossibleGivenPlayerState(PlayerState playerState) 
         => playerState.ObservedEvents.All(e => e.IsPossibleInGameState(State));
+
+    public IEnumerable<GamePermutation> ExtrapolateEndPermutations()
+    {
+        if (State.IsGameOver || State.CurrentPhase is null)
+        {
+            throw new InvalidOperationException("Cannot extrapolate from end of game state");
+        }
+        
+        List<GameState> possibleNextStates = State.CurrentPhase!.BuildPossibleStates(State).ToList();
+        foreach (var permutation in possibleNextStates)
+        {
+            GamePermutation next = new GamePermutation(permutation, Support / possibleNextStates.Count);
+
+            if (next.State.IsGameOver)
+            {
+                yield return next;
+            }
+            else
+            {
+                foreach (var result in next.ExtrapolateEndPermutations())
+                {
+                    yield return result;
+                }
+            }
+        }
+        
+    }
 }

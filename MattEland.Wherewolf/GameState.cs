@@ -14,11 +14,11 @@ public class GameState
     private readonly List<GameEvent> _events = new();
 
     internal GameState(GameSetup setup, ISlotShuffler shuffler) 
-        :this(setup, shuffler.Shuffle(setup.Roles).ToList())
+        :this(setup, shuffler.Shuffle(setup.Roles).ToList(), true)
     {
     }
     
-    internal GameState(GameSetup setup, IReadOnlyList<GameRole> shuffledRoles)
+    internal GameState(GameSetup setup, IReadOnlyList<GameRole> shuffledRoles, bool broadcastEventToController)
     {
         setup.Validate();
         _gameSetup = setup;
@@ -27,12 +27,12 @@ public class GameState
         _centerSlots = BuildCenterSlots(setup.Players, shuffledRoles);
 
         AssignOrderIndexToEachPlayer(setup.Players);
-        RegisterStartingCards();
+        RegisterStartingCards(broadcastEventToController);
         _allPhases = BuildGamePhases(setup.Roles);
         _remainingPhases = new Queue<GamePhase>(_allPhases);
     }    
 
-    private GameState(GameState oldState, IEnumerable<GamePhase> remainingPhases)
+    internal GameState(GameState oldState, IEnumerable<GamePhase> remainingPhases)
     {
         _remainingPhases = new Queue<GamePhase>(remainingPhases);
         _gameSetup = oldState._gameSetup;
@@ -41,7 +41,7 @@ public class GameState
         _centerSlots = oldState.CenterSlots.ToArray();
         _playerSlots = oldState.PlayerSlots.ToArray();
     }
-
+    
     private GamePhase[] BuildGamePhases(IEnumerable<GameRole> roles)
     {
         List<GamePhase> phases = new();
@@ -74,11 +74,11 @@ public class GameState
         return players.Select(p => new GameSlot(p.Name, shuffledRoles[i++]) { Player = p}).ToArray();
     }
 
-    private void RegisterStartingCards()
+    private void RegisterStartingCards(bool broadcastEventToController)
     {
         foreach (var slot in AllSlots)
         {
-            AddEvent(new DealtCardEvent(slot.StartRole, slot));
+            AddEvent(new DealtCardEvent(slot.StartRole, slot), broadcastEventToController);
         }
     }
 
@@ -140,9 +140,20 @@ public class GameState
     public IEnumerable<GamePhase> Phases => _remainingPhases.ToArray();
     public GameSetup Setup => _gameSetup;
 
-    public void AddEvent(GameEvent newEvent)
+    public void AddEvent(GameEvent newEvent, bool broadcastToController = true)
     {
         _events.Add(newEvent);
+
+        if (broadcastToController)
+        {
+            foreach (var player in Players)
+            {
+                if (newEvent.IsObservedBy(player))
+                {
+                    player.Controller.ObservedEvent(newEvent, this);
+                }
+            }
+        }
     }
 
     public GameSlot GetPlayerSlot(Player player) 
@@ -150,4 +161,7 @@ public class GameState
 
     public GameSlot GetSlot(string slotName)
         => AllSlots.First(s => s.Name == slotName);
+
+    public override string ToString() 
+        => $"{string.Join(",", PlayerSlots.Select(p => p.CurrentRole.Name))}[{string.Join(",", CenterSlots.Select(p => p.CurrentRole.Name))}]";
 }

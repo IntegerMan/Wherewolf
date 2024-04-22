@@ -53,4 +53,19 @@ public static class DisplayHelpers
         => slot.Player is null 
             ? $"[Gray50]{slot.Name}[/]" 
             : slot.Player.GetPlayerMarkup();
+
+    public static string StylizeEventMessage(string message, IEnumerable<GameSlot> slots, IEnumerable<GameRole> roles)
+    {
+        foreach (var slot in slots)
+        {
+            message = message.Replace(slot.Name, slot.GetSlotMarkup(), StringComparison.OrdinalIgnoreCase);
+        }
+        
+        foreach (var role in roles.DistinctBy(r => r.Name))
+        {
+            message = message.Replace(role.Name, role.AsMarkdown(), StringComparison.OrdinalIgnoreCase);
+        }
+
+        return message;
+    }
 }

@@ -23,6 +23,21 @@ public class RobberRoleTests : RoleTestBase
     }
 
     [Fact]
+    public void RobberShouldBeCertainTheyEndedAsRobberWithNoOtherCardSwappingRoles()
+    {
+        // Arrange
+        GameState gameState = RunRobberGame();
+        Player player = gameState.Players.Single(p => p.Name == "Player");
+
+        // Act
+        PlayerState playerState = gameState.GetPlayerStates(player);
+        SlotRoleProbabilities playerProbabilities = playerState.Probabilities.GetSlotProbabilities(gameState.GetPlayerSlot(player));
+
+        // Assert
+        playerProbabilities.CurrentRole["Robber"].ShouldBe(1);
+    }
+    
+    [Fact]
     public void RobberShouldHaveARobbedEvent()
     {
         // Arrange

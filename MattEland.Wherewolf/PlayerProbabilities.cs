@@ -11,14 +11,21 @@ public class PlayerProbabilities
         _playerState = playerState;
     }
 
-    public void RegisterSlotRoleProbabilities(GameSlot slot, string role, int support, int population)
+    public void RegisterSlotRoleProbabilities(GameSlot slot, bool isStarting, string role, double support, double population)
     {
         if (!_slotRoleProbabilities.ContainsKey(slot))
         {
             _slotRoleProbabilities[slot] = new SlotRoleProbabilities();
         }
-        
-        _slotRoleProbabilities[slot].SetStartRoleProbabilities(role, support, population);
+
+        if (isStarting)
+        {
+            _slotRoleProbabilities[slot].SetStartRoleProbabilities(role, support, population);
+        }
+        else
+        {
+            _slotRoleProbabilities[slot].SetCurrentRoleProbabilities(role, support, population);
+        }
     }
 
     public SlotRoleProbabilities GetSlotProbabilities(GameSlot slot) 

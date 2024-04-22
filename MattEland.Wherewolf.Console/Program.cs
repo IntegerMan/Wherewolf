@@ -18,7 +18,8 @@ gameSetup.AddPlayers(
         new Player("Jimothy", new RandomController())
     );
 gameSetup.AddRoles(
-        new VillagerRole(), new VillagerRole(), new VillagerRole(), 
+        new VillagerRole(), new VillagerRole(), 
+        new InsomniacRole(), 
         new RobberRole(), 
         new WerewolfRole(), new WerewolfRole()
     );
@@ -95,12 +96,12 @@ Tree possibleStatesTree = new("[Yellow]Possible Worlds[/]");
 foreach (var permutations in gameSetup.Permutations.GroupBy(p => string.Join(" ", p.State.PlayerSlots.Select(s => $"{s.GetSlotMarkup()}:{s.StartRole.AsMarkdown()}"))))
 {
     string possibleForPlayers = "Possible for: ";
-    int totalSupport = 0;
+    double totalSupport = 0;
     foreach (var player in gameSetup.Players)
     {
         PlayerState playerState = gameState.GetPlayerStates(player);
         
-        int support = permutations.Where(p => p.IsPossibleGivenPlayerState(playerState)).Sum(p => p.Support);
+        double support = permutations.Where(p => p.IsPossibleGivenPlayerState(playerState)).Sum(p => p.Support);
         if (support > 0)
         {
             possibleForPlayers += $"{player.GetPlayerMarkup()} ({support}) ";
@@ -120,15 +121,7 @@ AnsiConsole.WriteLine();
 void AddGameEventNodeToTree(GameEvent evt, Tree tree, IEnumerable<GameSlot> slots, IEnumerable<GameRole> roles, IEnumerable<Player> players, bool includeObservedBy = true)
 {
     // Make descriptions referencing slots or roles stand out more
-    string description = evt.Description;
-    foreach (var slot in slots)
-    {
-        description = description.Replace(slot.Name, slot.GetSlotMarkup(), StringComparison.OrdinalIgnoreCase);
-    }
-    foreach (var role in roles)
-    {
-        description = description.Replace(role.Name, role.AsMarkdown(), StringComparison.OrdinalIgnoreCase);
-    }
+    string description = DisplayHelpers.StylizeEventMessage(evt.Description, slots, roles);
     
     // Add the event node
     TreeNode eventNode = tree.AddNode($"[Cyan]{evt.GetType().Name}[/]: {description}");
