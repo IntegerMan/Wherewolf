@@ -30,12 +30,14 @@ public record PlayerState(Player Player, GameState GameState)
         PlayerProbabilities probabilities = new(this);
 
         // Start with all permutations
-        List<GamePermutation> startingPermutations = GameState.Setup.Permutations.ToList();
+        List<GamePermutation> startingPermutations = GameState.Setup.Permutations.Where(p => p.IsPossibleGivenPlayerState(this)).ToList();
 
+        /*
         List<GamePermutation> endPermutations = startingPermutations.SelectMany(p => p.ExtrapolateEndPermutations()).ToList();
         
         // Filter down to a set of permutations where the observed events are possible
         endPermutations = endPermutations.Where(p => p.IsPossibleGivenPlayerState(this)).ToList();
+        */
         
         double startPopulation = startingPermutations.Sum(p => p.Support);
         
