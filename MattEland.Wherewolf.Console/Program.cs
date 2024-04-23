@@ -42,10 +42,9 @@ AnsiConsole.WriteLine();
 foreach (var player in gameSetup.Players)
 {
     // Observed events tree
-    PlayerState playerState = gameState.GetPlayerStates(player);
     Tree playerTree = new($"[Yellow]Observed Events for {player.GetPlayerMarkup()}[/]");
     
-    foreach (var gameEvent in playerState.ObservedEvents)
+    foreach (var gameEvent in gameState.Events.Where(e => e.IsObservedBy(player)))
     {
         AddGameEventNodeToTree(gameEvent, playerTree, gameState.AllSlots, gameState.Roles, gameState.Players, includeObservedBy: false);
     }
@@ -63,7 +62,7 @@ foreach (var player in gameSetup.Players)
         probabilitiesTable.AddColumn(role.AsMarkdown());
     }
     
-    var probabilities = playerState.Probabilities;
+    var probabilities = gameState.CalculateProbabilities(player);
     foreach (var otherSlot in gameState.AllSlots)
     {
         SlotRoleProbabilities slotProbabilities = probabilities.GetSlotProbabilities(otherSlot);
@@ -99,9 +98,7 @@ foreach (var permutations in gameSetup.Permutations.GroupBy(p => string.Join(" "
     double totalSupport = 0;
     foreach (var player in gameSetup.Players)
     {
-        PlayerState playerState = gameState.GetPlayerStates(player);
-        
-        double support = permutations.Where(p => p.IsPossibleGivenPlayerState(playerState)).Sum(p => p.Support);
+        double support = permutations.Where(p => p.IsPossibleGivenEvents(gameState.Events.Where(e => e.IsObservedBy(player)))).Sum(p => p.Support);
         if (support > 0)
         {
             possibleForPlayers += $"{player.GetPlayerMarkup()} ({support}) ";

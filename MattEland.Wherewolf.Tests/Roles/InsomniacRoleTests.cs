@@ -15,8 +15,8 @@ public class InsomniacRoleTests : RoleTestBase
         Player player = gameState.Players.Single(p => p.Name == "Player");
 
         // Act
-        PlayerState playerState = gameState.GetPlayerStates(player);
-        SlotRoleProbabilities playerProbabilities = playerState.Probabilities.GetSlotProbabilities(gameState.GetPlayerSlot(player));
+        PlayerProbabilities playerProbs = gameState.CalculateProbabilities(player);
+        SlotRoleProbabilities playerProbabilities = playerProbs.GetSlotProbabilities(gameState.GetPlayerSlot(player));
 
         // Assert
         playerProbabilities.StartRole["Insomniac"].ShouldBe(1);
@@ -30,11 +30,11 @@ public class InsomniacRoleTests : RoleTestBase
         Player player = gameState.Players.Single(p => p.Name == "Player");
 
         // Act
-        PlayerState playerState = gameState.GetPlayerStates(player);
+        List<GameEvent> observedEvents = gameState.Events.Where(e => e.IsObservedBy(player)).ToList();
 
         // Assert
-        playerState.ObservedEvents.OfType<InsomniacSawFinalCardEvent>().Count().ShouldBe(1);
-        playerState.ObservedEvents.OfType<InsomniacSawFinalCardEvent>().Single().Role.Name.ShouldBe("Insomniac");
+        observedEvents.OfType<InsomniacSawFinalCardEvent>().Count().ShouldBe(1);
+        observedEvents.OfType<InsomniacSawFinalCardEvent>().Single().Role.Name.ShouldBe("Insomniac");
     }
     
     [Fact]
@@ -45,11 +45,11 @@ public class InsomniacRoleTests : RoleTestBase
         Player player = gameState.Players.Single(p => p.Name == "Player");
 
         // Act
-        PlayerState playerState = gameState.GetPlayerStates(player);
+        List<GameEvent> observedEvents = gameState.Events.Where(e => e.IsObservedBy(player)).ToList();
 
         // Assert
-        playerState.ObservedEvents.OfType<InsomniacSawFinalCardEvent>().Count().ShouldBe(1);
-        playerState.ObservedEvents.OfType<InsomniacSawFinalCardEvent>().Single().Role.Name.ShouldBe("Robber");
+        observedEvents.OfType<InsomniacSawFinalCardEvent>().Count().ShouldBe(1);
+        observedEvents.OfType<InsomniacSawFinalCardEvent>().Single().Role.Name.ShouldBe("Robber");
     }
     
     [Fact]
@@ -60,8 +60,8 @@ public class InsomniacRoleTests : RoleTestBase
         Player player = gameState.Players.Single(p => p.Name == "Player");
 
         // Act
-        PlayerState playerState = gameState.GetPlayerStates(player);
-        SlotRoleProbabilities playerProbabilities = playerState.Probabilities.GetSlotProbabilities(gameState.GetPlayerSlot(player));
+        PlayerProbabilities playerProbs = gameState.CalculateProbabilities(player);
+        SlotRoleProbabilities playerProbabilities = playerProbs.GetSlotProbabilities(gameState.GetPlayerSlot(player));
 
         // Assert
         playerProbabilities.CurrentRole["Insomniac"].ShouldBe(1);
@@ -75,8 +75,8 @@ public class InsomniacRoleTests : RoleTestBase
         Player player = gameState.Players.Single(p => p.Name == "Player");
 
         // Act
-        PlayerState playerState = gameState.GetPlayerStates(player);
-        SlotRoleProbabilities playerProbabilities = playerState.Probabilities.GetSlotProbabilities(gameState.GetPlayerSlot(player));
+        PlayerProbabilities playerProbs = gameState.CalculateProbabilities(player);
+        SlotRoleProbabilities playerProbabilities = playerProbs.GetSlotProbabilities(gameState.GetPlayerSlot(player));
 
         // Assert
         gameState.GetPlayerSlot(player).CurrentRole.Name.ShouldBe("Robber");

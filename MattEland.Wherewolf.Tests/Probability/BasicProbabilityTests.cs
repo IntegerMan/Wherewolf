@@ -13,10 +13,9 @@ public class BasicProbabilityTests : GameTestsBase
         AddMinimumRequiredRoles(gameSetup);
         Player player = gameSetup.Players.First();
         GameState state = gameSetup.StartGame(new NonShuffler()).RunToEnd();
-        PlayerState playerState = state.GetPlayerStates(player);
 
         // Act
-        PlayerProbabilities probabilities = playerState.Probabilities;
+        PlayerProbabilities probabilities = state.CalculateProbabilities(player);
         SlotRoleProbabilities slotProbabilities = probabilities.GetSlotProbabilities(state.GetSlot(player.Name));
         
         // Assert
@@ -36,8 +35,7 @@ public class BasicProbabilityTests : GameTestsBase
         GameState state = gameSetup.StartGame(new NonShuffler()).RunToEnd();
 
         // Act
-        PlayerState playerState = state.GetPlayerStates(villager);
-        PlayerProbabilities probabilities = playerState.Probabilities;
+        PlayerProbabilities probabilities = state.CalculateProbabilities(villager);
         SlotRoleProbabilities slotProbabilities = probabilities.GetSlotProbabilities(state.GetSlot(werewolf.Name));
 
         // Assert
@@ -58,8 +56,7 @@ public class BasicProbabilityTests : GameTestsBase
         GameState state = gameSetup.StartGame(new NonShuffler()).RunToEnd();
 
         // Act
-        PlayerState playerState = state.GetPlayerStates(werewolf);
-        PlayerProbabilities probabilities = playerState.Probabilities;
+        PlayerProbabilities probabilities = state.CalculateProbabilities(werewolf);
         SlotRoleProbabilities slotProbabilities = probabilities.GetSlotProbabilities(state.GetSlot(villager.Name));
 
         // Assert
@@ -79,8 +76,7 @@ public class BasicProbabilityTests : GameTestsBase
         GameState state = gameSetup.StartGame(new NonShuffler()).RunToEnd();
 
         // Act
-        PlayerState playerState = state.GetPlayerStates(ww1);
-        PlayerProbabilities probabilities = playerState.Probabilities;
+        PlayerProbabilities probabilities = state.CalculateProbabilities(ww1);
         SlotRoleProbabilities slotProbabilities = probabilities.GetSlotProbabilities(state.GetSlot(ww2.Name));
 
         // Assert
@@ -92,15 +88,14 @@ public class BasicProbabilityTests : GameTestsBase
     public void PlayersShouldBeCertainOfTheirEndRoleWhenNoRoleChangersExist()
     {
         // Arrange
-        GameSetup gameSetup = new GameSetup();
+        GameSetup gameSetup = new();
         AddMinimumRequiredPlayers(gameSetup);
         AddMinimumRequiredRoles(gameSetup);
         Player player = gameSetup.Players.First();
         GameState state = gameSetup.StartGame(new NonShuffler()).RunToEnd();
-        PlayerState playerState = state.GetPlayerStates(player);
 
         // Act
-        PlayerProbabilities probabilities = playerState.Probabilities;
+        PlayerProbabilities probabilities = state.CalculateProbabilities(player);
         SlotRoleProbabilities slotProbabilities = probabilities.GetSlotProbabilities(state.GetSlot(player.Name));
         
         // Assert

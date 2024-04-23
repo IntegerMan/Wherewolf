@@ -105,15 +105,62 @@ public class GameState
     public IEnumerable<GameRole> Roles => _gameSetup.Roles;
     public IEnumerable<GameEvent> Events => _events.AsReadOnly();
 
-    public PlayerState GetPlayerStates(Player player)
+    public PlayerProbabilities CalculateProbabilities(Player player)
     {
-        PlayerState state = new(player, this);
+        PlayerProbabilities probabilities = new();
+
+        // Start with all permutations
+        List<GameEvent> observedEvents = Events.Where(e => e.IsObservedBy(player)).ToList();
+        List<GamePermutation> startingPermutations = _gameSetup.Permutations.Where(p => p.IsPossibleGivenEvents(observedEvents)).ToList();
         
-        state.AddEvents(_events.Where(e => e.IsObservedBy(player)));
+        double startPopulation = startingPermutations.Sum(p => p.Support);
+        
+        // Calculate starting role probabilities
+        foreach (var slot in AllSlots)
+        {
+            foreach (var role in Roles.DistinctBy(r => r.Name))
+            {
+                // Figure out the number of possible worlds where the slot had the role at the start
+                double roleSupport = startingPermutations.Where(p => p.State.GetSlot(slot.Name).StartRole.Name == role.Name)
+                                              .Sum(p => p.Support);
 
-        return state;
+                probabilities.RegisterSlotRoleProbabilities(slot, isStarting: true, role.Name, roleSupport, startPopulation);
+            }
+        }
+        
+        // Given our valid start permutations, simulate all possible game states that could arise from the next night phase
+        List<GamePermutation> endPermutations = new(); //startingPermutations.SelectMany(p => p.ExtrapolateEndPermutations()).ToList();
+
+        foreach (var startPermutation in startingPermutations)
+        {
+            List<GamePermutation> childPermutations = startPermutation.ExtrapolateEndPermutations().ToList();
+
+            if (!childPermutations.Any())
+                throw new InvalidOperationException($"{startPermutation} yielded no end permutations on phase {startPermutation.State.CurrentPhase!.GetType().Name}");
+            
+            endPermutations.AddRange(childPermutations);
+        }
+        
+        // Filter down to a set of permutations where the observed events are possible
+        endPermutations = endPermutations.Where(p => p.IsPossibleGivenEvents(observedEvents)).ToList();
+
+        double endPopulation = endPermutations.Sum(p => p.Support);
+
+        // Calculate ending role probabilities
+        foreach (var slot in AllSlots)
+        {
+            foreach (var role in Roles.DistinctBy(r => r.Name))
+            {
+                // Figure out the number of possible worlds where the slot had the role at the end
+                double roleSupport = endPermutations.Where(p => p.State.GetSlot(slot.Name).CurrentRole.Name == role.Name)
+                    .Sum(p => p.Support);
+
+                probabilities.RegisterSlotRoleProbabilities(slot, isStarting: false, role.Name, roleSupport, endPopulation);
+            }
+        }
+        
+        return probabilities;
     }
-
     public GameState RunToEnd()
     {
         if (IsGameOver)
@@ -138,7 +185,6 @@ public class GameState
     public bool IsGameOver => _remainingPhases.Count == 0;
     public GamePhase? CurrentPhase => IsGameOver ? null : _remainingPhases.Peek();
     public IEnumerable<GamePhase> Phases => _remainingPhases.ToArray();
-    public GameSetup Setup => _gameSetup;
 
     public void AddEvent(GameEvent newEvent, bool broadcastToController = true)
     {

@@ -21,14 +21,9 @@ public class VillagerRoleTests : RoleTestBase
         Player player = gameState.Players.First();
 
         // Act
-        PlayerState playerState = gameState.GetPlayerStates(player);
+        DealtCardEvent dealtCardEvent = gameState.Events.Where(e => e.IsObservedBy(player)).OfType<DealtCardEvent>().Single();
 
         // Assert
-        playerState.ShouldNotBeNull();
-        playerState.Player.ShouldBe(player);
-        playerState.ObservedEvents.ShouldNotBeNull();
-        playerState.ObservedEvents.ShouldNotBeEmpty();
-        DealtCardEvent dealtCardEvent = playerState.ObservedEvents.OfType<DealtCardEvent>().Single();
         dealtCardEvent.Role.GetType().ShouldBe(typeof(VillagerRole));
         dealtCardEvent.Player.ShouldBe(player);
     }
