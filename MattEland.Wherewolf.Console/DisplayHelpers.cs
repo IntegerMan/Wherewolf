@@ -29,7 +29,7 @@ public static class DisplayHelpers
 
     public static void DisplaySummaryTable(GameState gameState)
     {
-        Table centerTable = new Table();
+        Table centerTable = new();
         centerTable.Title("[Yellow]Game Summary[/]");
         centerTable.AddColumn(string.Empty);
         List<string> values = new() { "[Cyan]Started as[/]"};

@@ -5,6 +5,8 @@ namespace MattEland.Wherewolf.Phases;
 
 public class RobberNightPhase : GamePhase
 {
+    public override string Name => "Robber";
+    
     public override GameState Run(GameState newState)
     {
         GameSlot? robber = newState.PlayerSlots.SingleOrDefault(p => p.StartRole.Name == "Robber");

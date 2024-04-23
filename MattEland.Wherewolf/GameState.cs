@@ -12,11 +12,6 @@ public class GameState
     private readonly GamePhase[] _allPhases;
     private readonly Queue<GamePhase> _remainingPhases;
     private readonly List<GameEvent> _events = new();
-
-    internal GameState(GameSetup setup, ISlotShuffler shuffler) 
-        :this(setup, shuffler.Shuffle(setup.Roles).ToList(), true)
-    {
-    }
     
     internal GameState(GameSetup setup, IReadOnlyList<GameRole> shuffledRoles, bool broadcastEventToController)
     {
@@ -28,8 +23,9 @@ public class GameState
 
         AssignOrderIndexToEachPlayer(setup.Players);
         RegisterStartingCards(broadcastEventToController);
-        _allPhases = BuildGamePhases(setup.Roles);
+        _allPhases = setup.Phases;
         _remainingPhases = new Queue<GamePhase>(_allPhases);
+        Root = this;
     }    
 
     internal GameState(GameState parentState)
@@ -41,17 +37,7 @@ public class GameState
         _centerSlots = parentState.CenterSlots.ToArray();
         _playerSlots = parentState.PlayerSlots.ToArray();
         Parent = parentState;
-    }
-    
-    private GamePhase[] BuildGamePhases(IEnumerable<GameRole> roles)
-    {
-        List<GamePhase> phases = new();
-        foreach (var role in roles.Where(r => r.HasNightPhases).DistinctBy(r => r.GetType()))
-        {
-            phases.AddRange(role.BuildNightPhases());
-        }
-
-        return phases.OrderBy(p => p.Order).ToArray();
+        Root = parentState.Root;
     }
 
     private static void AssignOrderIndexToEachPlayer(IEnumerable<Player> players)
@@ -112,9 +98,9 @@ public class GameState
 
         // Start with all permutations
         List<GameEvent> observedEvents = Events.Where(e => e.IsObservedBy(player)).ToList();
-        List<GamePermutation> startingPermutations = _gameSetup.Permutations.Where(p => p.IsPossibleGivenEvents(observedEvents)).ToList();
+        List<GamePermutation> validPermutations = _gameSetup.GetPermutationsAtPhase(this.CurrentPhase).Where(p => p.IsPossibleGivenEvents(observedEvents)).ToList();
         
-        double startPopulation = startingPermutations.Sum(p => p.Support);
+        double startPopulation = validPermutations.Sum(p => p.Support);
         
         // Calculate starting role probabilities
         foreach (var slot in AllSlots)
@@ -122,7 +108,7 @@ public class GameState
             foreach (var role in Roles.DistinctBy(r => r.Name))
             {
                 // Figure out the number of possible worlds where the slot had the role at the start
-                double roleSupport = startingPermutations.Where(p => p.State.GetSlot(slot.Name).StartRole.Name == role.Name)
+                double roleSupport = validPermutations.Where(p => p.State.GetSlot(slot.Name).CurrentRole.Name == role.Name)
                                               .Sum(p => p.Support);
 
                 probabilities.RegisterSlotRoleProbabilities(slot, role.Name, roleSupport, startPopulation);
@@ -171,6 +157,7 @@ public class GameState
         }
     }
     public GameState? Parent { get; }
+    public GameState Root { get; }
 
     public void AddEvent(GameEvent newEvent, bool broadcastToController = true)
     {

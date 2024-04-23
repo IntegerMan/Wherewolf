@@ -14,7 +14,7 @@ public class GameSetupPermutationTests
         setup.AddRoles(new VillagerRole(), new VillagerRole(), new WerewolfRole(), new VillagerRole(), new VillagerRole(), new WerewolfRole());
         
         // Act
-        List<GamePermutation> permutations = setup.Permutations.ToList();
+        List<GamePermutation> permutations = setup.GetPermutationsAtPhase(setup.Phases.FirstOrDefault()).ToList();
         
         // Assert
         permutations.ShouldNotBeEmpty();

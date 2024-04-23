@@ -26,7 +26,7 @@ public class GamePermutation
         List<GameState> possibleNextStates = State.CurrentPhase!.BuildPossibleStates(State).ToList();
         foreach (var permutation in possibleNextStates)
         {
-            GamePermutation next = new GamePermutation(permutation, Support / possibleNextStates.Count);
+            GamePermutation next = new(permutation, Support / possibleNextStates.Count);
 
             if (next.State.IsGameOver)
             {

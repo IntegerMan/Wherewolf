@@ -5,6 +5,8 @@ namespace MattEland.Wherewolf.Phases;
 
 public class WerewolfNightPhase : GamePhase
 {
+    public override string Name => "Werewolves";
+    
     public override GameState Run(GameState newState)
     {
         List<GameSlot> werewolves = newState.PlayerSlots.Where(p => p.StartRole.Team == Team.Werewolf).ToList();

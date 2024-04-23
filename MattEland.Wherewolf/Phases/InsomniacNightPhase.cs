@@ -32,6 +32,8 @@ public class InsomniacNightPhase : GamePhase
     }
 
     public override double Order => 9.0;
+    public override string Name => "Insomniac";
+
     public override IEnumerable<GameState> BuildPossibleStates(GameState priorState)
     {
         // The Insomniac role is non-interactive, so just run the night phase and record an event if it occurs

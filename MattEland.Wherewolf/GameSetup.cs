@@ -1,15 +1,18 @@
-﻿using MattEland.Wherewolf.Roles;
+﻿using MattEland.Wherewolf.Phases;
+using MattEland.Wherewolf.Roles;
 using MoreLinq;
 
 namespace MattEland.Wherewolf;
 
 public class GameSetup
 {
+    private readonly List<GamePhase> _phases = new();
     private readonly List<Player> _players = new();
     private readonly List<GameRole> _roles = new();
-    private readonly List<GamePermutation> _permutations = new();
+    private readonly Dictionary<string, List<GamePermutation>> _phasePermutations = new();
     public IEnumerable<Player> Players => _players.AsReadOnly();
     public IEnumerable<GameRole> Roles => _roles.AsReadOnly();
+    public GamePhase[] Phases => _phases.ToArray();
 
     public void AddPlayer(Player player)
     {
@@ -17,7 +20,6 @@ public class GameSetup
             throw new InvalidOperationException("Player has already been added");
         
         _players.Add(player);
-        _permutations.Clear();
     }
 
     public void AddPlayers(params Player[] players)
@@ -34,7 +36,6 @@ public class GameSetup
             throw new InvalidOperationException("Role has already been added. If you want multiple of the same role, instantiate multiple copies.");
         
         _roles.Add(role);
-        _permutations.Clear();
     }
 
     public void AddRoles(params GameRole[] roles)
@@ -49,11 +50,32 @@ public class GameSetup
     {
         slotShuffler ??= new RandomShuffler();
 
-        GameState startGame = new GameState(this, slotShuffler);
+        // Pre-calculate all phases
+        CalculatePhases();
         
-        return startGame;
+        // Pre-calculate all permutations
+        CalculatePermutations();
+
+        // Find a game state from our permutations (we want to avoid instantiating the same state again)
+        List<GameRole> shuffledRoles = slotShuffler.Shuffle(Roles).ToList();
+        string rolesList = shuffledRoles.ToDelimitedString(",");
+        GamePermutation permutation = GetPermutationsAtPhase(_phases.FirstOrDefault())
+            .First(p => p.State.AllSlots.Select(s => s.CurrentRole).ToDelimitedString(",") == rolesList);
+        
+        return permutation.State;
     }
 
+    private void CalculatePhases()
+    {
+        List<GamePhase> phases = new();
+        foreach (var role in Roles.Where(r => r.HasNightPhases).DistinctBy(r => r.GetType()))
+        {
+            phases.AddRange(role.BuildNightPhases());
+        }
+
+        _phases.Clear();
+        _phases.AddRange(phases.OrderBy(p => p.Order));
+    }
     internal void Validate()
     {
         if (_players.Count + 3 != _roles.Count)
@@ -70,25 +92,31 @@ public class GameSetup
         }
     }
 
-    public IEnumerable<GamePermutation> Permutations
+    private void CalculatePermutations()
     {
-        get
+        _phasePermutations.Clear();
+        
+        // Generate the unique combinations of each role
+        IEnumerable<IList<GameRole>> permutations = _roles.Permutations();
+
+        // Break our permutations into groups based on role combinations. This helps merge duplicate permutations
+        foreach (var group in permutations.GroupBy(p => string.Join(",", p.Select(z => z.Name))))
         {
-            if (!_permutations.Any())
+            // Represent multiple similar states merged together using the Support property to indicate merged probabilities
+            GameState state = new(this, group.First().ToList(), false);
+
+            string phaseName = state.CurrentPhase?.Name ?? "Voting";
+            if (!_phasePermutations.ContainsKey(phaseName))
             {
-                // Generate the unique combinations of each role
-                IEnumerable<IList<GameRole>> permutations = _roles.Permutations();
-
-                // Break our permutations into groups based on role combinations. This helps merge duplicate permutations
-                foreach (var group in permutations.GroupBy(p => string.Join(",", p.Select(z => z.Name))))
-                {
-                    // Represent multiple similar states merged together using the Support property to indicate merged probabilities
-                    GameState state = new GameState(this, group.First().ToList(), false);
-                    _permutations.Add(new GamePermutation(state, support: group.Count()));
-                }            
+                _phasePermutations[phaseName] = new List<GamePermutation>();
             }
-
-            return _permutations;
+            _phasePermutations[phaseName].Add(new GamePermutation(state, support: group.Count()));
         }
+        
+        // Now extrapolate future phases
+        throw new NotImplementedException("TODO: Pick up here");
     }
+
+    public IEnumerable<GamePermutation> GetPermutationsAtPhase(GamePhase? currentPhase) 
+        => _phasePermutations[currentPhase?.Name ?? "Voting"];
 }

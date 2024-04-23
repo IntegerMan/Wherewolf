@@ -92,7 +92,7 @@ foreach (var player in gameSetup.Players)
 
 // Display all possible worlds
 Tree possibleStatesTree = new("[Yellow]Possible Worlds[/]");
-foreach (var permutations in gameSetup.Permutations.GroupBy(p => string.Join(" ", p.State.PlayerSlots.Select(s => $"{s.GetSlotMarkup()}:{s.StartRole.AsMarkdown()}"))))
+foreach (var permutations in gameSetup.GetPermutationsAtPhase(gameSetup.Phases.FirstOrDefault()).GroupBy(p => string.Join(" ", p.State.PlayerSlots.Select(s => $"{s.GetSlotMarkup()}:{s.StartRole.AsMarkdown()}"))))
 {
     string possibleForPlayers = "Possible for: ";
     double totalSupport = 0;

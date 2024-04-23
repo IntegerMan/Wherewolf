@@ -8,7 +8,7 @@ public class BasicProbabilityTests : GameTestsBase
     public void PlayersShouldBeCertainOfTheirStartRole()
     {
         // Arrange
-        GameSetup gameSetup = new GameSetup();
+        GameSetup gameSetup = new();
         AddMinimumRequiredPlayers(gameSetup);
         AddMinimumRequiredRoles(gameSetup);
         Player player = gameSetup.Players.First();
@@ -27,7 +27,7 @@ public class BasicProbabilityTests : GameTestsBase
     public void PlayersShouldHaveAccuratePercentagesForOtherPlayerStartingRolesOnNoInformation()
     {
         // Arrange
-        GameSetup gameSetup = new GameSetup();
+        GameSetup gameSetup = new();
         AddMinimumRequiredPlayers(gameSetup);
         AddMinimumRequiredRoles(gameSetup);
         Player villager = gameSetup.Players.ToList()[2]; // This is a villager
@@ -48,7 +48,7 @@ public class BasicProbabilityTests : GameTestsBase
     public void WerewolvesShouldBeCertainNonWolvesAreVillagersInWolvesVsVillagers()
     {
         // Arrange
-        GameSetup gameSetup = new GameSetup();
+        GameSetup gameSetup = new();
         AddMinimumRequiredPlayers(gameSetup);
         AddMinimumRequiredRoles(gameSetup);
         Player villager = gameSetup.Players.ToList()[2]; // This is a villager
@@ -68,7 +68,7 @@ public class BasicProbabilityTests : GameTestsBase
     public void WerewolvesShouldBeCertainFellowWolvesAreWolves()
     {
         // Arrange
-        GameSetup gameSetup = new GameSetup();
+        GameSetup gameSetup = new();
         AddMinimumRequiredPlayers(gameSetup);
         AddMinimumRequiredRoles(gameSetup);
         Player ww1 = gameSetup.Players.ToList()[0];
