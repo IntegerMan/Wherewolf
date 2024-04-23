@@ -38,6 +38,8 @@ public class GamePermutation
                 }
             }
         }
-        
     }
+
+    public override string ToString() 
+        => $"{State} - Support: {Support}";
 }

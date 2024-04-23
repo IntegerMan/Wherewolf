@@ -33,7 +33,6 @@ public static class DisplayHelpers
         centerTable.Title("[Yellow]Game Summary[/]");
         centerTable.AddColumn(string.Empty);
         List<string> values = new() { "[Cyan]Started as[/]"};
-        int index = 0;
         foreach (var slot in gameState.AllSlots)
         {
             string header = slot.GetSlotMarkup();

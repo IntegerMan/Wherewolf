@@ -23,10 +23,10 @@ public class RobberRoleTests : RoleTestBase
     }
 
     [Fact]
-    public void RobberShouldBeCertainTheyEndedAsRobberWithNoOtherCardSwappingRoles()
+    public void RobberShouldBeCertainTheyEndedAsStolenRoleWithNoOtherCardSwappingRoles()
     {
         // Arrange
-        GameState gameState = RunRobberGame();
+        GameState gameState = RunRobberGame(); // Player moves from Robber -> Werewolf
         Player player = gameState.Players.Single(p => p.Name == "Player");
 
         // Act
@@ -34,7 +34,8 @@ public class RobberRoleTests : RoleTestBase
         SlotRoleProbabilities playerProbabilities = playerState.Probabilities.GetSlotProbabilities(gameState.GetPlayerSlot(player));
 
         // Assert
-        playerProbabilities.CurrentRole["Robber"].ShouldBe(1);
+        playerProbabilities.CurrentRole["Robber"].ShouldBe(0);
+        playerProbabilities.CurrentRole["Werewolf"].ShouldBe(1);
     }
     
     [Fact]

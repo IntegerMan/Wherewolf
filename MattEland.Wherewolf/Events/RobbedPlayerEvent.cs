@@ -29,7 +29,7 @@ public class RobbedPlayerEvent : GameEvent
         if (Target == Player) return false;
 
         // Any setup that didn't start with the target having the robbed card cannot be considered
-        if (state.GetPlayerSlot(Target).CurrentRole.Name != this.NewRole.Name) return false;
+        if (state.GetPlayerSlot(Target).StartRole.Name != this.NewRole.Name) return false; // TODO: This won't work with other swapping roles
         
         // The robbing player has to be the robber
         return state.GetPlayerSlot(Player).StartRole.Name == "Robber";

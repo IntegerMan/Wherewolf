@@ -40,6 +40,8 @@ public class WerewolfNightPhase : GamePhase
                 GameState lookedAtCenterCardState = new(priorState, priorState.Phases.Skip(1));
                 lookedAtCenterCardState.AddEvent(new LoneWolfEvent(loneWolfPlayer), broadcastToController: false);
                 lookedAtCenterCardState.AddEvent(new LoneWolfLookedAtSlotEvent(loneWolfPlayer, centerSlot), broadcastToController: false);
+
+                yield return lookedAtCenterCardState;
             }
         } 
         else if (werewolves.Count > 1)
