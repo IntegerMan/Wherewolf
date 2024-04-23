@@ -32,14 +32,15 @@ public class GameState
         _remainingPhases = new Queue<GamePhase>(_allPhases);
     }    
 
-    internal GameState(GameState oldState, IEnumerable<GamePhase> remainingPhases)
+    internal GameState(GameState parentState)
     {
-        _remainingPhases = new Queue<GamePhase>(remainingPhases);
-        _gameSetup = oldState._gameSetup;
-        _allPhases = oldState._allPhases.ToArray();
-        _events.AddRange(oldState.Events);
-        _centerSlots = oldState.CenterSlots.ToArray();
-        _playerSlots = oldState.PlayerSlots.ToArray();
+        _remainingPhases = new Queue<GamePhase>(parentState._remainingPhases.Skip(1));
+        _gameSetup = parentState._gameSetup;
+        _allPhases = parentState._allPhases.ToArray();
+        _events.AddRange(parentState.Events);
+        _centerSlots = parentState.CenterSlots.ToArray();
+        _playerSlots = parentState.PlayerSlots.ToArray();
+        Parent = parentState;
     }
     
     private GamePhase[] BuildGamePhases(IEnumerable<GameRole> roles)
@@ -124,38 +125,7 @@ public class GameState
                 double roleSupport = startingPermutations.Where(p => p.State.GetSlot(slot.Name).StartRole.Name == role.Name)
                                               .Sum(p => p.Support);
 
-                probabilities.RegisterSlotRoleProbabilities(slot, isStarting: true, role.Name, roleSupport, startPopulation);
-            }
-        }
-        
-        // Given our valid start permutations, simulate all possible game states that could arise from the next night phase
-        List<GamePermutation> endPermutations = new(); //startingPermutations.SelectMany(p => p.ExtrapolateEndPermutations()).ToList();
-
-        foreach (var startPermutation in startingPermutations)
-        {
-            List<GamePermutation> childPermutations = startPermutation.ExtrapolateEndPermutations().ToList();
-
-            if (!childPermutations.Any())
-                throw new InvalidOperationException($"{startPermutation} yielded no end permutations on phase {startPermutation.State.CurrentPhase!.GetType().Name}");
-            
-            endPermutations.AddRange(childPermutations);
-        }
-        
-        // Filter down to a set of permutations where the observed events are possible
-        endPermutations = endPermutations.Where(p => p.IsPossibleGivenEvents(observedEvents)).ToList();
-
-        double endPopulation = endPermutations.Sum(p => p.Support);
-
-        // Calculate ending role probabilities
-        foreach (var slot in AllSlots)
-        {
-            foreach (var role in Roles.DistinctBy(r => r.Name))
-            {
-                // Figure out the number of possible worlds where the slot had the role at the end
-                double roleSupport = endPermutations.Where(p => p.State.GetSlot(slot.Name).CurrentRole.Name == role.Name)
-                    .Sum(p => p.Support);
-
-                probabilities.RegisterSlotRoleProbabilities(slot, isStarting: false, role.Name, roleSupport, endPopulation);
+                probabilities.RegisterSlotRoleProbabilities(slot, role.Name, roleSupport, startPopulation);
             }
         }
         
@@ -177,7 +147,7 @@ public class GameState
         if (CurrentPhase is null)
             throw new InvalidOperationException("Cannot run the next phase; no current phase");
 
-        GameState nextState = new(this, _remainingPhases.Skip(1));
+        GameState nextState = new(this);
         
         return CurrentPhase.Run(nextState);
     }
@@ -185,6 +155,22 @@ public class GameState
     public bool IsGameOver => _remainingPhases.Count == 0;
     public GamePhase? CurrentPhase => IsGameOver ? null : _remainingPhases.Peek();
     public IEnumerable<GamePhase> Phases => _remainingPhases.ToArray();
+    public IEnumerable<GameState> PossibleNextStates 
+    {
+        get
+        {
+            if (IsGameOver)
+            {
+                yield break;
+            }
+
+            foreach (var possibleState in CurrentPhase!.BuildPossibleStates(this))
+            {
+                yield return possibleState;
+            }
+        }
+    }
+    public GameState? Parent { get; }
 
     public void AddEvent(GameEvent newEvent, bool broadcastToController = true)
     {

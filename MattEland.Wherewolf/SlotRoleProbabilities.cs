@@ -1,36 +1,29 @@
+using System.Collections;
 using System.Collections.ObjectModel;
 
 namespace MattEland.Wherewolf;
 
-public class SlotRoleProbabilities
+public class SlotRoleProbabilities : IEnumerable<KeyValuePair<string, double>>
 {
-    private readonly Dictionary<string, double> _startProbabilities = new();
-    private readonly Dictionary<string, double> _currentProbabilities = new();
+    private readonly Dictionary<string, double> _probabilities = new();
     
-    public void SetStartRoleProbabilities(string role, double support, double population)
+    public void SetProbability(string role, double support, double population)
     {
         if (population <= 0)
         {
-            _startProbabilities[role] = 0;
+            _probabilities[role] = 0;
         }
         else
         {
-            _startProbabilities[role] = support / population;
+            _probabilities[role] = support / population;
         }
     }
     
-    public void SetCurrentRoleProbabilities(string role, double support, double population)
-    {
-        if (population <= 0)
-        {
-            _currentProbabilities[role] = 0;
-        }
-        else
-        {
-            _currentProbabilities[role] = support / population;
-        }
-    }    
+    public ReadOnlyDictionary<string, double> Role => _probabilities.AsReadOnly();
     
-    public ReadOnlyDictionary<string, double> StartRole => _startProbabilities.AsReadOnly();
-    public ReadOnlyDictionary<string, double> CurrentRole => _currentProbabilities.AsReadOnly();
+    public IEnumerator<KeyValuePair<string, double>> GetEnumerator() => _probabilities.GetEnumerator();
+    IEnumerator IEnumerable.GetEnumerator() => ((IEnumerable)_probabilities).GetEnumerator();
+
+    public double this[string key] => _probabilities[key];
+    public int Count => _probabilities.Count;
 }

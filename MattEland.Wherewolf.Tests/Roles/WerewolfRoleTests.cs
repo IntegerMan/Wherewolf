@@ -84,8 +84,8 @@ public class WerewolfRoleTests : RoleTestBase
         // Assert
         List<GameEvent> observedEvents = gameState.Events.Where(e => e.IsObservedBy(player)).ToList();
         observedEvents.OfType<LoneWolfLookedAtSlotEvent>().Single().Slot.Name.ShouldBe("Center 2");
-        slotProbabilities.StartRole["Werewolf"].ShouldBe(0);
-        slotProbabilities.StartRole["Villager"].ShouldBe(1);
+        slotProbabilities.Role["Werewolf"].ShouldBe(0);
+        slotProbabilities.Role["Villager"].ShouldBe(1);
     }    
     
     [Fact]
