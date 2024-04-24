@@ -46,11 +46,11 @@ public class RobberNightPhase : GamePhase
         else
         {
             // When a robber is present, we spawn a new permutation per card they could have robbed
-            foreach (var player in priorState.PlayerSlots.Where(p => p.Player != robber.Player))
+            foreach (var target in priorState.PlayerSlots.Where(p => p.Player != robber.Player))
             {
                 GameState robbedState = new(priorState);
                 
-                PerformRobbery(robbedState, player, robber, broadcast: false);
+                PerformRobbery(robbedState, target, robber, broadcast: false);
                 
                 yield return robbedState;
             }
