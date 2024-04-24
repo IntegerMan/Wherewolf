@@ -28,10 +28,19 @@ public class RobbedPlayerEvent : GameEvent
         // Robbers can't rob themselves
         if (Target == Player) return false;
 
-        // Any setup that didn't start with the target having the robbed card cannot be considered
-        if (state.GetPlayerSlot(Target).StartRole.Name != this.NewRole.Name) return false; // TODO: This won't work with other swapping roles
+        // Only allow players who started as robbers to rob
+        GameSlot robberSlot = state.GetPlayerSlot(Player);
+        if (robberSlot.StartRole.Name != "Robber") return false;
         
-        // The robbing player has to be the robber
-        return state.GetPlayerSlot(Player).StartRole.Name == "Robber";
+        // Find the game state just prior to robbery
+        while (state.CurrentPhase == null || state.CurrentPhase.Name == "Robber")
+        {
+            state = state.Parent!;
+        }
+        
+        GameSlot targetSlot = state.GetPlayerSlot(Target);
+        
+        // Any setup that didn't start with the target having the robbed card cannot be considered
+        return (targetSlot.CurrentRole.Name == this.NewRole.Name);
     }
 }

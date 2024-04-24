@@ -52,13 +52,23 @@ public class GameState
     private static GameSlot[] BuildCenterSlots(IEnumerable<Player> players, IEnumerable<GameRole> shuffledRoles)
     {
         int c = 1;
-        return shuffledRoles.Skip(players.Count()).Select(r => new GameSlot("Center " + (c++), r)).ToArray();
+        return shuffledRoles.Skip(players.Count()).Select(r => new GameSlot
+        {
+            Name = "Center " + (c++),
+            StartRole = r,
+            CurrentRole = r,
+            Player = null
+        }).ToArray();
     }
 
     private static GameSlot[] BuildPlayerSlots(IEnumerable<Player> players, IReadOnlyList<GameRole> shuffledRoles)
     {
         int i = 0;
-        return players.Select(p => new GameSlot(p.Name, shuffledRoles[i++]) { Player = p}).ToArray();
+        return players.Select(p =>
+        {
+            GameRole role = shuffledRoles[i++];
+            return new GameSlot { Player = p, Name = p.Name, CurrentRole = role, StartRole = role };
+        }).ToArray();
     }
 
     private void RegisterStartingCards(bool broadcastEventToController)

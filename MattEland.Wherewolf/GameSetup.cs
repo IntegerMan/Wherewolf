@@ -95,6 +95,8 @@ public class GameSetup
     private void CalculatePermutations()
     {
         _phasePermutations.Clear();
+
+        List<GamePermutation> currentPhasePermutations = new();
         
         // Generate the unique combinations of each role
         IEnumerable<IList<GameRole>> permutations = _roles.Permutations();
@@ -110,13 +112,45 @@ public class GameSetup
             {
                 _phasePermutations[phaseName] = new List<GamePermutation>();
             }
-            _phasePermutations[phaseName].Add(new GamePermutation(state, support: group.Count()));
+
+            GamePermutation gamePermutation = new(state, support: group.Count());
+            _phasePermutations[phaseName].Add(gamePermutation);
+            currentPhasePermutations.Add(gamePermutation);
         }
         
         // Now extrapolate future phases
-        throw new NotImplementedException("TODO: Pick up here");
+        while (!currentPhasePermutations.First().State.IsGameOver)
+        {
+            List<GamePermutation> priorPhasePermutations = currentPhasePermutations.ToList();
+            currentPhasePermutations.Clear();
+
+            foreach (var priorPermutation in priorPhasePermutations)
+            {
+                IEnumerable<GameState> possibleStates = priorPermutation.State.PossibleNextStates;
+                int count = possibleStates.Count();
+                foreach (var state in possibleStates)
+                {
+                    GamePermutation permutation = new(state, priorPermutation.Support * (1d / count));
+                    currentPhasePermutations.Add(permutation);
+
+                    string phaseName = permutation.State.CurrentPhase?.Name ?? "Voting";
+                    if (!_phasePermutations.ContainsKey(phaseName))
+                    {
+                        _phasePermutations[phaseName] = new List<GamePermutation>();
+                    }
+
+                    _phasePermutations[phaseName].Add(permutation);
+                }
+            }
+        }
     }
 
-    public IEnumerable<GamePermutation> GetPermutationsAtPhase(GamePhase? currentPhase) 
-        => _phasePermutations[currentPhase?.Name ?? "Voting"];
+    public IEnumerable<GamePermutation> GetPermutationsAtPhase(GamePhase? currentPhase)
+    {
+        if (!_phasePermutations.Any())
+        {
+            CalculatePermutations();
+        }
+        return _phasePermutations[currentPhase?.Name ?? "Voting"];
+    }
 }
