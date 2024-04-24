@@ -29,8 +29,10 @@ public class GameStatePermutationTests
     {
         // Arrange
         GameSetup setup = new();
-        setup.AddPlayers(new Player("A", new RandomController()), new Player("B", new RandomController()), new Player("C", new RandomController()));
-        setup.AddRoles(new WerewolfRole(), new WerewolfRole(), new VillagerRole(), new VillagerRole(), new VillagerRole(), new VillagerRole());
+        setup.AddPlayers(new Player("A", new RandomController()), new Player("B", new RandomController()),
+            new Player("C", new RandomController()));
+        setup.AddRoles(new WerewolfRole(), new WerewolfRole(), new VillagerRole(), new VillagerRole(),
+            new VillagerRole(), new VillagerRole());
         GameState startState = setup.StartGame(new NonShuffler());
 
         // Act
@@ -40,6 +42,46 @@ public class GameStatePermutationTests
         childState.ShouldNotBeNull();
         childState.Parent.ShouldBe(startState);
     }
+
+    [Fact]
+    public void ChildStatesShouldHaveDifferentSlotArrays()
+    {
+        // Arrange
+        GameSetup setup = new();
+        setup.AddPlayers(new Player("A", new RandomController()), new Player("B", new RandomController()), new Player("C", new RandomController()));
+        setup.AddRoles(new WerewolfRole(), new WerewolfRole(), new VillagerRole(), new VillagerRole(), new VillagerRole(), new VillagerRole());
+        GameState startState = setup.StartGame(new NonShuffler());
+
+        // Act
+        GameState? childState = startState.PossibleNextStates.FirstOrDefault();
+
+        // Assert
+        childState.ShouldNotBeNull();
+        childState.CenterSlots.ShouldNotBe(startState.CenterSlots);
+        childState.PlayerSlots.ShouldNotBe(startState.PlayerSlots);
+    }
+
+    [Fact]
+    public void ChildStatesShouldHaveDifferentSlotObjects()
+    {
+        // Arrange
+        GameSetup setup = new();
+        setup.AddPlayers(new Player("A", new RandomController()), new Player("B", new RandomController()), new Player("C", new RandomController()));
+        setup.AddRoles(new WerewolfRole(), new WerewolfRole(), new VillagerRole(), new VillagerRole(), new VillagerRole(), new VillagerRole());
+        GameState startState = setup.StartGame(new NonShuffler());
+
+        // Act
+        GameState? childState = startState.PossibleNextStates.FirstOrDefault();
+
+        // Assert
+        childState.ShouldNotBeNull();
+        foreach (var slot in childState.AllSlots)
+        {
+            startState.PlayerSlots.ShouldNotContain(slot);
+            startState.CenterSlots.ShouldNotContain(slot);
+            startState.AllSlots.ShouldNotContain(slot);
+        }
+    }    
     
     [Fact]
     public void RootStateShouldHaveNoParent()

@@ -13,11 +13,11 @@ public class RobberNightPhase : GamePhase
         if (robber is not null)
         {
             // Figure out who we're robbing
-            string[] targets = newState.Players.Where(p => p != robber.Value.Player).Select(p => p.Name).ToArray();
-            string targetName = robber.Value.Player!.Controller.SelectRobberTarget(targets);
+            string[] targets = newState.Players.Where(p => p != robber.Player).Select(p => p.Name).ToArray();
+            string targetName = robber.Player!.Controller.SelectRobberTarget(targets);
             GameSlot target = newState.PlayerSlots.Single(p => p.Name == targetName);
             
-            PerformRobbery(newState, target, robber.Value, broadcast: true);
+            PerformRobbery(newState, target, robber, broadcast: true);
         }
 
         return newState;
@@ -30,8 +30,7 @@ public class RobberNightPhase : GamePhase
         newState.AddEvent(new RobbedPlayerEvent(robber.Player!, target.Player!, stolenRole), broadcastToController: broadcast);
             
         // Swap roles
-        target.CurrentRole = robber.CurrentRole;
-        robber.CurrentRole = stolenRole;
+        newState.SwapRoles(target, robber);
     }
 
     public override double Order => 6.0;
@@ -47,11 +46,11 @@ public class RobberNightPhase : GamePhase
         else
         {
             // When a robber is present, we spawn a new permutation per card they could have robbed
-            foreach (var player in priorState.PlayerSlots.Where(p => p.Player != robber.Value.Player))
+            foreach (var player in priorState.PlayerSlots.Where(p => p.Player != robber.Player))
             {
                 GameState robbedState = new(priorState);
                 
-                PerformRobbery(robbedState, player, robber.Value, broadcast: false);
+                PerformRobbery(robbedState, player, robber, broadcast: false);
                 
                 yield return robbedState;
             }

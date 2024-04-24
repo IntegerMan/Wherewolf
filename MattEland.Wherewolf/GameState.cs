@@ -34,8 +34,8 @@ public class GameState
         _gameSetup = parentState._gameSetup;
         _allPhases = parentState._allPhases.ToArray();
         _events.AddRange(parentState.Events);
-        _centerSlots = parentState.CenterSlots.ToArray();
-        _playerSlots = parentState.PlayerSlots.ToArray();
+        _centerSlots = parentState.CenterSlots.Select(c => new GameSlot(c)).ToArray();
+        _playerSlots = parentState.PlayerSlots.Select(c => new GameSlot(c)).ToArray();
         Parent = parentState;
         Root = parentState.Root;
     }
@@ -52,13 +52,9 @@ public class GameState
     private static GameSlot[] BuildCenterSlots(IEnumerable<Player> players, IEnumerable<GameRole> shuffledRoles)
     {
         int c = 1;
-        return shuffledRoles.Skip(players.Count()).Select(r => new GameSlot
-        {
-            Name = "Center " + (c++),
-            StartRole = r,
-            CurrentRole = r,
-            Player = null
-        }).ToArray();
+        return shuffledRoles.Skip(players.Count())
+                            .Select(r => new GameSlot("Center " + (c++), r))
+                            .ToArray();
     }
 
     private static GameSlot[] BuildPlayerSlots(IEnumerable<Player> players, IReadOnlyList<GameRole> shuffledRoles)
@@ -67,7 +63,7 @@ public class GameState
         return players.Select(p =>
         {
             GameRole role = shuffledRoles[i++];
-            return new GameSlot { Player = p, Name = p.Name, CurrentRole = role, StartRole = role };
+            return new GameSlot(p.Name, role, p);
         }).ToArray();
     }
 
@@ -193,4 +189,27 @@ public class GameState
 
     public override string ToString() 
         => $"{string.Join(",", PlayerSlots.Select(p => p.CurrentRole.Name))}[{string.Join(",", CenterSlots.Select(p => p.CurrentRole.Name))}]";
+
+    internal void SwapRoles(GameSlot slot1, GameSlot slot2)
+    {
+        GameRole role1 = slot1.CurrentRole;
+        GameRole role2 = slot2.CurrentRole;
+
+        ReplaceSlot(slot1, new GameSlot(slot1, role2));
+        ReplaceSlot(slot2, new GameSlot(slot2, role1));
+    }
+
+    private void ReplaceSlot(GameSlot oldSlot, GameSlot newSlot)
+    {
+        if (oldSlot.Player is not null)
+        {
+            int pIndex = _playerSlots.ToList().FindIndex(o => o.Name == oldSlot.Name);
+            _playerSlots[pIndex] = newSlot;
+        }
+        else
+        {
+            int cIndex = _centerSlots.ToList().FindIndex(o => o.Name == oldSlot.Name);
+            _centerSlots[cIndex] = newSlot;
+        }
+    }
 }

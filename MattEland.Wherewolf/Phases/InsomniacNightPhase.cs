@@ -21,7 +21,7 @@ public class InsomniacNightPhase : GamePhase
         GameSlot? insomniac = newState.PlayerSlots.SingleOrDefault(p => p.StartRole.Name == "Insomniac");
         if (insomniac is not null)
         {
-            insomniacEvent = new InsomniacSawFinalCardEvent(insomniac.Value.Player!, insomniac.Value.CurrentRole);
+            insomniacEvent = new InsomniacSawFinalCardEvent(insomniac.Player!, insomniac.CurrentRole);
         }
         else
         {
