@@ -2,19 +2,36 @@ namespace MattEland.Wherewolf;
 
 public class PlayerProbabilities
 {
-    private readonly Dictionary<GameSlot, SlotRoleProbabilities> _slotRoleProbabilities = new();
+    private readonly Dictionary<GameSlot, SlotRoleProbabilities> _currentRoleProbabilities = new();
+    private readonly Dictionary<GameSlot, SlotRoleProbabilities> _startRoleProbabilities = new();
 
-    public void RegisterSlotRoleProbabilities(GameSlot slot, string role, double support, double population)
+    public void RegisterCurrentRoleProbabilities(GameSlot slot, string role, double support, double population)
     {
-        if (!_slotRoleProbabilities.TryGetValue(slot, out SlotRoleProbabilities? probabilities))
+        if (!_currentRoleProbabilities.TryGetValue(slot, out SlotRoleProbabilities? probabilities))
         {
             probabilities = new SlotRoleProbabilities();
-            _slotRoleProbabilities[slot] = probabilities;
+            _currentRoleProbabilities[slot] = probabilities;
         }
 
         probabilities.SetProbability(role, support, population);
     }
 
-    public SlotRoleProbabilities GetSlotProbabilities(GameSlot slot) 
-        => _slotRoleProbabilities[slot];
+    public void RegisterStartRoleProbabilities(GameSlot slot, string role, double support, double population)
+    {
+        if (!_startRoleProbabilities.TryGetValue(slot, out SlotRoleProbabilities? probabilities))
+        {
+            probabilities = new SlotRoleProbabilities();
+            _startRoleProbabilities[slot] = probabilities;
+        }
+
+        probabilities.SetProbability(role, support, population);
+    }
+    
+
+    public SlotRoleProbabilities GetCurrentProbabilities(GameSlot slot) 
+        => _currentRoleProbabilities[slot];
+
+    public SlotRoleProbabilities GetStartProbabilities(GameSlot slot) 
+        => _startRoleProbabilities[slot];
+    
 }

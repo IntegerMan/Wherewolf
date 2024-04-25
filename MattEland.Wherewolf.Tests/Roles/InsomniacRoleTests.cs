@@ -16,7 +16,7 @@ public class InsomniacRoleTests : RoleTestBase
 
         // Act
         PlayerProbabilities playerProbs = gameState.CalculateProbabilities(player);
-        SlotRoleProbabilities playerProbabilities = playerProbs.GetSlotProbabilities(gameState.GetPlayerSlot(player));
+        SlotRoleProbabilities playerProbabilities = playerProbs.GetCurrentProbabilities(gameState.GetPlayerSlot(player));
 
         // Assert
         playerProbabilities.Role["Insomniac"].ShouldBe(1);
@@ -61,7 +61,7 @@ public class InsomniacRoleTests : RoleTestBase
 
         // Act
         PlayerProbabilities playerProbs = gameState.CalculateProbabilities(player);
-        SlotRoleProbabilities playerProbabilities = playerProbs.GetSlotProbabilities(gameState.GetPlayerSlot(player));
+        SlotRoleProbabilities playerProbabilities = playerProbs.GetCurrentProbabilities(gameState.GetPlayerSlot(player));
 
         // Assert
         playerProbabilities["Insomniac"].ShouldBe(1);
@@ -76,7 +76,7 @@ public class InsomniacRoleTests : RoleTestBase
 
         // Act
         PlayerProbabilities playerProbs = gameState.CalculateProbabilities(player);
-        SlotRoleProbabilities playerProbabilities = playerProbs.GetSlotProbabilities(gameState.GetPlayerSlot(player));
+        SlotRoleProbabilities playerProbabilities = playerProbs.GetCurrentProbabilities(gameState.GetPlayerSlot(player));
 
         // Assert
         gameState.GetPlayerSlot(player).CurrentRole.Name.ShouldBe("Robber");

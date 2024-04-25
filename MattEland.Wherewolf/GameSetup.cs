@@ -61,6 +61,8 @@ public class GameSetup
         string rolesList = shuffledRoles.ToDelimitedString(",");
         GamePermutation permutation = GetPermutationsAtPhase(_phases.FirstOrDefault())
             .First(p => p.State.AllSlots.Select(s => s.CurrentRole).ToDelimitedString(",") == rolesList);
+
+        permutation.State.SendRolesToControllers();
         
         return permutation.State;
     }
@@ -105,7 +107,7 @@ public class GameSetup
         foreach (var group in permutations.GroupBy(p => string.Join(",", p.Select(z => z.Name))))
         {
             // Represent multiple similar states merged together using the Support property to indicate merged probabilities
-            GameState state = new(this, group.First().ToList(), false);
+            GameState state = new(this, group.First().ToList());
 
             string phaseName = state.CurrentPhase?.Name ?? "Voting";
             if (!_phasePermutations.ContainsKey(phaseName))
@@ -126,8 +128,8 @@ public class GameSetup
 
             foreach (var priorPermutation in priorPhasePermutations)
             {
-                IEnumerable<GameState> possibleStates = priorPermutation.State.PossibleNextStates;
-                int count = possibleStates.Count();
+                List<GameState> possibleStates = priorPermutation.State.PossibleNextStates.ToList();
+                int count = possibleStates.Count;
                 foreach (var state in possibleStates)
                 {
                     GamePermutation permutation = new(state, priorPermutation.Support * (1d / count));

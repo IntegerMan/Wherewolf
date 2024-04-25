@@ -16,7 +16,7 @@ public class RobberRoleTests : RoleTestBase
 
         // Act
         PlayerProbabilities playerProbs = gameState.Root.CalculateProbabilities(player);
-        SlotRoleProbabilities playerProbabilities = playerProbs.GetSlotProbabilities(gameState.Root.GetPlayerSlot(player));
+        SlotRoleProbabilities playerProbabilities = playerProbs.GetCurrentProbabilities(gameState.Root.GetPlayerSlot(player));
 
         // Assert
         playerProbabilities.Role["Robber"].ShouldBe(1);
@@ -31,7 +31,7 @@ public class RobberRoleTests : RoleTestBase
 
         // Act
         PlayerProbabilities playerProbs = gameState.CalculateProbabilities(player);
-        SlotRoleProbabilities playerProbabilities = playerProbs.GetSlotProbabilities(gameState.GetPlayerSlot(player));
+        SlotRoleProbabilities playerProbabilities = playerProbs.GetCurrentProbabilities(gameState.GetPlayerSlot(player));
 
         // Assert
         playerProbabilities["Robber"].ShouldBe(0);

@@ -44,6 +44,6 @@ public class InsomniacNightPhase : GamePhase
             newState.AddEvent(insomniacEvent, broadcastToController: false);
         }
 
-        yield return Run(newState);
+        yield return newState;
     }
 }

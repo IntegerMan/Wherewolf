@@ -13,7 +13,7 @@ public class GameState
     private readonly Queue<GamePhase> _remainingPhases;
     private readonly List<GameEvent> _events = new();
     
-    internal GameState(GameSetup setup, IReadOnlyList<GameRole> shuffledRoles, bool broadcastEventToController)
+    internal GameState(GameSetup setup, IReadOnlyList<GameRole> shuffledRoles)
     {
         setup.Validate();
         _gameSetup = setup;
@@ -22,7 +22,10 @@ public class GameState
         _centerSlots = BuildCenterSlots(setup.Players, shuffledRoles);
 
         AssignOrderIndexToEachPlayer(setup.Players);
-        RegisterStartingCards(broadcastEventToController);
+        foreach (var slot in AllSlots)
+        {
+            AddEvent(new DealtCardEvent(slot.StartRole, slot), false);
+        }
         _allPhases = setup.Phases;
         _remainingPhases = new Queue<GamePhase>(_allPhases);
         Root = this;
@@ -67,14 +70,6 @@ public class GameState
         }).ToArray();
     }
 
-    private void RegisterStartingCards(bool broadcastEventToController)
-    {
-        foreach (var slot in AllSlots)
-        {
-            AddEvent(new DealtCardEvent(slot.StartRole, slot), broadcastEventToController);
-        }
-    }
-
     public GameSlot[] PlayerSlots => _playerSlots;
     public GameSlot[] CenterSlots => _centerSlots;
 
@@ -114,10 +109,17 @@ public class GameState
             foreach (var role in Roles.DistinctBy(r => r.Name))
             {
                 // Figure out the number of possible worlds where the slot had the role at the start
-                double roleSupport = validPermutations.Where(p => p.State.GetSlot(slot.Name).CurrentRole.Name == role.Name)
+                double startRoleSupport = validPermutations.Where(p => p.State.GetSlot(slot.Name).StartRole.Name == role.Name)
                                               .Sum(p => p.Support);
 
-                probabilities.RegisterSlotRoleProbabilities(slot, role.Name, roleSupport, startPopulation);
+                probabilities.RegisterStartRoleProbabilities(slot, role.Name, startRoleSupport, startPopulation);
+                
+                // Figure out the number of possible worlds where the slot currently has the role
+                double currentRoleSupport = validPermutations.Where(p => p.State.GetSlot(slot.Name).CurrentRole.Name == role.Name)
+                    .Sum(p => p.Support);
+
+                probabilities.RegisterCurrentRoleProbabilities(slot, role.Name, currentRoleSupport, startPopulation);
+                
             }
         }
         
@@ -210,6 +212,15 @@ public class GameState
         {
             int cIndex = _centerSlots.ToList().FindIndex(o => o.Name == oldSlot.Name);
             _centerSlots[cIndex] = newSlot;
+        }
+    }
+
+    internal void SendRolesToControllers()
+    {
+        // In order to avoid sending events from possible worlds to players, we only broadcast dealt events after a root state has been chosen
+        foreach (var dealtEvent in _events.OfType<DealtCardEvent>())
+        {
+            dealtEvent.Player?.Controller.ObservedEvent(dealtEvent, this);
         }
     }
 }

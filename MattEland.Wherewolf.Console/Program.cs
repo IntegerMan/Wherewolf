@@ -65,7 +65,7 @@ foreach (var player in gameSetup.Players)
     var probabilities = gameState.CalculateProbabilities(player);
     foreach (var otherSlot in gameState.AllSlots)
     {
-        SlotRoleProbabilities slotProbabilities = probabilities.GetSlotProbabilities(otherSlot);
+        SlotRoleProbabilities slotProbabilities = probabilities.GetStartProbabilities(otherSlot);
         
         List<string> values = [otherSlot.GetSlotMarkup()];
         foreach (var (_, probability) in slotProbabilities.Role.OrderBy(r => r.Key))
