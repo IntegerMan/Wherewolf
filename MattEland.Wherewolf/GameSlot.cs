@@ -9,7 +9,8 @@ public class GameSlot
         this.Name = name;
         this.Player = player;
         this.StartRole = startRole;
-        this.CurrentRole = startRole;
+        this.BeginningOfPhaseRole = startRole;
+        this.EndOfPhaseRole = startRole;
     }
     
     public GameSlot(GameSlot baseSlot)
@@ -17,7 +18,8 @@ public class GameSlot
         this.Name = baseSlot.Name;
         this.Player = baseSlot.Player;
         this.StartRole = baseSlot.StartRole;
-        this.CurrentRole = baseSlot.CurrentRole;
+        this.BeginningOfPhaseRole = baseSlot.EndOfPhaseRole;
+        this.EndOfPhaseRole = baseSlot.EndOfPhaseRole;
     }
     
     public GameSlot(GameSlot baseSlot, GameRole newRole)
@@ -25,11 +27,13 @@ public class GameSlot
         this.Name = baseSlot.Name;
         this.Player = baseSlot.Player;
         this.StartRole = baseSlot.StartRole;
-        this.CurrentRole = newRole;
+        this.BeginningOfPhaseRole = newRole;
+        this.EndOfPhaseRole = newRole;
     }    
 
     public string Name { get; init; }
     public Player? Player { get; init; }
     public GameRole StartRole { get; init; }
-    public GameRole CurrentRole { get; init; }
+    public GameRole BeginningOfPhaseRole { get; init; }
+    public GameRole EndOfPhaseRole { get; set; }
 }

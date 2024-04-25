@@ -22,6 +22,6 @@ public class RobberPhaseTests
 
         // Assert
         possibleStates.Count.ShouldBe(2);
-        possibleStates.Count(p => p.GetPlayerSlot(state.Players.First()).CurrentRole.Name != "Robber").ShouldBe(2);
+        possibleStates.Count(p => p.GetPlayerSlot(state.Players.First()).EndOfPhaseRole.Name != "Robber").ShouldBe(2);
     }
 }

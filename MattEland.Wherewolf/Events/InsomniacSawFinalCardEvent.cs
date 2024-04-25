@@ -24,6 +24,6 @@ public class InsomniacSawFinalCardEvent : GameEvent
     {
         GameSlot playerSlot = state.GetPlayerSlot(Player);
         
-        return playerSlot.StartRole.Name == "Insomniac" && playerSlot.CurrentRole.Name == this.Role.Name;
+        return playerSlot.StartRole.Name == "Insomniac" && playerSlot.EndOfPhaseRole.Name == this.Role.Name;
     }
 }

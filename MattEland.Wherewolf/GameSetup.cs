@@ -60,7 +60,7 @@ public class GameSetup
         List<GameRole> shuffledRoles = slotShuffler.Shuffle(Roles).ToList();
         string rolesList = shuffledRoles.ToDelimitedString(",");
         GamePermutation permutation = GetPermutationsAtPhase(_phases.FirstOrDefault())
-            .First(p => p.State.AllSlots.Select(s => s.CurrentRole).ToDelimitedString(",") == rolesList);
+            .First(p => p.State.AllSlots.Select(s => s.BeginningOfPhaseRole).ToDelimitedString(",") == rolesList);
 
         permutation.State.SendRolesToControllers();
         

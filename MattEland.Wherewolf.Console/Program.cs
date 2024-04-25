@@ -18,13 +18,13 @@ gameSetup.AddPlayers(
         new Player("Jimothy", new RandomController())
     );
 gameSetup.AddRoles(
-        new VillagerRole(), new VillagerRole(), 
-        new InsomniacRole(), 
         new RobberRole(), 
+        new InsomniacRole(), 
+        new VillagerRole(), new VillagerRole(), 
         new WerewolfRole(), new WerewolfRole()
     );
     
-GameState gameState = gameSetup.StartGame();
+GameState gameState = gameSetup.StartGame(new NonShuffler());
 gameState = gameState.RunToEnd();
 
 DisplayHelpers.DisplaySummaryTable(gameState);

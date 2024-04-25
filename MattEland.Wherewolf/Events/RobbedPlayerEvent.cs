@@ -42,10 +42,12 @@ public class RobbedPlayerEvent : GameEvent
         GameSlot targetSlot = robbingState.GetPlayerSlot(Target);
         
         // Any setup that didn't start with the target having the robbed card cannot be considered
-        if (targetSlot.CurrentRole.Name != this.NewRole.Name) return false;
+        if (targetSlot.BeginningOfPhaseRole.Name != this.NewRole.Name) return false;
+        if (robberSlot.EndOfPhaseRole.Name != this.NewRole.Name) return false;
+        if (targetSlot.EndOfPhaseRole.Name != robberSlot.BeginningOfPhaseRole.Name) return false;
+        if (robberSlot.EndOfPhaseRole.Name != targetSlot.BeginningOfPhaseRole.Name) return false;
 
-        // Let's filter down based on the exact robbery
-        return (state.Events.OfType<RobbedPlayerEvent>().Any(e => e.Description == this.Description)) ;
+        return true;
     }
     
 }
