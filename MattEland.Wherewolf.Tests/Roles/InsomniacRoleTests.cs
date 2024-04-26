@@ -83,6 +83,23 @@ public class InsomniacRoleTests : RoleTestBase
         playerProbabilities["Robber"].ShouldBe(1);
     }
     
+        
+    [Fact]
+    public void InsomniacShouldNotBeCertainOfStartingRobberWhenRobbed()
+    {
+        // Arrange
+        GameState gameState = RunInsomniacGame(robPlayer: true);
+        Player insomniac = gameState.Players.Single(p => p.Name == "Player");
+        Player robber = gameState.Players.Single(p => p.Name == "Thief");
+
+        // Act
+        PlayerProbabilities playerProbs = gameState.CalculateProbabilities(insomniac);
+        SlotRoleProbabilities thiefProbabilities = playerProbs.GetStartProbabilities(gameState.GetPlayerSlot(robber));
+
+        // Assert
+        thiefProbabilities["Robber"].ShouldBeLessThan(1);
+    }
+    
     private static GameState RunInsomniacGame(bool robPlayer)
     {
         GameSetup setup = new();

@@ -90,31 +90,6 @@ foreach (var player in gameSetup.Players)
     AnsiConsole.WriteLine();
 }
 
-// Display all possible worlds
-Tree possibleStatesTree = new("[Yellow]Possible Worlds[/]");
-foreach (var permutations in gameSetup.GetPermutationsAtPhase(gameSetup.Phases.FirstOrDefault()).GroupBy(p => string.Join(" ", p.State.PlayerSlots.Select(s => $"{s.GetSlotMarkup()}:{s.StartRole.AsMarkdown()}"))))
-{
-    string possibleForPlayers = "Possible for: ";
-    double totalSupport = 0;
-    foreach (var player in gameSetup.Players)
-    {
-        double support = permutations.Where(p => p.IsPossibleGivenEvents(gameState.Events.Where(e => e.IsObservedBy(player)))).Sum(p => p.Support);
-        if (support > 0)
-        {
-            possibleForPlayers += $"{player.GetPlayerMarkup()} ({support}) ";
-            totalSupport += support;
-        }
-    }
-
-    if (totalSupport > 0)
-    {
-        TreeNode permutationNode = possibleStatesTree.AddNode(permutations.Key);
-        permutationNode.AddNode(possibleForPlayers);
-    }
-}
-AnsiConsole.Write(possibleStatesTree);
-AnsiConsole.WriteLine();
-
 void AddGameEventNodeToTree(GameEvent evt, Tree tree, IEnumerable<GameSlot> slots, IEnumerable<GameRole> roles, IEnumerable<Player> players, bool includeObservedBy = true)
 {
     // Make descriptions referencing slots or roles stand out more
