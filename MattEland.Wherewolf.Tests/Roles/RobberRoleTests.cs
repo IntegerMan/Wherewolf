@@ -15,13 +15,29 @@ public class RobberRoleTests : RoleTestBase
         Player player = gameState.Players.Single(p => p.Name == "Player");
 
         // Act
-        PlayerState playerState = gameState.GetPlayerStates(player);
-        SlotRoleProbabilities playerProbabilities = playerState.Probabilities.GetSlotProbabilities(gameState.GetPlayerSlot(player));
+        PlayerProbabilities playerProbs = gameState.Root.CalculateProbabilities(player);
+        SlotRoleProbabilities playerProbabilities = playerProbs.GetCurrentProbabilities(gameState.Root.GetPlayerSlot(player));
 
         // Assert
-        playerProbabilities.StartRole["Robber"].ShouldBe(1);
+        playerProbabilities.Role["Robber"].ShouldBe(1);
     }
 
+    [Fact]
+    public void RobberShouldBeCertainTheyEndedAsStolenRoleWithNoOtherCardSwappingRoles()
+    {
+        // Arrange
+        GameState gameState = RunRobberGame(); // Player moves from Robber -> Werewolf
+        Player player = gameState.Players.Single(p => p.Name == "Player");
+
+        // Act
+        PlayerProbabilities playerProbs = gameState.CalculateProbabilities(player);
+        SlotRoleProbabilities playerProbabilities = playerProbs.GetCurrentProbabilities(gameState.GetPlayerSlot(player));
+
+        // Assert
+        playerProbabilities["Robber"].ShouldBe(0);
+        playerProbabilities["Werewolf"].ShouldBe(1);
+    }
+    
     [Fact]
     public void RobberShouldHaveARobbedEvent()
     {
@@ -30,10 +46,10 @@ public class RobberRoleTests : RoleTestBase
         Player player = gameState.Players.Single(p => p.Name == "Player");
 
         // Act
-        PlayerState playerState = gameState.GetPlayerStates(player);
+        IEnumerable<GameEvent> observedEvents = gameState.Events.Where(e => e.IsObservedBy(player));
 
         // Assert
-        playerState.ObservedEvents.OfType<RobbedPlayerEvent>().Count().ShouldBe(1);
+        observedEvents.OfType<RobbedPlayerEvent>().Count().ShouldBe(1);
     }
     
     [Fact]
@@ -44,10 +60,10 @@ public class RobberRoleTests : RoleTestBase
         Player player = gameState.Players.Single(p => p.Name == "Target");
 
         // Act
-        PlayerState playerState = gameState.GetPlayerStates(player);
+        IEnumerable<GameEvent> observedEvents = gameState.Events.Where(e => e.IsObservedBy(player));
 
         // Assert
-        playerState.ObservedEvents.OfType<RobbedPlayerEvent>().Count().ShouldBe(0);
+        observedEvents.OfType<RobbedPlayerEvent>().Count().ShouldBe(0);
     }
 
     private static GameState RunRobberGame()

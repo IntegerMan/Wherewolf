@@ -12,11 +12,6 @@ public class GameState
     private readonly GamePhase[] _allPhases;
     private readonly Queue<GamePhase> _remainingPhases;
     private readonly List<GameEvent> _events = new();
-
-    internal GameState(GameSetup setup, ISlotShuffler shuffler) 
-        :this(setup, shuffler.Shuffle(setup.Roles).ToList())
-    {
-    }
     
     internal GameState(GameSetup setup, IReadOnlyList<GameRole> shuffledRoles)
     {
@@ -27,30 +22,25 @@ public class GameState
         _centerSlots = BuildCenterSlots(setup.Players, shuffledRoles);
 
         AssignOrderIndexToEachPlayer(setup.Players);
-        RegisterStartingCards();
-        _allPhases = BuildGamePhases(setup.Roles);
+        foreach (var slot in AllSlots)
+        {
+            AddEvent(new DealtCardEvent(slot.StartRole, slot), false);
+        }
+        _allPhases = setup.Phases;
         _remainingPhases = new Queue<GamePhase>(_allPhases);
+        Root = this;
     }    
 
-    private GameState(GameState oldState, IEnumerable<GamePhase> remainingPhases)
+    internal GameState(GameState parentState)
     {
-        _remainingPhases = new Queue<GamePhase>(remainingPhases);
-        _gameSetup = oldState._gameSetup;
-        _allPhases = oldState._allPhases.ToArray();
-        _events.AddRange(oldState.Events);
-        _centerSlots = oldState.CenterSlots.ToArray();
-        _playerSlots = oldState.PlayerSlots.ToArray();
-    }
-
-    private GamePhase[] BuildGamePhases(IEnumerable<GameRole> roles)
-    {
-        List<GamePhase> phases = new();
-        foreach (var role in roles.Where(r => r.HasNightPhases).DistinctBy(r => r.GetType()))
-        {
-            phases.AddRange(role.BuildNightPhases());
-        }
-
-        return phases.OrderBy(p => p.Order).ToArray();
+        _remainingPhases = new Queue<GamePhase>(parentState._remainingPhases.Skip(1));
+        _gameSetup = parentState._gameSetup;
+        _allPhases = parentState._allPhases.ToArray();
+        _events.AddRange(parentState.Events);
+        _centerSlots = parentState.CenterSlots.Select(c => new GameSlot(c)).ToArray();
+        _playerSlots = parentState.PlayerSlots.Select(c => new GameSlot(c)).ToArray();
+        Parent = parentState;
+        Root = parentState.Root;
     }
 
     private static void AssignOrderIndexToEachPlayer(IEnumerable<Player> players)
@@ -65,21 +55,19 @@ public class GameState
     private static GameSlot[] BuildCenterSlots(IEnumerable<Player> players, IEnumerable<GameRole> shuffledRoles)
     {
         int c = 1;
-        return shuffledRoles.Skip(players.Count()).Select(r => new GameSlot("Center " + (c++), r)).ToArray();
+        return shuffledRoles.Skip(players.Count())
+                            .Select(r => new GameSlot("Center " + (c++), r))
+                            .ToArray();
     }
 
     private static GameSlot[] BuildPlayerSlots(IEnumerable<Player> players, IReadOnlyList<GameRole> shuffledRoles)
     {
         int i = 0;
-        return players.Select(p => new GameSlot(p.Name, shuffledRoles[i++]) { Player = p}).ToArray();
-    }
-
-    private void RegisterStartingCards()
-    {
-        foreach (var slot in AllSlots)
+        return players.Select(p =>
         {
-            AddEvent(new DealtCardEvent(slot.StartRole, slot));
-        }
+            GameRole role = shuffledRoles[i++];
+            return new GameSlot(p.Name, role, p);
+        }).ToArray();
     }
 
     public GameSlot[] PlayerSlots => _playerSlots;
@@ -105,15 +93,39 @@ public class GameState
     public IEnumerable<GameRole> Roles => _gameSetup.Roles;
     public IEnumerable<GameEvent> Events => _events.AsReadOnly();
 
-    public PlayerState GetPlayerStates(Player player)
+    public PlayerProbabilities CalculateProbabilities(Player player)
     {
-        PlayerState state = new(player, this);
+        PlayerProbabilities probabilities = new();
+
+        // Start with all permutations
+        List<GameEvent> observedEvents = Events.Where(e => e.IsObservedBy(player)).ToList();
+        IEnumerable<GamePermutation> phasePermutations = _gameSetup.GetPermutationsAtPhase(CurrentPhase);
+        List<GamePermutation> validPermutations = phasePermutations.Where(p => p.IsPossibleGivenEvents(observedEvents)).ToList();
         
-        state.AddEvents(_events.Where(e => e.IsObservedBy(player)));
+        double startPopulation = validPermutations.Sum(p => p.Support);
+        
+        // Calculate starting role probabilities
+        foreach (var slot in AllSlots)
+        {
+            foreach (var role in Roles.DistinctBy(r => r.Name))
+            {
+                // Figure out the number of possible worlds where the slot had the role at the start
+                double startRoleSupport = validPermutations.Where(p => p.State.GetSlot(slot.Name).StartRole.Name == role.Name)
+                                              .Sum(p => p.Support);
 
-        return state;
+                probabilities.RegisterStartRoleProbabilities(slot, role.Name, startRoleSupport, startPopulation);
+                
+                // Figure out the number of possible worlds where the slot currently has the role
+                double currentRoleSupport = validPermutations.Where(p => p.State.GetSlot(slot.Name).BeginningOfPhaseRole.Name == role.Name)
+                    .Sum(p => p.Support);
+
+                probabilities.RegisterCurrentRoleProbabilities(slot, role.Name, currentRoleSupport, startPopulation);
+                
+            }
+        }
+        
+        return probabilities;
     }
-
     public GameState RunToEnd()
     {
         if (IsGameOver)
@@ -130,19 +142,46 @@ public class GameState
         if (CurrentPhase is null)
             throw new InvalidOperationException("Cannot run the next phase; no current phase");
 
-        GameState nextState = new(this, _remainingPhases.Skip(1));
-        
+        GameState nextState = new(this);
+
         return CurrentPhase.Run(nextState);
     }
 
     public bool IsGameOver => _remainingPhases.Count == 0;
     public GamePhase? CurrentPhase => IsGameOver ? null : _remainingPhases.Peek();
     public IEnumerable<GamePhase> Phases => _remainingPhases.ToArray();
-    public GameSetup Setup => _gameSetup;
+    public IEnumerable<GameState> PossibleNextStates 
+    {
+        get
+        {
+            if (IsGameOver)
+            {
+                yield break;
+            }
 
-    public void AddEvent(GameEvent newEvent)
+            foreach (var possibleState in CurrentPhase!.BuildPossibleStates(this))
+            {
+                yield return possibleState;
+            }
+        }
+    }
+    public GameState? Parent { get; }
+    public GameState Root { get; }
+
+    public void AddEvent(GameEvent newEvent, bool broadcastToController = true)
     {
         _events.Add(newEvent);
+
+        if (broadcastToController)
+        {
+            foreach (var player in Players)
+            {
+                if (newEvent.IsObservedBy(player))
+                {
+                    player.Controller.ObservedEvent(newEvent, this);
+                }
+            }
+        }
     }
 
     public GameSlot GetPlayerSlot(Player player) 
@@ -150,4 +189,27 @@ public class GameState
 
     public GameSlot GetSlot(string slotName)
         => AllSlots.First(s => s.Name == slotName);
+
+    public override string ToString() 
+        => $"{string.Join(",", PlayerSlots.Select(p => p.BeginningOfPhaseRole.Name))}[{string.Join(",", CenterSlots.Select(p => p.BeginningOfPhaseRole.Name))}]";
+
+    internal void SwapRoles(GameSlot slot1, GameSlot slot2)
+    {
+        if (slot1.BeginningOfPhaseRole != slot1.EndOfPhaseRole)
+            throw new InvalidOperationException("Swapping roles encountered a slot1 that was already swapped");
+        if (slot2.BeginningOfPhaseRole != slot2.EndOfPhaseRole)
+            throw new InvalidOperationException("Swapping roles encountered a slot2 that was already swapped");
+        
+        slot1.EndOfPhaseRole = slot2.BeginningOfPhaseRole;
+        slot2.EndOfPhaseRole = slot1.BeginningOfPhaseRole;
+    }
+
+    internal void SendRolesToControllers()
+    {
+        // In order to avoid sending events from possible worlds to players, we only broadcast dealt events after a root state has been chosen
+        foreach (var dealtEvent in _events.OfType<DealtCardEvent>())
+        {
+            dealtEvent.Player?.Controller.ObservedEvent(dealtEvent, this);
+        }
+    }
 }

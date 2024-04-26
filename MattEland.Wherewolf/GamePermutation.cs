@@ -1,16 +1,21 @@
+using MattEland.Wherewolf.Events;
+
 namespace MattEland.Wherewolf;
 
 public class GamePermutation
 {
     public GameState State { get; }
-    public int Support { get; }
+    public double Support { get; }
     
-    public GamePermutation(GameState state, int support)
+    public GamePermutation(GameState state, double support)
     {
         State = state;
         Support = support;
     }
 
-    public bool IsPossibleGivenPlayerState(PlayerState playerState) 
-        => playerState.ObservedEvents.All(e => e.IsPossibleInGameState(State));
+    public bool IsPossibleGivenEvents(IEnumerable<GameEvent> events) 
+        => events.All(e => e.IsPossibleInGameState(State));
+
+    public override string ToString() 
+        => $"{State} - Support: {Support}";
 }

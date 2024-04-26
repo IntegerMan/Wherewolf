@@ -24,12 +24,11 @@ public class WerewolfRoleTests : RoleTestBase
         Player player = gameState.Players.First();
 
         // Act
-        PlayerState playerState = gameState.GetPlayerStates(player);
+        List<GameEvent> observedEvents = gameState.Events.Where(e => e.IsObservedBy(player)).ToList();
 
         // Assert
-        playerState.ShouldNotBeNull();
-        playerState.ObservedEvents.ShouldNotBeNull();
-        playerState.ObservedEvents.OfType<LoneWolfEvent>().Count().ShouldBe(1);
+        observedEvents.ShouldNotBeEmpty();
+        observedEvents.OfType<LoneWolfEvent>().Count().ShouldBe(1);
     }
 
     [Fact]
@@ -49,12 +48,11 @@ public class WerewolfRoleTests : RoleTestBase
         Player player = gameState.Players.First();
 
         // Act
-        PlayerState playerState = gameState.GetPlayerStates(player);
+        List<GameEvent> observedEvents = gameState.Events.Where(e => e.IsObservedBy(player)).ToList();
 
         // Assert
-        playerState.ShouldNotBeNull();
-        playerState.ObservedEvents.ShouldNotBeNull();
-        playerState.ObservedEvents.OfType<LoneWolfLookedAtSlotEvent>().Count().ShouldBe(1);
+        observedEvents.ShouldNotBeEmpty();
+        observedEvents.OfType<LoneWolfLookedAtSlotEvent>().Count().ShouldBe(1);
     }
     
 
@@ -62,7 +60,7 @@ public class WerewolfRoleTests : RoleTestBase
     public void LoneWerewolfShouldHaveCertainKnowledgeOfStartingRoleOfTheCardTheyLookedAt()
     {
         // Arrange
-        GameSetup setup = new GameSetup();
+        GameSetup setup = new();
         setup.AddRoles(            
             new WerewolfRole(), // This will go to our player
             new VillagerRole(),
@@ -79,15 +77,15 @@ public class WerewolfRoleTests : RoleTestBase
         );
         GameState gameState = setup.StartGame(new NonShuffler()).RunToEnd();
         Player player = gameState.Players.Single(p => p.Name == "A");
-        PlayerState playerState = gameState.GetPlayerStates(player);
-
+        
         // Act
-        SlotRoleProbabilities slotProbabilities = playerState.Probabilities.GetSlotProbabilities(gameState.GetSlot("Center 2"));
+        SlotRoleProbabilities slotProbabilities = gameState.CalculateProbabilities(player).GetCurrentProbabilities(gameState.GetSlot("Center 2"));
 
         // Assert
-        playerState.ObservedEvents.OfType<LoneWolfLookedAtSlotEvent>().Single().Slot.Name.ShouldBe("Center 2");
-        slotProbabilities.StartRole["Werewolf"].ShouldBe(0);
-        slotProbabilities.StartRole["Villager"].ShouldBe(1);
+        List<GameEvent> observedEvents = gameState.Events.Where(e => e.IsObservedBy(player)).ToList();
+        observedEvents.OfType<LoneWolfLookedAtSlotEvent>().Single().Slot.Name.ShouldBe("Center 2");
+        slotProbabilities.Role["Werewolf"].ShouldBe(0);
+        slotProbabilities.Role["Villager"].ShouldBe(1);
     }    
     
     [Fact]
@@ -108,12 +106,12 @@ public class WerewolfRoleTests : RoleTestBase
         Player player2 = gameState.Players.Skip(1).First();
 
         // Act
-        PlayerState p1State = gameState.GetPlayerStates(player1);
-        PlayerState p2State = gameState.GetPlayerStates(player2);
+        List<GameEvent> p1ObservedEvents = gameState.Events.Where(e => e.IsObservedBy(player1)).ToList();
+        List<GameEvent> p2ObservedEvents = gameState.Events.Where(e => e.IsObservedBy(player2)).ToList();
 
         // Assert
-        p1State.ObservedEvents.OfType<SawOtherWolvesEvent>().Count().ShouldBe(1);
-        p2State.ObservedEvents.OfType<SawOtherWolvesEvent>().Count().ShouldBe(1);
+        p1ObservedEvents.OfType<SawOtherWolvesEvent>().Count().ShouldBe(1);
+        p2ObservedEvents.OfType<SawOtherWolvesEvent>().Count().ShouldBe(1);
         gameState.Events.OfType<SawOtherWolvesEvent>().Count().ShouldBe(1); // 1 shared event
     }    
 }

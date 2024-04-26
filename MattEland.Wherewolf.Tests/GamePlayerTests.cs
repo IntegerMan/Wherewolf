@@ -21,7 +21,7 @@ public class GamePlayerTests
     {
         // Arrange
         GameSetup gameSetup = new();
-        Player player = new Player("Test", new RandomController());
+        Player player = new("Test", new RandomController());
         
         // Act
         gameSetup.AddPlayer(player);
@@ -36,7 +36,7 @@ public class GamePlayerTests
     {
         // Arrange
         GameSetup gameSetup = new();
-        Player player = new Player("Test", new RandomController());
+        Player player = new("Test", new RandomController());
         gameSetup.AddPlayer(player);
         
         // Act

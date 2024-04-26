@@ -2,25 +2,36 @@ namespace MattEland.Wherewolf;
 
 public class PlayerProbabilities
 {
-    private readonly PlayerState _playerState;
+    private readonly Dictionary<GameSlot, SlotRoleProbabilities> _currentRoleProbabilities = new();
+    private readonly Dictionary<GameSlot, SlotRoleProbabilities> _startRoleProbabilities = new();
 
-    private readonly Dictionary<GameSlot, SlotRoleProbabilities> _slotRoleProbabilities = new();
-
-    public PlayerProbabilities(PlayerState playerState)
+    public void RegisterCurrentRoleProbabilities(GameSlot slot, string role, double support, double population)
     {
-        _playerState = playerState;
-    }
-
-    public void RegisterSlotRoleProbabilities(GameSlot slot, string role, int support, int population)
-    {
-        if (!_slotRoleProbabilities.ContainsKey(slot))
+        if (!_currentRoleProbabilities.TryGetValue(slot, out SlotRoleProbabilities? probabilities))
         {
-            _slotRoleProbabilities[slot] = new SlotRoleProbabilities();
+            probabilities = new SlotRoleProbabilities();
+            _currentRoleProbabilities[slot] = probabilities;
         }
-        
-        _slotRoleProbabilities[slot].SetStartRoleProbabilities(role, support, population);
+
+        probabilities.SetProbability(role, support, population);
     }
 
-    public SlotRoleProbabilities GetSlotProbabilities(GameSlot slot) 
-        => _slotRoleProbabilities[slot];
+    public void RegisterStartRoleProbabilities(GameSlot slot, string role, double support, double population)
+    {
+        if (!_startRoleProbabilities.TryGetValue(slot, out SlotRoleProbabilities? probabilities))
+        {
+            probabilities = new SlotRoleProbabilities();
+            _startRoleProbabilities[slot] = probabilities;
+        }
+
+        probabilities.SetProbability(role, support, population);
+    }
+    
+
+    public SlotRoleProbabilities GetCurrentProbabilities(GameSlot slot) 
+        => _currentRoleProbabilities[slot];
+
+    public SlotRoleProbabilities GetStartProbabilities(GameSlot slot) 
+        => _startRoleProbabilities[slot];
+    
 }

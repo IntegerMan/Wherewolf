@@ -12,4 +12,6 @@ public abstract class GameRole
     {
         return Enumerable.Empty<GamePhase>();
     }
+
+    public override string ToString() => Name;
 }

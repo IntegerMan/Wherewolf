@@ -1,6 +1,6 @@
 using MattEland.Wherewolf.Roles;
 
-namespace MattEland.Wherewolf.Tests.Helpers;
+namespace MattEland.Wherewolf;
 
 public class NonShuffler : ISlotShuffler
 {

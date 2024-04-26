@@ -17,7 +17,7 @@ public class LoneWolfLookedAtSlotEvent : GameEvent
     {
         this.Player = player;
         this.Slot = slot;
-        this.ObservedRole = slot.CurrentRole.Name;
+        this.ObservedRole = slot.BeginningOfPhaseRole.Name;
     }
 
     public override bool IsObservedBy(Player player) 
@@ -41,6 +41,6 @@ public class LoneWolfLookedAtSlotEvent : GameEvent
         }
         
         // In the game state, the current role needs to be the one the event recorded seeing
-        return state.GetSlot(Slot.Name).CurrentRole.Name == ObservedRole;
+        return state.GetSlot(Slot.Name).BeginningOfPhaseRole.Name == ObservedRole;
     }
 }

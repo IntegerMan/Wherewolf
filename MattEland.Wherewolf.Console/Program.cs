@@ -18,12 +18,13 @@ gameSetup.AddPlayers(
         new Player("Jimothy", new RandomController())
     );
 gameSetup.AddRoles(
-        new VillagerRole(), new VillagerRole(), new VillagerRole(), 
         new RobberRole(), 
+        new InsomniacRole(), 
+        new VillagerRole(), new VillagerRole(), 
         new WerewolfRole(), new WerewolfRole()
     );
     
-GameState gameState = gameSetup.StartGame();
+GameState gameState = gameSetup.StartGame(new NonShuffler());
 gameState = gameState.RunToEnd();
 
 DisplayHelpers.DisplaySummaryTable(gameState);
@@ -41,10 +42,9 @@ AnsiConsole.WriteLine();
 foreach (var player in gameSetup.Players)
 {
     // Observed events tree
-    PlayerState playerState = gameState.GetPlayerStates(player);
     Tree playerTree = new($"[Yellow]Observed Events for {player.GetPlayerMarkup()}[/]");
     
-    foreach (var gameEvent in playerState.ObservedEvents)
+    foreach (var gameEvent in gameState.Events.Where(e => e.IsObservedBy(player)))
     {
         AddGameEventNodeToTree(gameEvent, playerTree, gameState.AllSlots, gameState.Roles, gameState.Players, includeObservedBy: false);
     }
@@ -62,13 +62,13 @@ foreach (var player in gameSetup.Players)
         probabilitiesTable.AddColumn(role.AsMarkdown());
     }
     
-    var probabilities = playerState.Probabilities;
+    var probabilities = gameState.CalculateProbabilities(player);
     foreach (var otherSlot in gameState.AllSlots)
     {
-        SlotRoleProbabilities slotProbabilities = probabilities.GetSlotProbabilities(otherSlot);
+        SlotRoleProbabilities slotProbabilities = probabilities.GetStartProbabilities(otherSlot);
         
         List<string> values = [otherSlot.GetSlotMarkup()];
-        foreach (var (_, probability) in slotProbabilities.StartRole.OrderBy(r => r.Key))
+        foreach (var (_, probability) in slotProbabilities.Role.OrderBy(r => r.Key))
         {
             switch (probability)
             {
@@ -90,45 +90,10 @@ foreach (var player in gameSetup.Players)
     AnsiConsole.WriteLine();
 }
 
-// Display all possible worlds
-Tree possibleStatesTree = new("[Yellow]Possible Worlds[/]");
-foreach (var permutations in gameSetup.Permutations.GroupBy(p => string.Join(" ", p.State.PlayerSlots.Select(s => $"{s.GetSlotMarkup()}:{s.StartRole.AsMarkdown()}"))))
-{
-    string possibleForPlayers = "Possible for: ";
-    int totalSupport = 0;
-    foreach (var player in gameSetup.Players)
-    {
-        PlayerState playerState = gameState.GetPlayerStates(player);
-        
-        int support = permutations.Where(p => p.IsPossibleGivenPlayerState(playerState)).Sum(p => p.Support);
-        if (support > 0)
-        {
-            possibleForPlayers += $"{player.GetPlayerMarkup()} ({support}) ";
-            totalSupport += support;
-        }
-    }
-
-    if (totalSupport > 0)
-    {
-        TreeNode permutationNode = possibleStatesTree.AddNode(permutations.Key);
-        permutationNode.AddNode(possibleForPlayers);
-    }
-}
-AnsiConsole.Write(possibleStatesTree);
-AnsiConsole.WriteLine();
-
 void AddGameEventNodeToTree(GameEvent evt, Tree tree, IEnumerable<GameSlot> slots, IEnumerable<GameRole> roles, IEnumerable<Player> players, bool includeObservedBy = true)
 {
     // Make descriptions referencing slots or roles stand out more
-    string description = evt.Description;
-    foreach (var slot in slots)
-    {
-        description = description.Replace(slot.Name, slot.GetSlotMarkup(), StringComparison.OrdinalIgnoreCase);
-    }
-    foreach (var role in roles)
-    {
-        description = description.Replace(role.Name, role.AsMarkdown(), StringComparison.OrdinalIgnoreCase);
-    }
+    string description = DisplayHelpers.StylizeEventMessage(evt.Description, slots, roles);
     
     // Add the event node
     TreeNode eventNode = tree.AddNode($"[Cyan]{evt.GetType().Name}[/]: {description}");

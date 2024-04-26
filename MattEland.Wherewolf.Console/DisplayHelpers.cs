@@ -29,11 +29,10 @@ public static class DisplayHelpers
 
     public static void DisplaySummaryTable(GameState gameState)
     {
-        Table centerTable = new Table();
+        Table centerTable = new();
         centerTable.Title("[Yellow]Game Summary[/]");
         centerTable.AddColumn(string.Empty);
         List<string> values = new() { "[Cyan]Started as[/]"};
-        int index = 0;
         foreach (var slot in gameState.AllSlots)
         {
             string header = slot.GetSlotMarkup();
@@ -53,4 +52,19 @@ public static class DisplayHelpers
         => slot.Player is null 
             ? $"[Gray50]{slot.Name}[/]" 
             : slot.Player.GetPlayerMarkup();
+
+    public static string StylizeEventMessage(string message, IEnumerable<GameSlot> slots, IEnumerable<GameRole> roles)
+    {
+        foreach (var slot in slots)
+        {
+            message = message.Replace(slot.Name, slot.GetSlotMarkup(), StringComparison.OrdinalIgnoreCase);
+        }
+        
+        foreach (var role in roles.DistinctBy(r => r.Name))
+        {
+            message = message.Replace(role.Name, role.AsMarkdown(), StringComparison.OrdinalIgnoreCase);
+        }
+
+        return message;
+    }
 }
