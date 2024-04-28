@@ -99,27 +99,42 @@ public class GameState
 
         // Start with all permutations
         List<GameEvent> observedEvents = Events.Where(e => e.IsObservedBy(player)).ToList();
-        IEnumerable<GamePermutation> phasePermutations = _gameSetup.GetPermutationsAtPhase(CurrentPhase);
+        List<GamePermutation> phasePermutations = _gameSetup.GetPermutationsAtPhase(CurrentPhase).ToList();
+        if (!phasePermutations.Any())
+            throw new InvalidOperationException("No phase permutations found for phase " + (CurrentPhase?.Name ?? "Voting") + " for player " + player.Name);
+        
+        /* For testing specific permutations...
+        phasePermutations = phasePermutations.Where(p => p.State.GetSlot("Player").StartRole == GameRole.Robber)
+                                             .Where(p => p.State.GetSlot("Target").StartRole == GameRole.Werewolf)
+                                             .Where(p => p.State.GetSlot("Other").StartRole == GameRole.Villager)
+                                             .Where(p => p.State.GetSlot("Center 1").StartRole == GameRole.Villager)
+                                             .Where(p => p.State.GetSlot("Center 2").StartRole == GameRole.Villager)
+                                             .Where(p => p.State.GetSlot("Center 3").StartRole == GameRole.Werewolf)
+                                             .ToList();
+        */
+        
         List<GamePermutation> validPermutations = phasePermutations.Where(p => p.IsPossibleGivenEvents(observedEvents)).ToList();
+        if (!validPermutations.Any())
+            throw new InvalidOperationException("No valid permutations found for phase " + (CurrentPhase?.Name ?? "Voting") + " for player " + player.Name);
         
         double startPopulation = validPermutations.Sum(p => p.Support);
         
         // Calculate starting role probabilities
         foreach (var slot in AllSlots)
         {
-            foreach (var role in Roles.DistinctBy(r => r.Name))
+            foreach (var role in Roles.Distinct())
             {
                 // Figure out the number of possible worlds where the slot had the role at the start
-                double startRoleSupport = validPermutations.Where(p => p.State.GetSlot(slot.Name).StartRole.Name == role.Name)
+                double startRoleSupport = validPermutations.Where(p => p.State.GetSlot(slot.Name).StartRole == role)
                                               .Sum(p => p.Support);
 
-                probabilities.RegisterStartRoleProbabilities(slot, role.Name, startRoleSupport, startPopulation);
+                probabilities.RegisterStartRoleProbabilities(slot, role, startRoleSupport, startPopulation);
                 
                 // Figure out the number of possible worlds where the slot currently has the role
-                double currentRoleSupport = validPermutations.Where(p => p.State.GetSlot(slot.Name).BeginningOfPhaseRole.Name == role.Name)
+                double currentRoleSupport = validPermutations.Where(p => p.State.GetSlot(slot.Name).BeginningOfPhaseRole == role)
                     .Sum(p => p.Support);
 
-                probabilities.RegisterCurrentRoleProbabilities(slot, role.Name, currentRoleSupport, startPopulation);
+                probabilities.RegisterCurrentRoleProbabilities(slot, role, currentRoleSupport, startPopulation);
                 
             }
         }
@@ -191,7 +206,7 @@ public class GameState
         => AllSlots.First(s => s.Name == slotName);
 
     public override string ToString() 
-        => $"{string.Join(",", PlayerSlots.Select(p => p.BeginningOfPhaseRole.Name))}[{string.Join(",", CenterSlots.Select(p => p.BeginningOfPhaseRole.Name))}]";
+        => $"{string.Join(",", PlayerSlots.Select(p => p.BeginningOfPhaseRole))}[{string.Join(",", CenterSlots.Select(p => p.BeginningOfPhaseRole))}]";
 
     internal void SwapRoles(GameSlot slot1, GameSlot slot2)
     {

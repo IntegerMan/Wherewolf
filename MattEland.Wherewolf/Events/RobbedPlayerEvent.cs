@@ -22,7 +22,7 @@ public class RobbedPlayerEvent : GameEvent
     public override bool IsObservedBy(Player player) 
         => Player == player;
 
-    public override string Description => $"{Player.Name} robbed {Target.Name} and saw their new role is {NewRole.Name}";
+    public override string Description => $"{Player.Name} robbed {Target.Name} and saw their new role is {NewRole}";
     public override bool IsPossibleInGameState(GameState state)
     {
         // Robbers can't rob themselves
@@ -37,17 +37,16 @@ public class RobbedPlayerEvent : GameEvent
         
         // Only allow players who started as robbers to rob
         GameSlot robberSlot = robbingState.GetPlayerSlot(Player);
-        if (robberSlot.StartRole.Name != "Robber") return false;
+        if (robberSlot.StartRole != GameRole.Robber) return false;
         
         GameSlot targetSlot = robbingState.GetPlayerSlot(Target);
         
         // Any setup that didn't start with the target having the robbed card cannot be considered
-        if (targetSlot.BeginningOfPhaseRole.Name != this.NewRole.Name) return false;
-        if (robberSlot.EndOfPhaseRole.Name != this.NewRole.Name) return false;
-        if (targetSlot.EndOfPhaseRole.Name != robberSlot.BeginningOfPhaseRole.Name) return false;
-        if (robberSlot.EndOfPhaseRole.Name != targetSlot.BeginningOfPhaseRole.Name) return false;
+        if (targetSlot.BeginningOfPhaseRole != this.NewRole) return false;
+        if (robberSlot.EndOfPhaseRole != this.NewRole) return false;
+        if (targetSlot.EndOfPhaseRole != robberSlot.BeginningOfPhaseRole) return false;
+        if (robberSlot.EndOfPhaseRole != targetSlot.BeginningOfPhaseRole) return false;
 
         return true;
     }
-    
 }

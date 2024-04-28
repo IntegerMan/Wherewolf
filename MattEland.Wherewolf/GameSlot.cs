@@ -21,15 +21,6 @@ public class GameSlot
         this.BeginningOfPhaseRole = baseSlot.EndOfPhaseRole;
         this.EndOfPhaseRole = baseSlot.EndOfPhaseRole;
     }
-    
-    public GameSlot(GameSlot baseSlot, GameRole newRole)
-    {
-        this.Name = baseSlot.Name;
-        this.Player = baseSlot.Player;
-        this.StartRole = baseSlot.StartRole;
-        this.BeginningOfPhaseRole = newRole;
-        this.EndOfPhaseRole = newRole;
-    }    
 
     public string Name { get; init; }
     public Player? Player { get; init; }

@@ -14,7 +14,7 @@ public class RobberPhaseTests
         RobberNightPhase phase = new();
         GameSetup setup = new GameSetup();
         setup.AddPlayers(new Player("A", new RandomController()), new Player("B", new RandomController()), new Player("C", new RandomController()));
-        setup.AddRoles(new RobberRole(), new WerewolfRole(), new VillagerRole(), new VillagerRole(), new VillagerRole(), new VillagerRole());
+        setup.AddRoles(GameRole.Robber, GameRole.Werewolf, GameRole.Villager, GameRole.Villager, GameRole.Villager, GameRole.Villager);
         GameState state = setup.StartGame(new NonShuffler());
 
         // Act
@@ -22,6 +22,6 @@ public class RobberPhaseTests
 
         // Assert
         possibleStates.Count.ShouldBe(2);
-        possibleStates.Count(p => p.GetPlayerSlot(state.Players.First()).EndOfPhaseRole.Name != "Robber").ShouldBe(2);
+        possibleStates.Count(p => p.GetPlayerSlot(state.Players.First()).EndOfPhaseRole != GameRole.Robber).ShouldBe(2);
     }
 }

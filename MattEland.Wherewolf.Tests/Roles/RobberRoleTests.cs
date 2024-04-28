@@ -19,7 +19,7 @@ public class RobberRoleTests : RoleTestBase
         SlotRoleProbabilities playerProbabilities = playerProbs.GetCurrentProbabilities(gameState.Root.GetPlayerSlot(player));
 
         // Assert
-        playerProbabilities.Role["Robber"].ShouldBe(1);
+        playerProbabilities.Role[GameRole.Robber].ShouldBe(1);
     }
 
     [Fact]
@@ -34,8 +34,8 @@ public class RobberRoleTests : RoleTestBase
         SlotRoleProbabilities playerProbabilities = playerProbs.GetCurrentProbabilities(gameState.GetPlayerSlot(player));
 
         // Assert
-        playerProbabilities["Robber"].ShouldBe(0);
-        playerProbabilities["Werewolf"].ShouldBe(1);
+        playerProbabilities[GameRole.Robber].ShouldBe(0);
+        playerProbabilities[GameRole.Werewolf].ShouldBe(1);
     }
     
     [Fact]
@@ -74,13 +74,13 @@ public class RobberRoleTests : RoleTestBase
             new Player("Target", new RandomController()),
             new Player("Other", new RandomController()));
         setup.AddRoles(
-            new RobberRole(), // this will go to our player
-            new WerewolfRole(),
-            new VillagerRole(),
+            GameRole.Robber, // this will go to our player
+            GameRole.Werewolf,
+            GameRole.Villager,
             // Center Cards
-            new VillagerRole(),
-            new VillagerRole(),
-            new WerewolfRole()
+            GameRole.Villager,
+            GameRole.Villager,
+            GameRole.Werewolf
         );
         return setup.StartGame(new NonShuffler()).RunToEnd();
     }

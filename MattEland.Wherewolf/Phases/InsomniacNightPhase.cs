@@ -1,4 +1,5 @@
 using MattEland.Wherewolf.Events;
+using MattEland.Wherewolf.Roles;
 
 namespace MattEland.Wherewolf.Phases;
 
@@ -18,7 +19,7 @@ public class InsomniacNightPhase : GamePhase
     private static InsomniacSawFinalCardEvent? BuildInsomniacEventIfRelevant(GameState newState)
     {
         InsomniacSawFinalCardEvent? insomniacEvent;
-        GameSlot? insomniac = newState.PlayerSlots.SingleOrDefault(p => p.StartRole.Name == "Insomniac");
+        GameSlot? insomniac = newState.PlayerSlots.SingleOrDefault(p => p.StartRole == GameRole.Insomniac);
         if (insomniac is not null)
         {
             insomniacEvent = new InsomniacSawFinalCardEvent(insomniac.Player!, insomniac.BeginningOfPhaseRole);

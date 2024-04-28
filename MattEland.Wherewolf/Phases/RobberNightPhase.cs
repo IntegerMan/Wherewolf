@@ -9,7 +9,7 @@ public class RobberNightPhase : GamePhase
     
     public override GameState Run(GameState newState)
     {
-        GameSlot? robber = newState.PlayerSlots.SingleOrDefault(p => p.StartRole.Name == "Robber");
+        GameSlot? robber = newState.PlayerSlots.SingleOrDefault(p => p.StartRole == GameRole.Robber);
         if (robber is not null)
         {
             // Figure out who we're robbing
@@ -37,7 +37,7 @@ public class RobberNightPhase : GamePhase
     public override double Order => 6.0;
     public override IEnumerable<GameState> BuildPossibleStates(GameState priorState)
     {
-        Player? robberPlayer = priorState.PlayerSlots.Where(p => p.StartRole.Name == "Robber").Select(p => p.Player).FirstOrDefault();
+        Player? robberPlayer = priorState.PlayerSlots.Where(p => p.StartRole == GameRole.Robber).Select(p => p.Player).FirstOrDefault();
 
         if (robberPlayer is null)
         {

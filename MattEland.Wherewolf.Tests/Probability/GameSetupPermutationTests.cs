@@ -11,7 +11,7 @@ public class GameSetupPermutationTests
         // Arrange
         GameSetup setup = new();
         setup.AddPlayers(new Player("A", new RandomController()), new Player("B", new RandomController()), new Player("C", new RandomController()));
-        setup.AddRoles(new VillagerRole(), new VillagerRole(), new WerewolfRole(), new VillagerRole(), new VillagerRole(), new WerewolfRole());
+        setup.AddRoles(GameRole.Villager, GameRole.Villager, GameRole.Werewolf, GameRole.Villager, GameRole.Villager, GameRole.Werewolf);
         
         // Act
         List<GamePermutation> permutations = setup.GetPermutationsAtPhase(setup.Phases.FirstOrDefault()).ToList();

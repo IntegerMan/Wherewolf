@@ -11,13 +11,13 @@ public class LoneWolfLookedAtSlotEvent : GameEvent
 {
     public Player Player { get; }
     public GameSlot Slot { get; }
-    public string ObservedRole { get; }
+    public GameRole ObservedRole { get; }
 
     public LoneWolfLookedAtSlotEvent(Player player, GameSlot slot)
     {
         this.Player = player;
         this.Slot = slot;
-        this.ObservedRole = slot.BeginningOfPhaseRole.Name;
+        this.ObservedRole = slot.BeginningOfPhaseRole;
     }
 
     public override bool IsObservedBy(Player player) 
@@ -29,18 +29,18 @@ public class LoneWolfLookedAtSlotEvent : GameEvent
     public override bool IsPossibleInGameState(GameState state)
     {
         // This event is only possible with a solo wolf
-        if (state.PlayerSlots.Count(p => p.StartRole.Team == Team.Werewolf) != 1)
+        if (state.PlayerSlots.Count(p => p.StartRole.GetTeam() == Team.Werewolf) != 1)
         {
             return false;
         }
         
         // If the executing player was not a werewolf, this event is not possible
-        if (state.GetPlayerSlot(Player).StartRole.Team != Team.Werewolf)
+        if (state.GetPlayerSlot(Player).StartRole.GetTeam() != Team.Werewolf)
         {
             return false;
         }
         
         // In the game state, the current role needs to be the one the event recorded seeing
-        return state.GetSlot(Slot.Name).BeginningOfPhaseRole.Name == ObservedRole;
+        return state.GetSlot(Slot.Name).BeginningOfPhaseRole == ObservedRole;
     }
 }

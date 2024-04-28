@@ -21,7 +21,7 @@ public class GameRoleTests
     {
         // Arrange
         GameSetup gameSetup = new();
-        GameRole role = new VillagerRole();
+        GameRole role = GameRole.Villager;
         
         // Act
         gameSetup.AddRole(role);
@@ -29,25 +29,5 @@ public class GameRoleTests
         // Assert
         gameSetup.Roles.ShouldNotBeEmpty();
         gameSetup.Roles.ShouldContain(role);
-    }    
-    
-    [Fact]
-    public void AddingARoleShouldAddTheRoleOnlyOnce()
-    {
-        // Arrange
-        GameSetup gameSetup = new();
-        GameRole role = new VillagerRole();
-        gameSetup.AddRole(role);
-        
-        // Act
-        ShouldThrowExtensions.ShouldThrow<InvalidOperationException>(() =>
-        {
-            gameSetup.AddRole(role);
-        });
-
-        // Assert
-        gameSetup.Roles.ShouldNotBeEmpty();
-        gameSetup.Roles.ShouldContain(role);
-        gameSetup.Roles.Count().ShouldBe(1);
-    }        
+    }
 }

@@ -11,12 +11,12 @@ public class TestingSetups
         for (int i = 1; i <= playerCount; i++)
         {
             setup.AddPlayer(new Player($"Player {i}", new RandomController()));
-            setup.AddRole(new VillagerRole());
+            setup.AddRole(GameRole.Villager);
         }
         
-        setup.AddRole(new VillagerRole());
-        setup.AddRole(new WerewolfRole());
-        setup.AddRole(new WerewolfRole());
+        setup.AddRole(GameRole.Villager);
+        setup.AddRole(GameRole.Werewolf);
+        setup.AddRole(GameRole.Werewolf);
 
         return setup;
     }

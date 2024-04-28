@@ -18,10 +18,10 @@ gameSetup.AddPlayers(
         new Player("Jimothy", new RandomController())
     );
 gameSetup.AddRoles(
-        new RobberRole(), 
-        new InsomniacRole(), 
-        new VillagerRole(), new VillagerRole(), 
-        new WerewolfRole(), new WerewolfRole()
+        GameRole.Robber, 
+        GameRole.Insomniac, 
+        GameRole.Villager, GameRole.Villager, 
+        GameRole.Werewolf, GameRole.Werewolf
     );
     
 GameState gameState = gameSetup.StartGame(new NonShuffler());
@@ -87,7 +87,7 @@ void RenderProbabilitiesTable(Player player, GameSetup setup, GameState state, b
     probabilitiesTable.Title($"[Yellow]{player.GetPlayerMarkup()}'s {(isStart ? "Start" : "Final")} Role Perceptions[/]");
     probabilitiesTable.AddColumn("Player");
 
-    foreach (var role in setup.Roles.DistinctBy(r => r.Name).OrderBy(r => r.Name))
+    foreach (var role in setup.Roles.Distinct().OrderBy(r => r.ToString()))
     {
         probabilitiesTable.AddColumn(role.AsMarkdown());
     }

@@ -9,7 +9,7 @@ public class WerewolfNightPhase : GamePhase
     
     public override GameState Run(GameState newState)
     {
-        List<GameSlot> werewolves = newState.PlayerSlots.Where(p => p.StartRole.Team == Team.Werewolf).ToList();
+        List<GameSlot> werewolves = newState.PlayerSlots.Where(p => p.StartRole.GetTeam() == Team.Werewolf).ToList();
         if (werewolves.Count == 1)
         {
             Player loneWolfPlayer = werewolves.First().Player!;
@@ -32,7 +32,7 @@ public class WerewolfNightPhase : GamePhase
     public override double Order => 2.0;
     public override IEnumerable<GameState> BuildPossibleStates(GameState priorState)
     {
-        List<GameSlot> werewolves = priorState.PlayerSlots.Where(p => p.StartRole.Team == Team.Werewolf).ToList();
+        List<GameSlot> werewolves = priorState.PlayerSlots.Where(p => p.StartRole.GetTeam() == Team.Werewolf).ToList();
         if (werewolves.Count == 1)
         {
             // In cases where we have a lone wolf, we spawn a new possible state based on each card that could have been looked at

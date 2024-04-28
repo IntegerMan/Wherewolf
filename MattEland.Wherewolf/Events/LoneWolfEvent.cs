@@ -28,13 +28,13 @@ public class LoneWolfEvent : GameEvent
             GameSlot playerSlot = state.GetPlayerSlot(player);
             
             // If the involved player isn't a werewolf, they wouldn't have gotten this event
-            if (player == Player && playerSlot.StartRole.Team != Team.Werewolf)
+            if (player == Player && playerSlot.StartRole.GetTeam() != Team.Werewolf)
             {
                 return false;
             }
 
             // If other players were werewolves, this solo event wouldn't be possible
-            if (player != Player && playerSlot.StartRole.Team == Team.Werewolf)
+            if (player != Player && playerSlot.StartRole.GetTeam() == Team.Werewolf)
             {
                 return false;
             }

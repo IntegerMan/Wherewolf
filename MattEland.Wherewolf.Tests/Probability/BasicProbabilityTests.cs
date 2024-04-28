@@ -1,4 +1,4 @@
-using MattEland.Wherewolf.Tests.Helpers;
+using MattEland.Wherewolf.Roles;
 
 namespace MattEland.Wherewolf.Tests.Probability;
 
@@ -19,8 +19,8 @@ public class BasicProbabilityTests : GameTestsBase
         SlotRoleProbabilities slotProbabilities = probabilities.GetCurrentProbabilities(state.GetSlot(player.Name));
         
         // Assert
-        slotProbabilities.Role["Werewolf"].ShouldBe(1);
-        slotProbabilities.Role["Villager"].ShouldBe(0);
+        slotProbabilities[GameRole.Werewolf].ShouldBe(1);
+        slotProbabilities[GameRole.Villager].ShouldBe(0);
     }
     
     [Fact]
@@ -40,8 +40,8 @@ public class BasicProbabilityTests : GameTestsBase
 
         // Assert
         // Calculating probabilities of roles based on remaining roles since the villager knows they're a villager
-        slotProbabilities.Role["Werewolf"].ShouldBe(2/5d);
-        slotProbabilities.Role["Villager"].ShouldBe(3/5d);
+        slotProbabilities[GameRole.Werewolf].ShouldBe(2/5d);
+        slotProbabilities[GameRole.Villager].ShouldBe(3/5d);
     }
     
     [Fact]
@@ -60,8 +60,8 @@ public class BasicProbabilityTests : GameTestsBase
         SlotRoleProbabilities slotProbabilities = probabilities.GetCurrentProbabilities(state.GetSlot(villager.Name));
 
         // Assert
-        slotProbabilities.Role["Werewolf"].ShouldBe(0);
-        slotProbabilities.Role["Villager"].ShouldBe(1);
+        slotProbabilities[GameRole.Werewolf].ShouldBe(0);
+        slotProbabilities[GameRole.Villager].ShouldBe(1);
     }
     
     [Fact]
@@ -80,8 +80,8 @@ public class BasicProbabilityTests : GameTestsBase
         SlotRoleProbabilities slotProbabilities = probabilities.GetCurrentProbabilities(state.GetSlot(ww2.Name));
 
         // Assert
-        slotProbabilities.Role["Werewolf"].ShouldBe(1);
-        slotProbabilities.Role["Villager"].ShouldBe(0);
+        slotProbabilities.Role[GameRole.Werewolf].ShouldBe(1);
+        slotProbabilities.Role[GameRole.Villager].ShouldBe(0);
     }
     
     [Fact]
@@ -99,8 +99,8 @@ public class BasicProbabilityTests : GameTestsBase
         SlotRoleProbabilities slotProbabilities = probabilities.GetCurrentProbabilities(state.GetSlot(player.Name));
         
         // Assert
-        slotProbabilities.Count.ShouldBe(gameSetup.Roles.DistinctBy(r => r.Name).Count());
-        slotProbabilities["Werewolf"].ShouldBe(1);
-        slotProbabilities["Villager"].ShouldBe(0);
+        slotProbabilities.Count.ShouldBe(gameSetup.Roles.Distinct().Count());
+        slotProbabilities[GameRole.Werewolf].ShouldBe(1);
+        slotProbabilities[GameRole.Villager].ShouldBe(0);
     }
 }
