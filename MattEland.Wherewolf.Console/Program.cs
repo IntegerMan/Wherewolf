@@ -41,6 +41,11 @@ AnsiConsole.WriteLine();
 // Display Player States
 foreach (var player in gameSetup.Players)
 {
+    // Player divider
+    Rule rule = new(player.GetPlayerMarkup());
+    AnsiConsole.Write(rule);
+    AnsiConsole.WriteLine();
+    
     // Observed events tree
     Tree playerTree = new($"[Yellow]Observed Events for {player.GetPlayerMarkup()}[/]");
     
@@ -53,20 +58,47 @@ foreach (var player in gameSetup.Players)
     AnsiConsole.WriteLine();
     
     // Probabilities table
+    RenderProbabilitiesTable(player, gameSetup, gameState, isStart: true);
+    RenderProbabilitiesTable(player, gameSetup, gameState, isStart: false);
+}
+
+void AddGameEventNodeToTree(GameEvent evt, Tree tree, IEnumerable<GameSlot> slots, IEnumerable<GameRole> roles, IEnumerable<Player> players, bool includeObservedBy = true)
+{
+    // Make descriptions referencing slots or roles stand out more
+    string description = DisplayHelpers.StylizeEventMessage(evt.Description, slots, roles);
+    
+    // Add the event node
+    TreeNode eventNode = tree.AddNode($"[Cyan]{evt.GetType().Name}[/]: {description}");
+    
+    // Add observed by node as needed
+    if (includeObservedBy)
+    {
+        string observedBy = string.Join(", ", players.Where(evt.IsObservedBy).Select(p => p.GetPlayerMarkup()));
+        if (!string.IsNullOrWhiteSpace(observedBy))
+        {
+            eventNode.AddNode($"Observed by {observedBy}");
+        }
+    }
+}
+
+void RenderProbabilitiesTable(Player player, GameSetup setup, GameState state, bool isStart)
+{
     Table probabilitiesTable = new();
-    probabilitiesTable.Title($"[Yellow]{player.GetPlayerMarkup()}'s Start Role Perceptions[/]");
+    probabilitiesTable.Title($"[Yellow]{player.GetPlayerMarkup()}'s {(isStart ? "Start" : "Final")} Role Perceptions[/]");
     probabilitiesTable.AddColumn("Player");
 
-    foreach (var role in gameSetup.Roles.DistinctBy(r => r.Name).OrderBy(r => r.Name))
+    foreach (var role in setup.Roles.DistinctBy(r => r.Name).OrderBy(r => r.Name))
     {
         probabilitiesTable.AddColumn(role.AsMarkdown());
     }
     
-    var probabilities = gameState.CalculateProbabilities(player);
-    foreach (var otherSlot in gameState.AllSlots)
+    PlayerProbabilities probabilities = state.CalculateProbabilities(player);
+    foreach (var otherSlot in state.AllSlots)
     {
-        SlotRoleProbabilities slotProbabilities = probabilities.GetStartProbabilities(otherSlot);
-        
+        SlotRoleProbabilities slotProbabilities = isStart 
+            ? probabilities.GetStartProbabilities(otherSlot) 
+            : probabilities.GetCurrentProbabilities(otherSlot);
+
         List<string> values = [otherSlot.GetSlotMarkup()];
         foreach (var (_, probability) in slotProbabilities.Role.OrderBy(r => r.Key))
         {
@@ -88,23 +120,4 @@ foreach (var player in gameSetup.Players)
     
     AnsiConsole.Write(probabilitiesTable);
     AnsiConsole.WriteLine();
-}
-
-void AddGameEventNodeToTree(GameEvent evt, Tree tree, IEnumerable<GameSlot> slots, IEnumerable<GameRole> roles, IEnumerable<Player> players, bool includeObservedBy = true)
-{
-    // Make descriptions referencing slots or roles stand out more
-    string description = DisplayHelpers.StylizeEventMessage(evt.Description, slots, roles);
-    
-    // Add the event node
-    TreeNode eventNode = tree.AddNode($"[Cyan]{evt.GetType().Name}[/]: {description}");
-    
-    // Add observed by node as needed
-    if (includeObservedBy)
-    {
-        string observedBy = string.Join(", ", players.Where(evt.IsObservedBy).Select(p => p.GetPlayerMarkup()));
-        if (!string.IsNullOrWhiteSpace(observedBy))
-        {
-            eventNode.AddNode($"Observed by {observedBy}");
-        }
-    }
 }
