@@ -12,13 +12,24 @@ public class GameSetup
     private readonly Dictionary<string, List<GamePermutation>> _phasePermutations = new();
     public IEnumerable<Player> Players => _players.AsReadOnly();
     public IEnumerable<GameRole> Roles => _roles.AsReadOnly();
-    public GamePhase[] Phases => _phases.ToArray();
+    public GamePhase[] Phases
+    {
+        get
+        {
+            if (!_phases.Any())
+            {
+                CalculatePhases();
+            }
+
+            return _phases.ToArray();
+        }
+    }
 
     public void AddPlayer(Player player)
     {
-        if (_players.Contains(player)) 
+        if (_players.Contains(player))
             throw new InvalidOperationException("Player has already been added");
-        
+
         _players.Add(player);
     }
 
@@ -30,7 +41,13 @@ public class GameSetup
         }
     }
 
-    public void AddRole(GameRole role) => _roles.Add(role);
+    public void AddRole(GameRole role, int count = 1)
+    {
+        for (int i = 0; i < count; i++)
+        {
+            _roles.Add(role);
+        }
+    }
 
     public void AddRoles(params GameRole[] roles)
     {
@@ -46,7 +63,7 @@ public class GameSetup
 
         // Pre-calculate all phases
         CalculatePhases();
-        
+
         // Pre-calculate all permutations
         CalculatePermutations();
 
@@ -57,7 +74,7 @@ public class GameSetup
             .First(p => p.State.AllSlots.Select(s => s.BeginningOfPhaseRole).ToDelimitedString(",") == rolesList);
 
         permutation.State.SendRolesToControllers();
-        
+
         return permutation.State;
     }
 
@@ -72,16 +89,21 @@ public class GameSetup
         _phases.Clear();
         _phases.AddRange(phases.OrderBy(p => p.Order));
     }
+
     internal void Validate()
     {
         if (_players.Count + 3 != _roles.Count)
         {
-            throw new InvalidOperationException($"There must be exactly 3 more roles allocated to the game than players. Roles: {_roles.Count}, Players: {_players.Count}");
+            throw new InvalidOperationException(
+                $"There must be exactly 3 more roles allocated to the game than players. Roles: {_roles.Count}, Players: {_players.Count}");
         }
+
         if (_players.Count < 3)
         {
-            throw new InvalidOperationException($"There must be at least 3 players in the game, Players: {_players.Count}");
+            throw new InvalidOperationException(
+                $"There must be at least 3 players in the game, Players: {_players.Count}");
         }
+
         if (_roles.Select(r => r.GetTeam()).Distinct().Count() == 1)
         {
             throw new InvalidOperationException("All roles were on the same team");
@@ -93,7 +115,7 @@ public class GameSetup
         _phasePermutations.Clear();
 
         List<GamePermutation> currentPhasePermutations = new();
-        
+
         // Generate the unique combinations of each role
         IEnumerable<IList<GameRole>> permutations = _roles.Permutations();
 
@@ -113,7 +135,7 @@ public class GameSetup
             _phasePermutations[phaseName].Add(gamePermutation);
             currentPhasePermutations.Add(gamePermutation);
         }
-        
+
         // Now extrapolate future phases
         while (!currentPhasePermutations.First().State.IsGameOver)
         {
@@ -135,7 +157,7 @@ public class GameSetup
                     {
                         Console.WriteLine("Yo");
                     }
-                    
+
                     if (!_phasePermutations.ContainsKey(phaseName))
                     {
                         _phasePermutations[phaseName] = new List<GamePermutation>();
@@ -153,6 +175,7 @@ public class GameSetup
         {
             CalculatePermutations();
         }
+
         return _phasePermutations[currentPhase?.Name ?? "Voting"];
     }
 }

@@ -205,6 +205,8 @@ public class GameState
     public GameSlot GetSlot(string slotName)
         => AllSlots.First(s => s.Name == slotName);
 
+    public GameSlot this[string slotName] => GetSlot(slotName);
+    
     public override string ToString() 
         => $"{string.Join(",", PlayerSlots.Select(p => p.BeginningOfPhaseRole))}[{string.Join(",", CenterSlots.Select(p => p.BeginningOfPhaseRole))}]";
 
