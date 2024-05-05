@@ -161,13 +161,13 @@ public class GameState
             foreach (var role in Roles.Distinct())
             {
                 // Figure out the number of possible worlds where the slot had the role at the start
-                double startRoleSupport = validPermutations.Where(p => p.GetSlot(slot.Name).Role == role)
+                double startRoleSupport = validPermutations.Where(p => p.Root[slot.Name].Role == role)
                                               .Sum(p => p.Support);
 
                 probabilities.RegisterStartRoleProbabilities(slot, role, startRoleSupport, startPopulation);
                 
                 // Figure out the number of possible worlds where the slot currently has the role
-                double currentRoleSupport = validPermutations.Where(p => p.GetSlot(slot.Name).Role == role)
+                double currentRoleSupport = validPermutations.Where(p => p[slot.Name].Role == role)
                     .Sum(p => p.Support);
 
                 probabilities.RegisterCurrentRoleProbabilities(slot, role, currentRoleSupport, startPopulation);
