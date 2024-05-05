@@ -42,14 +42,15 @@ public class RobberNightPhase : GamePhase
         if (robberPlayer is null)
         {
             // When no robber, no alterations occur, just skip the phase and move on
-            yield return new GameState(priorState);
+            yield return new GameState(priorState, priorState.Support);
         }
         else
         {
             // When a robber is present, we spawn a new permutation per card they could have robbed
-            foreach (var targetPlayer in priorState.Players.Where(p => p != robberPlayer))
+            Player[] eligibleTargets = priorState.Players.Where(p => p != robberPlayer).ToArray();
+            foreach (var targetPlayer in eligibleTargets)
             {
-                GameState robbedState = new(priorState);
+                GameState robbedState = new(priorState, priorState.Support / eligibleTargets.Length);
 
                 GameSlot robber = robbedState.PlayerSlots.First(p => p.Player == robberPlayer);
                 GameSlot target = robbedState.PlayerSlots.First(p => p.Player == targetPlayer);

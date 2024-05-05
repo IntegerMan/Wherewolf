@@ -18,7 +18,7 @@ public class CalculatePermutationsTests
         int lastCount = 0;
         foreach (var phase in phases)
         {
-            IEnumerable<GamePermutation> perms = setup.GetPermutationsAtPhase(phase);
+            IEnumerable<GameState> perms = setup.GetPermutationsAtPhase(phase);
             int count = perms.Count();
             count.ShouldBeGreaterThanOrEqualTo(lastCount);
             lastCount = count;
@@ -33,14 +33,14 @@ public class CalculatePermutationsTests
         RobberNightPhase robberNightPhase = setup.Phases.OfType<RobberNightPhase>().First();
 
         // Act
-        IEnumerable<GamePermutation> permutations = setup.GetPermutationsAtPhase(robberNightPhase);
+        IEnumerable<GameState> permutations = setup.GetPermutationsAtPhase(robberNightPhase);
         
         // Filter down to only cases where we have a robber in player 1's slot
-        permutations = permutations.Where(p => p.State.GetSlot("A").StartRole == GameRole.Robber);
+        permutations = permutations.Where(p => p["A"].StartRole == GameRole.Robber);
         
         // Assert
         permutations.ShouldNotBeEmpty();
-        permutations.ShouldAllBe(p => p.State["A"].BeginningOfPhaseRole != p.State["A"].EndOfPhaseRole);
+        permutations.ShouldAllBe(p => p["A"].EndOfPhaseRole != GameRole.Robber, "Permutations existed where the robber started the robber phase as robber and ended as the robber");
     }
 
     private static GameSetup CreateGameSetup()
@@ -50,7 +50,7 @@ public class CalculatePermutationsTests
         setup.AddRole(GameRole.Werewolf);
         setup.AddRole(GameRole.Villager, 3);
         setup.AddRole(GameRole.Werewolf);
-        Player robberPlayer = new Player("A", new RandomController());
+        Player robberPlayer = new("A", new RandomController());
         setup.AddPlayers(
             robberPlayer,
             new Player("B", new RandomController()),

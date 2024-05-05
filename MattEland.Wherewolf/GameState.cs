@@ -12,8 +12,9 @@ public class GameState
     private readonly GamePhase[] _allPhases;
     private readonly Queue<GamePhase> _remainingPhases;
     private readonly List<GameEvent> _events = new();
+    public double Support { get; }
     
-    internal GameState(GameSetup setup, IReadOnlyList<GameRole> shuffledRoles)
+    internal GameState(GameSetup setup, IReadOnlyList<GameRole> shuffledRoles, double support)
     {
         setup.Validate();
         _gameSetup = setup;
@@ -29,9 +30,10 @@ public class GameState
         _allPhases = setup.Phases;
         _remainingPhases = new Queue<GamePhase>(_allPhases);
         Root = this;
+        Support = support;
     }    
 
-    internal GameState(GameState parentState)
+    internal GameState(GameState parentState, double support)
     {
         _remainingPhases = new Queue<GamePhase>(parentState._remainingPhases.Skip(1));
         _gameSetup = parentState._gameSetup;
@@ -41,6 +43,7 @@ public class GameState
         _playerSlots = parentState.PlayerSlots.Select(c => new GameSlot(c)).ToArray();
         Parent = parentState;
         Root = parentState.Root;
+        Support = support;
     }
 
     private static void AssignOrderIndexToEachPlayer(IEnumerable<Player> players)
@@ -99,7 +102,7 @@ public class GameState
 
         // Start with all permutations
         List<GameEvent> observedEvents = Events.Where(e => e.IsObservedBy(player)).ToList();
-        List<GamePermutation> phasePermutations = _gameSetup.GetPermutationsAtPhase(CurrentPhase).ToList();
+        List<GameState> phasePermutations = _gameSetup.GetPermutationsAtPhase(CurrentPhase).ToList();
         if (!phasePermutations.Any())
             throw new InvalidOperationException("No phase permutations found for phase " + (CurrentPhase?.Name ?? "Voting") + " for player " + player.Name);
         
@@ -113,7 +116,7 @@ public class GameState
                                              .ToList();
         */
         
-        List<GamePermutation> validPermutations = phasePermutations.Where(p => p.IsPossibleGivenEvents(observedEvents)).ToList();
+        List<GameState> validPermutations = phasePermutations.Where(p => p.IsPossibleGivenEvents(observedEvents)).ToList();
         if (!validPermutations.Any())
             throw new InvalidOperationException("No valid permutations found for phase " + (CurrentPhase?.Name ?? "Voting") + " for player " + player.Name);
         
@@ -125,13 +128,13 @@ public class GameState
             foreach (var role in Roles.Distinct())
             {
                 // Figure out the number of possible worlds where the slot had the role at the start
-                double startRoleSupport = validPermutations.Where(p => p.State.GetSlot(slot.Name).StartRole == role)
+                double startRoleSupport = validPermutations.Where(p => p.GetSlot(slot.Name).StartRole == role)
                                               .Sum(p => p.Support);
 
                 probabilities.RegisterStartRoleProbabilities(slot, role, startRoleSupport, startPopulation);
                 
                 // Figure out the number of possible worlds where the slot currently has the role
-                double currentRoleSupport = validPermutations.Where(p => p.State.GetSlot(slot.Name).BeginningOfPhaseRole == role)
+                double currentRoleSupport = validPermutations.Where(p => p.GetSlot(slot.Name).BeginningOfPhaseRole == role)
                     .Sum(p => p.Support);
 
                 probabilities.RegisterCurrentRoleProbabilities(slot, role, currentRoleSupport, startPopulation);
@@ -157,7 +160,7 @@ public class GameState
         if (CurrentPhase is null)
             throw new InvalidOperationException("Cannot run the next phase; no current phase");
 
-        GameState nextState = new(this);
+        GameState nextState = new(this, Support);
 
         return CurrentPhase.Run(nextState);
     }
@@ -229,4 +232,7 @@ public class GameState
             dealtEvent.Player?.Controller.ObservedEvent(dealtEvent, this);
         }
     }
+    
+    public bool IsPossibleGivenEvents(IEnumerable<GameEvent> events) 
+        => events.All(e => e.IsPossibleInGameState(this));
 }

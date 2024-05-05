@@ -38,7 +38,7 @@ public class InsomniacNightPhase : GamePhase
     public override IEnumerable<GameState> BuildPossibleStates(GameState priorState)
     {
         // The Insomniac role is non-interactive, so just run the night phase and record an event if it occurs
-        GameState newState = new(priorState);
+        GameState newState = new(priorState, priorState.Support);
         InsomniacSawFinalCardEvent? insomniacEvent = BuildInsomniacEventIfRelevant(newState);
         if (insomniacEvent is not null)
         {

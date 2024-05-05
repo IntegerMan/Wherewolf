@@ -39,7 +39,7 @@ public class WerewolfNightPhase : GamePhase
             Player loneWolfPlayer = werewolves.First().Player!;
             foreach (var centerSlot in priorState.CenterSlots)
             {
-                GameState lookedAtCenterCardState = new(priorState);
+                GameState lookedAtCenterCardState = new(priorState, priorState.Support / priorState.CenterSlots.Length);
                 lookedAtCenterCardState.AddEvent(new LoneWolfEvent(loneWolfPlayer), broadcastToController: false);
                 lookedAtCenterCardState.AddEvent(new LoneWolfLookedAtSlotEvent(loneWolfPlayer, centerSlot), broadcastToController: false);
 
@@ -49,14 +49,14 @@ public class WerewolfNightPhase : GamePhase
         else if (werewolves.Count > 1)
         {
             // In this case we had multiple werewolves, they do no action but we get an event
-            GameState newState = new(priorState);
+            GameState newState = new(priorState, priorState.Support);
             newState.AddEvent(new SawOtherWolvesEvent(werewolves.Select(w => w.Player!)), broadcastToController: false);
             yield return newState;
         }
         else
         {
             // In this case we had no werewolves, so just advance without any events needed
-            yield return new GameState(priorState);
+            yield return new GameState(priorState, priorState.Support);
         }
     }
 }
