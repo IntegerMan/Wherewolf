@@ -44,6 +44,21 @@ public class GameState
     }
     
     /// <summary>
+    /// Create a gamestate variant with a fixed set of slots. This method is used for swapping cards only.
+    /// </summary>
+    internal GameState(GameState parentState, IEnumerable<GameSlot> playerSlots, IEnumerable<GameSlot> centerSlots)
+    {
+        _remainingPhases = new Queue<GamePhase>(parentState._remainingPhases);
+        _gameSetup = parentState._gameSetup;
+        _events.AddRange(parentState.Events);
+        _centerSlots = centerSlots.ToArray();
+        _playerSlots = playerSlots.ToArray();
+        Parent = parentState.Parent;
+        Root = parentState.Root;
+        Support = parentState.Support;
+    }
+    
+    /// <summary>
     /// This constructor is intended only for unit tests
     /// </summary>
     public GameState(IEnumerable<Player> players, IEnumerable<GameRole> roles, IEnumerable<GamePhase> remainingPhases, IEnumerable<GameEvent> priorEvents)
@@ -252,12 +267,37 @@ public class GameState
     public GameRole GetStartRole(Player player) 
         => GetStartRole(player.Name);
 
-    public void SwapRoles(GameSlot slot1, GameSlot slot2)
+    public GameState SwapRoles(string slot1, string slot2)
     {
-        GameRole role1 = slot1.Role;
-        GameRole role2 = slot2.Role;
+        GameSlot[] slots = AllSlots.ToArray();
+        
+        GameSlot s1 = slots.First(s => s.Name == slot1);
+        GameSlot s2 = slots.First(s => s.Name == slot2);
 
-        slot1.Role = role2;
-        slot2.Role = role1;
+        GameRole role1 = s1.Role;
+        GameRole role2 = s2.Role;
+
+        GameSlot[] playerSlots = slots.Where(s => s.Player is not null)
+            .Select(SlotMutator)
+            .ToArray();
+
+        GameSlot[] centerSlots = slots.Where(s => s.Player is null)
+            .Select(SlotMutator)
+            .ToArray();
+
+        return new GameState(this, playerSlots, centerSlots);
+
+        GameSlot SlotMutator(GameSlot s)
+        {
+            if (s == s1)
+            {
+                return new GameSlot(s.Name, role2, s.Player);
+            } else if (s == s2)
+            {
+                return new GameSlot(s.Name, role1, s.Player);
+            }
+
+            return new GameSlot(s);
+        }
     }
 }

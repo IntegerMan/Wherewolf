@@ -30,10 +30,10 @@ public class CalculatePermutationsTests
     {
         // Arrange
         GameSetup setup = CreateGameSetup();
-        RobberNightPhase robberNightPhase = setup.Phases.OfType<RobberNightPhase>().First();
 
         // Act
-        IEnumerable<GameState> permutations = setup.GetPermutationsAtPhase(robberNightPhase);
+        IEnumerable<GameState> permutations = setup.GetPermutationsAtPhase(null); // voting
+        permutations = permutations.Where(p => p.GetStartRole("A") == GameRole.Robber);
         
         // Assert
         permutations.ShouldAllBe(p => p["A"].Role != GameRole.Robber, "Permutations existed where the robber started the robber phase as robber and ended as the robber");

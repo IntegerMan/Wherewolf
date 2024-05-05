@@ -47,17 +47,13 @@ public class RobberPhaseTests
             GameRole.Werewolf
         ];
         GameEvent[] priorEvents = [];
-        GamePhase[] remainingPhases = [new RobberNightPhase()];
+        GamePhase[] remainingPhases = [];
         GameState state = new(players, roles, remainingPhases, priorEvents);
 
         // Act
-        List<GameState?> newStates = phase.BuildPossibleStates(state)
-            .Select(p => p.Parent)
-            .ToList();
+        List<GameState> newStates = phase.BuildPossibleStates(state).ToList();
 
         // Assert
-        newStates.ShouldAllBe(s => s != null);
-        newStates.ShouldAllBe(s => s.CurrentPhase!.Name == "Robber");
         newStates.ShouldAllBe(s => s["Robber"].Role != GameRole.Robber);
     }
 }

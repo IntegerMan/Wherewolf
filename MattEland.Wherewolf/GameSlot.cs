@@ -20,5 +20,5 @@ public class GameSlot
 
     public string Name { get; }
     public Player? Player { get; }
-    public GameRole Role { get; internal set; }
+    public GameRole Role { get; }
 }

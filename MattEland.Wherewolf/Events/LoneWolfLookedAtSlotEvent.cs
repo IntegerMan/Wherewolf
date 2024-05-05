@@ -39,8 +39,14 @@ public class LoneWolfLookedAtSlotEvent : GameEvent
         {
             return false;
         }
+
+        GameState wwPhaseState = state;
+        while (wwPhaseState.CurrentPhase is not { Name: "Werewolves" })
+        {
+            wwPhaseState = wwPhaseState.Parent!;
+        }
         
         // In the game state, the current role needs to be the one the event recorded seeing
-        return state.GetSlot(Slot.Name).Role == ObservedRole;
+        return wwPhaseState[Slot.Name].Role == ObservedRole;
     }
 }

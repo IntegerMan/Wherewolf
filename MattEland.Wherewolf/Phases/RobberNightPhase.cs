@@ -19,13 +19,13 @@ public class RobberNightPhase : GamePhase
             string targetName = robber.Player!.Controller.SelectRobberTarget(targets);
             GameSlot target = newState.PlayerSlots.Single(p => p.Name == targetName);
             
-            PerformRobbery(newState, target, robber, broadcast: true);
+            newState = PerformRobbery(newState, target, robber, broadcast: true);
         }
 
         return newState;
     }
 
-    private static void PerformRobbery(GameState newState, GameSlot target, GameSlot robber, bool broadcast)
+    private static GameState PerformRobbery(GameState newState, GameSlot target, GameSlot robber, bool broadcast)
     {
         // Issue the event
         GameRole stolenRole = target.Role;
@@ -33,7 +33,7 @@ public class RobberNightPhase : GamePhase
         newState.AddEvent(robbedEvent, broadcastToController: broadcast);
             
         // Swap roles
-        newState.SwapRoles(target, robber); // TODO: I don't love this. It'd be better to swap at creation of newState
+        return newState.SwapRoles(target.Name, robber.Name);
     }
 
     public override double Order => 6.0;
@@ -54,12 +54,12 @@ public class RobberNightPhase : GamePhase
             {
                 GameState robbedState = new(priorState, priorState.Support / eligibleTargets.Length);
 
-                GameSlot robber = robbedState.PlayerSlots.First(p => p.Player == robberPlayer);
-                GameSlot target = robbedState.PlayerSlots.First(p => p.Player == targetPlayer);
+                GameSlot robber = robbedState[robberPlayer.Name];
+                GameSlot target = robbedState[targetPlayer.Name];
+
+                GameState stateAfterRobbery = PerformRobbery(robbedState, target, robber, broadcast: false);
                 
-                PerformRobbery(robbedState, target, robber, broadcast: false);
-                
-                yield return robbedState;
+                yield return stateAfterRobbery;
             }
         }
     }
