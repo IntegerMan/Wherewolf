@@ -30,16 +30,16 @@ public class RobbedPlayerEvent : GameEvent
         
         // Find the game state just prior to robbery
         GameState robbingState = state;
-        while (robbingState.CurrentPhase == null || robbingState.CurrentPhase.Name == "Robber")
+        while (robbingState.CurrentPhase is not { Name: "Robber" })
         {
             robbingState = robbingState.Parent!;
         }
         
         // Only allow players who started as robbers to rob
-        GameSlot robberSlot = robbingState.GetPlayerSlot(Player);
+        GameSlot robberSlot = robbingState[Player.Name];
         if (robberSlot.StartRole != GameRole.Robber) return false;
         
-        GameSlot targetSlot = robbingState.GetPlayerSlot(Target);
+        GameSlot targetSlot = robbingState[Target.Name];
         
         // Any setup that didn't start with the target having the robbed card cannot be considered
         if (targetSlot.BeginningOfPhaseRole != this.NewRole) return false;

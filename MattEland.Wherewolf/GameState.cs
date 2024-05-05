@@ -123,15 +123,14 @@ public class GameState
         if (!phasePermutations.Any())
             throw new InvalidOperationException("No phase permutations found for phase " + (CurrentPhase?.Name ?? "Voting") + " for player " + player.Name);
         
-        /* For testing specific permutations...
-        phasePermutations = phasePermutations.Where(p => p.State.GetSlot("Player").StartRole == GameRole.Robber)
-                                             .Where(p => p.State.GetSlot("Target").StartRole == GameRole.Werewolf)
-                                             .Where(p => p.State.GetSlot("Other").StartRole == GameRole.Villager)
-                                             .Where(p => p.State.GetSlot("Center 1").StartRole == GameRole.Villager)
-                                             .Where(p => p.State.GetSlot("Center 2").StartRole == GameRole.Villager)
-                                             .Where(p => p.State.GetSlot("Center 3").StartRole == GameRole.Werewolf)
+        // For testing specific permutations...
+        phasePermutations = phasePermutations.Where(p => p["Player"].StartRole == GameRole.Robber)
+                                             .Where(p => p["Target"].StartRole == GameRole.Werewolf)
+                                             .Where(p => p["Other"].StartRole == GameRole.Villager)
+                                             .Where(p => p["Center 1"].StartRole == GameRole.Villager)
+                                             .Where(p => p["Center 2"].StartRole == GameRole.Villager)
+                                             .Where(p => p["Center 3"].StartRole == GameRole.Werewolf)
                                              .ToList();
-        */
         
         List<GameState> validPermutations = phasePermutations.Where(p => p.IsPossibleGivenEvents(observedEvents)).ToList();
         if (!validPermutations.Any())
