@@ -23,8 +23,8 @@ public class DealtCardEvent : GameEvent
     
     public override bool IsPossibleInGameState(GameState state)
     {
-        GameSlot stateSlot = state.GetSlot(Slot.Name);
+        GameSlot stateSlot = state.Root[Slot.Name];
         
-        return stateSlot.StartRole == this.Role;
+        return stateSlot.Role == this.Role;
     }
 }

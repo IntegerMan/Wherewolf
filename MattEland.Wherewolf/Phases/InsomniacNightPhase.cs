@@ -18,18 +18,10 @@ public class InsomniacNightPhase : GamePhase
 
     private static InsomniacSawFinalCardEvent? BuildInsomniacEventIfRelevant(GameState newState)
     {
-        InsomniacSawFinalCardEvent? insomniacEvent;
-        GameSlot? insomniac = newState.PlayerSlots.SingleOrDefault(p => p.StartRole == GameRole.Insomniac);
-        if (insomniac is not null)
-        {
-            insomniacEvent = new InsomniacSawFinalCardEvent(insomniac.Player!, insomniac.BeginningOfPhaseRole);
-        }
-        else
-        {
-            insomniacEvent = null;
-        }
-
-        return insomniacEvent;
+        GameSlot? insomniac = newState.PlayerSlots.SingleOrDefault(p => newState.GetStartRole(p) == GameRole.Insomniac);
+        return insomniac is not null 
+            ? new InsomniacSawFinalCardEvent(insomniac.Player!, insomniac.Role) 
+            : null;
     }
 
     public override double Order => 9.0;

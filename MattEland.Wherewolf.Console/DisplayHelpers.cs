@@ -39,7 +39,7 @@ public static class DisplayHelpers
     
             centerTable.AddColumn(header);
 
-            values.Add(slot.StartRole.AsMarkdown());
+            values.Add(slot.Role.AsMarkdown());
         }
         centerTable.AddRow(values.ToArray());
         AnsiConsole.Write(centerTable);

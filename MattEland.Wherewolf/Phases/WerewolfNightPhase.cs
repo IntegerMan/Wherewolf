@@ -9,7 +9,7 @@ public class WerewolfNightPhase : GamePhase
     
     public override GameState Run(GameState newState)
     {
-        List<GameSlot> werewolves = newState.PlayerSlots.Where(p => p.StartRole.GetTeam() == Team.Werewolf).ToList();
+        List<GameSlot> werewolves = newState.PlayerSlots.Where(p => newState.GetStartRole(p).GetTeam() == Team.Werewolf).ToList();
         if (werewolves.Count == 1)
         {
             Player loneWolfPlayer = werewolves.First().Player!;
@@ -32,31 +32,36 @@ public class WerewolfNightPhase : GamePhase
     public override double Order => 2.0;
     public override IEnumerable<GameState> BuildPossibleStates(GameState priorState)
     {
-        List<GameSlot> werewolves = priorState.PlayerSlots.Where(p => p.StartRole.GetTeam() == Team.Werewolf).ToList();
-        if (werewolves.Count == 1)
+        List<GameSlot> werewolves = priorState.PlayerSlots.Where(p => priorState.GetStartRole(p).GetTeam() == Team.Werewolf).ToList();
+        switch (werewolves.Count)
         {
-            // In cases where we have a lone wolf, we spawn a new possible state based on each card that could have been looked at
-            Player loneWolfPlayer = werewolves.First().Player!;
-            foreach (var centerSlot in priorState.CenterSlots)
+            case 1:
             {
-                GameState lookedAtCenterCardState = new(priorState, priorState.Support / priorState.CenterSlots.Length);
-                lookedAtCenterCardState.AddEvent(new LoneWolfEvent(loneWolfPlayer), broadcastToController: false);
-                lookedAtCenterCardState.AddEvent(new LoneWolfLookedAtSlotEvent(loneWolfPlayer, centerSlot), broadcastToController: false);
+                // In cases where we have a lone wolf, we spawn a new possible state based on each card that could have been looked at
+                Player loneWolfPlayer = werewolves.First().Player!;
+                foreach (var centerSlot in priorState.CenterSlots)
+                {
+                    GameState lookedAtCenterCardState = new(priorState, priorState.Support / priorState.CenterSlots.Length);
+                    lookedAtCenterCardState.AddEvent(new LoneWolfEvent(loneWolfPlayer), broadcastToController: false);
+                    lookedAtCenterCardState.AddEvent(new LoneWolfLookedAtSlotEvent(loneWolfPlayer, centerSlot), broadcastToController: false);
 
-                yield return lookedAtCenterCardState;
+                    yield return lookedAtCenterCardState;
+                }
+
+                break;
             }
-        } 
-        else if (werewolves.Count > 1)
-        {
-            // In this case we had multiple werewolves, they do no action but we get an event
-            GameState newState = new(priorState, priorState.Support);
-            newState.AddEvent(new SawOtherWolvesEvent(werewolves.Select(w => w.Player!)), broadcastToController: false);
-            yield return newState;
-        }
-        else
-        {
-            // In this case we had no werewolves, so just advance without any events needed
-            yield return new GameState(priorState, priorState.Support);
+            case > 1:
+            {
+                // In this case we had multiple werewolves, they do no action but we get an event
+                GameState newState = new(priorState, priorState.Support);
+                newState.AddEvent(new SawOtherWolvesEvent(werewolves.Select(w => w.Player!)), broadcastToController: false);
+                yield return newState;
+                break;
+            }
+            default:
+                // In this case we had no werewolves, so just advance without any events needed
+                yield return new GameState(priorState, priorState.Support);
+                break;
         }
     }
 }

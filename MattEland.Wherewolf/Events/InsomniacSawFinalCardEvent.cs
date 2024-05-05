@@ -23,7 +23,8 @@ public class InsomniacSawFinalCardEvent : GameEvent
     public override bool IsPossibleInGameState(GameState state)
     {
         GameSlot playerSlot = state.GetPlayerSlot(Player);
+        GameRole startRole = state.Root[Player.Name].Role;
         
-        return playerSlot.StartRole == GameRole.Insomniac && playerSlot.EndOfPhaseRole == this.Role;
+        return startRole == GameRole.Insomniac && playerSlot.Role == this.Role;
     }
 }

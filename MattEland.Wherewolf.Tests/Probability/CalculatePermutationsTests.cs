@@ -35,12 +35,9 @@ public class CalculatePermutationsTests
         // Act
         IEnumerable<GameState> permutations = setup.GetPermutationsAtPhase(robberNightPhase);
         
-        // Filter down to only cases where we have a robber in player 1's slot
-        permutations = permutations.Where(p => p["A"].StartRole == GameRole.Robber);
-        
         // Assert
-        permutations.ShouldNotBeEmpty();
-        permutations.ShouldAllBe(p => p["A"].EndOfPhaseRole != GameRole.Robber, "Permutations existed where the robber started the robber phase as robber and ended as the robber");
+        permutations.ShouldAllBe(p => p["A"].Role != GameRole.Robber, "Permutations existed where the robber started the robber phase as robber and ended as the robber");
+        permutations.ShouldAllBe(p => p.PlayerSlots.Count(p => p.Role == GameRole.Robber) == 1);
     }
 
     private static GameSetup CreateGameSetup()

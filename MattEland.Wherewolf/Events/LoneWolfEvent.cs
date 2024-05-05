@@ -25,16 +25,16 @@ public class LoneWolfEvent : GameEvent
     {
         foreach (var player in state.Players)
         {
-            GameSlot playerSlot = state.GetPlayerSlot(player);
+            GameRole startRole = state.Root[Player.Name].Role;
             
             // If the involved player isn't a werewolf, they wouldn't have gotten this event
-            if (player == Player && playerSlot.StartRole.GetTeam() != Team.Werewolf)
+            if (player == Player && startRole.GetTeam() != Team.Werewolf)
             {
                 return false;
             }
 
             // If other players were werewolves, this solo event wouldn't be possible
-            if (player != Player && playerSlot.StartRole.GetTeam() == Team.Werewolf)
+            if (player != Player && startRole.GetTeam() == Team.Werewolf)
             {
                 return false;
             }

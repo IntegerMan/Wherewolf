@@ -70,8 +70,8 @@ public class GameSetup
         // Find a game state from our permutations (we want to avoid instantiating the same state again)
         List<GameRole> shuffledRoles = slotShuffler.Shuffle(Roles).ToList();
         string rolesList = shuffledRoles.ToDelimitedString(",");
-        GameState permutation = GetPermutationsAtPhase(_phases.FirstOrDefault())
-            .First(p => p.AllSlots.Select(s => s.BeginningOfPhaseRole).ToDelimitedString(",") == rolesList);
+        GameState permutation = GetPermutationsAtPhase(_phases.First())
+            .First(p => p.AllSlots.Select(s => s.Role).ToDelimitedString(",") == rolesList);
 
         permutation.SendRolesToControllers();
 

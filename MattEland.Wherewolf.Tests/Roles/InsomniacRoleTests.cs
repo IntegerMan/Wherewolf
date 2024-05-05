@@ -79,10 +79,9 @@ public class InsomniacRoleTests : RoleTestBase
         SlotRoleProbabilities playerProbabilities = playerProbs.GetCurrentProbabilities(gameState.GetPlayerSlot(player));
 
         // Assert
-        gameState.GetPlayerSlot(player).EndOfPhaseRole.ShouldBe(GameRole.Robber);
+        gameState.GetPlayerSlot(player).Role.ShouldBe(GameRole.Robber);
         playerProbabilities[GameRole.Robber].ShouldBe(1);
     }
-    
         
     [Fact]
     public void InsomniacShouldNotBeCertainOfStartingRobberWhenRobbed()

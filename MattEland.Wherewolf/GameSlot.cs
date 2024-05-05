@@ -8,23 +8,17 @@ public class GameSlot
     {
         this.Name = name;
         this.Player = player;
-        this.StartRole = startRole;
-        this.BeginningOfPhaseRole = startRole;
-        this.EndOfPhaseRole = startRole;
+        this.Role = startRole;
     }
     
     public GameSlot(GameSlot baseSlot)
     {
         this.Name = baseSlot.Name;
         this.Player = baseSlot.Player;
-        this.StartRole = baseSlot.StartRole;
-        this.BeginningOfPhaseRole = baseSlot.EndOfPhaseRole;
-        this.EndOfPhaseRole = baseSlot.EndOfPhaseRole;
+        this.Role = baseSlot.Role;
     }
 
-    public string Name { get; init; }
-    public Player? Player { get; init; }
-    public GameRole StartRole { get; init; }
-    public GameRole BeginningOfPhaseRole { get; init; }
-    public GameRole EndOfPhaseRole { get; set; }
+    public string Name { get; }
+    public Player? Player { get; }
+    public GameRole Role { get; internal set; }
 }

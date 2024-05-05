@@ -28,7 +28,7 @@ public class RobberPhaseTests
 
         // Assert
         possibleStates.Count.ShouldBe(2);
-        possibleStates.Count(p => p["Robber"].EndOfPhaseRole != GameRole.Robber).ShouldBe(2);
+        possibleStates.Count(p => p["Robber"].Role != GameRole.Robber).ShouldBe(2);
     }
     
     [Fact]
@@ -58,7 +58,6 @@ public class RobberPhaseTests
         // Assert
         newStates.ShouldAllBe(s => s != null);
         newStates.ShouldAllBe(s => s.CurrentPhase!.Name == "Robber");
-        newStates.ShouldAllBe(s => s["Robber"].StartRole == GameRole.Robber);
-        newStates.ShouldAllBe(s => s["Robber"].EndOfPhaseRole != GameRole.Robber);
+        newStates.ShouldAllBe(s => s["Robber"].Role != GameRole.Robber);
     }
 }

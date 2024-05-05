@@ -27,8 +27,7 @@ public class SawOtherWolvesEvent : GameEvent
         // Can only occur if all listed players are werewolves
         foreach (var player in Players)
         {
-            GameSlot playerSlot = state.GetPlayerSlot(player);
-            if (playerSlot.StartRole.GetTeam() != Team.Werewolf)
+            if (state.GetStartRole(player).GetTeam() != Team.Werewolf)
             {
                 return false;
             }
@@ -37,7 +36,7 @@ public class SawOtherWolvesEvent : GameEvent
         // Cannot occur if other players not listed are also werewolves
         foreach (var slot in state.PlayerSlots)
         {
-            if (slot.StartRole.GetTeam() == Team.Werewolf && !Players.Contains(slot.Player))
+            if (state.GetStartRole(slot).GetTeam() == Team.Werewolf && !Players.Contains(slot.Player))
             {
                 return false;
             }

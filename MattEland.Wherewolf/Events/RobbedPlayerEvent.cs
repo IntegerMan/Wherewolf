@@ -29,23 +29,28 @@ public class RobbedPlayerEvent : GameEvent
         if (Target == Player) return false;
         
         // Find the game state just prior to robbery
-        GameState robbingState = state;
-        while (robbingState.CurrentPhase is not { Name: "Robber" })
+        GameState beforeRobState = state;
+        while (beforeRobState.CurrentPhase is not { Name: "Robber" })
         {
-            robbingState = robbingState.Parent!;
+            beforeRobState = beforeRobState.Parent!;
+        }
+
+        GameState afterRobState = state;
+        while (afterRobState.Parent != beforeRobState)
+        {
+            afterRobState = afterRobState.Parent!;
         }
         
         // Only allow players who started as robbers to rob
-        GameSlot robberSlot = robbingState[Player.Name];
-        if (robberSlot.StartRole != GameRole.Robber) return false;
-        
-        GameSlot targetSlot = robbingState[Target.Name];
+        if (state.GetStartRole(Player) != GameRole.Robber) return false;
+
+        GameRole robbersOldRole = beforeRobState[Player.Name].Role;
         
         // Any setup that didn't start with the target having the robbed card cannot be considered
-        if (targetSlot.BeginningOfPhaseRole != this.NewRole) return false;
-        if (robberSlot.EndOfPhaseRole != this.NewRole) return false;
-        if (targetSlot.EndOfPhaseRole != robberSlot.BeginningOfPhaseRole) return false;
-        if (robberSlot.EndOfPhaseRole != targetSlot.BeginningOfPhaseRole) return false;
+        if (beforeRobState[Target.Name].Role != this.NewRole) return false;
+        if (beforeRobState[Player.Name].Role != robbersOldRole) return false;
+        if (afterRobState[Player.Name].Role != this.NewRole) return false;
+        if (afterRobState[Target.Name].Role != robbersOldRole) return false;
 
         return true;
     }
