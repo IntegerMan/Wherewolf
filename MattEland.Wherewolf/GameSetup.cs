@@ -121,20 +121,29 @@ public class GameSetup
         BuildSetupPermutations();
 
         List<GameState> currentPhasePermutations = [.._phasePermutations["Setup"]];
+        string nextPhase = currentPhasePermutations.First().Phases.Skip(1).FirstOrDefault()?.Name ?? "Voting";
 
-        BuildPermutationsForNextPhase(currentPhasePermutations);
+        BuildPermutationsForNextPhase(currentPhasePermutations, nextPhase);
     }
 
-    private void BuildPermutationsForNextPhase(IEnumerable<GameState> priorStates)
+    private void BuildPermutationsForNextPhase(List<GameState> priorStates, string phaseName)
     {
         List<GameState> possibleStates = priorStates.SelectMany(p => p.PossibleNextStates).ToList();
-        if (!possibleStates.Any()) return;
+        if (!possibleStates.Any())
+        {
+            _phasePermutations["Voting"] = priorStates.ToList();
+            return;
+        }
         
-        string phaseName = possibleStates.First().CurrentPhase?.Name ?? "Voting";
+        string nextPhaseName = possibleStates.First().CurrentPhase?.Name ?? "Voting";
 
+        if (phaseName == "Robber")
+        {
+            Console.Write("Robble");
+        }
         _phasePermutations[phaseName] = possibleStates;
         
-        BuildPermutationsForNextPhase(possibleStates);
+        BuildPermutationsForNextPhase(possibleStates, nextPhaseName);
     }
 
     private void BuildSetupPermutations()

@@ -9,7 +9,6 @@ public class GameState
     private readonly GameSetup _gameSetup;
     private readonly GameSlot[] _centerSlots;
     private readonly GameSlot[] _playerSlots;
-    private readonly GamePhase[] _allPhases;
     private readonly Queue<GamePhase> _remainingPhases;
     private readonly List<GameEvent> _events = new();
     public double Support { get; }
@@ -27,8 +26,7 @@ public class GameState
         {
             AddEvent(new DealtCardEvent(slot.StartRole, slot), false);
         }
-        _allPhases = setup.Phases;
-        _remainingPhases = new Queue<GamePhase>(_allPhases);
+        _remainingPhases = new Queue<GamePhase>(setup.Phases);
         Root = this;
         Support = support;
     }    
@@ -37,7 +35,6 @@ public class GameState
     {
         _remainingPhases = new Queue<GamePhase>(parentState._remainingPhases.Skip(1));
         _gameSetup = parentState._gameSetup;
-        _allPhases = parentState._allPhases.ToArray();
         _events.AddRange(parentState.Events);
         _centerSlots = parentState.CenterSlots.Select(c => new GameSlot(c)).ToArray();
         _playerSlots = parentState.PlayerSlots.Select(c => new GameSlot(c)).ToArray();
@@ -45,6 +42,26 @@ public class GameState
         Root = parentState.Root;
         Support = support;
     }
+    
+    /// <summary>
+    /// This constructor is intended only for unit tests
+    /// </summary>
+    public GameState(IEnumerable<Player> players, IEnumerable<GameRole> roles, IEnumerable<GamePhase> remainingPhases, IEnumerable<GameEvent> priorEvents)
+    {
+        GameSetup setup = new();
+        setup.AddPlayers(players.ToArray());
+        setup.AddRoles(roles.ToArray());
+        
+        _gameSetup = setup;
+        _remainingPhases = new Queue<GamePhase>(remainingPhases);
+        _events.AddRange(priorEvents);
+        _playerSlots = BuildPlayerSlots(setup.Players, setup.Roles.ToList());
+        _centerSlots = BuildCenterSlots(setup.Players, setup.Roles.ToList());
+        
+        Parent = null;
+        Root = this;
+        Support = 1;
+    }    
 
     private static void AssignOrderIndexToEachPlayer(IEnumerable<Player> players)
     {
@@ -211,7 +228,7 @@ public class GameState
     public GameSlot this[string slotName] => GetSlot(slotName);
     
     public override string ToString() 
-        => $"{string.Join(",", PlayerSlots.Select(p => p.BeginningOfPhaseRole))}[{string.Join(",", CenterSlots.Select(p => p.BeginningOfPhaseRole))}]";
+        => $"{string.Join(",", PlayerSlots.Select(p => p.EndOfPhaseRole))}[{string.Join(",", CenterSlots.Select(p => p.EndOfPhaseRole))}]";
 
     internal void SwapRoles(GameSlot slot1, GameSlot slot2)
     {
