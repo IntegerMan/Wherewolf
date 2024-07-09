@@ -32,7 +32,7 @@ public static class DisplayHelpers
         Table centerTable = new();
         centerTable.Title("[Yellow]Game Summary[/]");
         centerTable.AddColumn(string.Empty);
-        List<string> startValues = new() { "[Cyan]Started as[/]"};
+        List<string> startValues = ["[Cyan]Started as[/]"];
         foreach (var slot in gameState.Root.AllSlots)
         {
             string header = slot.GetSlotMarkup();
@@ -42,7 +42,7 @@ public static class DisplayHelpers
         }
         centerTable.AddRow(startValues.ToArray());
         
-        List<string> endValues = new() { "[Cyan]Ended as[/]"};
+        List<string> endValues = ["[Cyan]Ended as[/]"];
         foreach (var slot in gameState.AllSlots)
         {
             endValues.Add(slot.Role.AsMarkdown());

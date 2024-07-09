@@ -87,7 +87,8 @@ void RenderProbabilitiesTable(Player player, GameSetup setup, GameState state, b
     probabilitiesTable.Title($"[Yellow]{player.GetPlayerMarkup()}'s {(isStart ? "Start" : "Final")} Role Perceptions[/]");
     probabilitiesTable.AddColumn("Player");
 
-    foreach (var role in setup.Roles.Distinct().OrderBy(r => r.ToString()))
+    List<GameRole> orderedRoles = setup.Roles.Distinct().OrderBy(r => r.ToString()).ToList();
+    foreach (var role in orderedRoles)
     {
         probabilitiesTable.AddColumn(role.AsMarkdown());
     }
@@ -100,8 +101,9 @@ void RenderProbabilitiesTable(Player player, GameSetup setup, GameState state, b
             : probabilities.GetCurrentProbabilities(otherSlot);
 
         List<string> values = [otherSlot.GetSlotMarkup()];
-        foreach (var (_, probability) in slotProbabilities.Role.OrderBy(r => r.Key))
+        foreach (var role in orderedRoles)
         {
+            double probability = slotProbabilities[role];
             switch (probability)
             {
                 case 0:
