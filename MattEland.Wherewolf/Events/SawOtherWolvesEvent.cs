@@ -24,10 +24,19 @@ public class SawOtherWolvesEvent : GameEvent
 
     public override bool IsPossibleInGameState(GameState state)
     {
+        // Can only occur if all listed players are werewolves
         foreach (var player in Players)
         {
-            GameSlot playerSlot = state.GetPlayerSlot(player);
-            if (playerSlot.StartRole.Team != Team.Werewolf)
+            if (state.GetStartRole(player).GetTeam() != Team.Werewolf)
+            {
+                return false;
+            }
+        }
+        
+        // Cannot occur if other players not listed are also werewolves
+        foreach (var slot in state.PlayerSlots)
+        {
+            if (state.GetStartRole(slot).GetTeam() == Team.Werewolf && !Players.Contains(slot.Player))
             {
                 return false;
             }

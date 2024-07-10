@@ -7,11 +7,11 @@ public static class DisplayHelpers
 {
     public static string AsMarkdown(this GameRole role)
     {
-        return role.Team switch
+        return role.GetTeam() switch
         {
-            Team.Villager => $"[Blue]{role.Name}[/]",
-            Team.Werewolf => $"[Maroon]{role.Name}[/]",
-            _ => role.Name
+            Team.Villager => $"[Blue]{role}[/]",
+            Team.Werewolf => $"[Maroon]{role}[/]",
+            _ => role.ToString()
         };
     }
 
@@ -32,16 +32,22 @@ public static class DisplayHelpers
         Table centerTable = new();
         centerTable.Title("[Yellow]Game Summary[/]");
         centerTable.AddColumn(string.Empty);
-        List<string> values = new() { "[Cyan]Started as[/]"};
-        foreach (var slot in gameState.AllSlots)
+        List<string> startValues = ["[Cyan]Started as[/]"];
+        foreach (var slot in gameState.Root.AllSlots)
         {
             string header = slot.GetSlotMarkup();
-    
             centerTable.AddColumn(header);
-
-            values.Add(slot.StartRole.AsMarkdown());
+            
+            startValues.Add(slot.Role.AsMarkdown());
         }
-        centerTable.AddRow(values.ToArray());
+        centerTable.AddRow(startValues.ToArray());
+        
+        List<string> endValues = ["[Cyan]Ended as[/]"];
+        foreach (var slot in gameState.AllSlots)
+        {
+            endValues.Add(slot.Role.AsMarkdown());
+        }
+        centerTable.AddRow(endValues.ToArray());
         AnsiConsole.Write(centerTable);
     }
 
@@ -60,9 +66,9 @@ public static class DisplayHelpers
             message = message.Replace(slot.Name, slot.GetSlotMarkup(), StringComparison.OrdinalIgnoreCase);
         }
         
-        foreach (var role in roles.DistinctBy(r => r.Name))
+        foreach (var role in roles.Distinct())
         {
-            message = message.Replace(role.Name, role.AsMarkdown(), StringComparison.OrdinalIgnoreCase);
+            message = message.Replace(role.ToString(), role.AsMarkdown(), StringComparison.OrdinalIgnoreCase);
         }
 
         return message;

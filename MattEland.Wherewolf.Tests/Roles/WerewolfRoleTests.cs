@@ -12,13 +12,13 @@ public class WerewolfRoleTests : RoleTestBase
     {
         // Arrange
         GameState gameState = CreateTestGameState(            
-            new WerewolfRole(), // This will go to our player
-            new VillagerRole(),
-            new VillagerRole(),
+            GameRole.Werewolf, // This will go to our player
+            GameRole.Villager,
+            GameRole.Villager,
             // Center Cards
-            new VillagerRole(),
-            new WerewolfRole(),
-            new VillagerRole()
+            GameRole.Villager,
+            GameRole.Werewolf,
+            GameRole.Villager
         );
         gameState = gameState.RunToEnd();
         Player player = gameState.Players.First();
@@ -36,13 +36,13 @@ public class WerewolfRoleTests : RoleTestBase
     {
         // Arrange
         GameState gameState = CreateTestGameState(            
-            new WerewolfRole(), // This will go to our player
-            new VillagerRole(),
-            new VillagerRole(),
+            GameRole.Werewolf, // This will go to our player
+            GameRole.Villager,
+            GameRole.Villager,
             // Center Cards
-            new VillagerRole(),
-            new WerewolfRole(),
-            new VillagerRole()
+            GameRole.Villager,
+            GameRole.Werewolf,
+            GameRole.Villager
         );
         gameState = gameState.RunToEnd();
         Player player = gameState.Players.First();
@@ -62,13 +62,13 @@ public class WerewolfRoleTests : RoleTestBase
         // Arrange
         GameSetup setup = new();
         setup.AddRoles(            
-            new WerewolfRole(), // This will go to our player
-            new VillagerRole(),
-            new VillagerRole(),
+            GameRole.Werewolf, // This will go to our player
+            GameRole.Villager,
+            GameRole.Villager,
             // Center Cards
-            new WerewolfRole(),
-            new VillagerRole(),
-            new VillagerRole()
+            GameRole.Werewolf,
+            GameRole.Villager,
+            GameRole.Villager
         );
         setup.AddPlayers(
             new Player("A", new FixedSelectionController("Center 2")),
@@ -79,13 +79,14 @@ public class WerewolfRoleTests : RoleTestBase
         Player player = gameState.Players.Single(p => p.Name == "A");
         
         // Act
-        SlotRoleProbabilities slotProbabilities = gameState.CalculateProbabilities(player).GetCurrentProbabilities(gameState.GetSlot("Center 2"));
+        SlotRoleProbabilities slotProbabilities = gameState.CalculateProbabilities(player)
+            .GetCurrentProbabilities(gameState.GetSlot("Center 2"));
 
         // Assert
         List<GameEvent> observedEvents = gameState.Events.Where(e => e.IsObservedBy(player)).ToList();
         observedEvents.OfType<LoneWolfLookedAtSlotEvent>().Single().Slot.Name.ShouldBe("Center 2");
-        slotProbabilities.Role["Werewolf"].ShouldBe(0);
-        slotProbabilities.Role["Villager"].ShouldBe(1);
+        slotProbabilities.Role[GameRole.Werewolf].ShouldBe(0);
+        slotProbabilities.Role[GameRole.Villager].ShouldBe(1);
     }    
     
     [Fact]
@@ -93,13 +94,13 @@ public class WerewolfRoleTests : RoleTestBase
     {
         // Arrange
         GameState gameState = CreateTestGameState(            
-            new WerewolfRole(), // This will go to player1
-            new WerewolfRole(), // This will go to player2
-            new VillagerRole(),
+            GameRole.Werewolf, // This will go to player1
+            GameRole.Werewolf, // This will go to player2
+            GameRole.Villager,
             // Center Cards
-            new VillagerRole(),
-            new VillagerRole(),
-            new VillagerRole()
+            GameRole.Villager,
+            GameRole.Villager,
+            GameRole.Villager
         );
         gameState = gameState.RunToEnd();
         Player player1 = gameState.Players.First();

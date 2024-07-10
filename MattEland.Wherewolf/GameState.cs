@@ -9,11 +9,11 @@ public class GameState
     private readonly GameSetup _gameSetup;
     private readonly GameSlot[] _centerSlots;
     private readonly GameSlot[] _playerSlots;
-    private readonly GamePhase[] _allPhases;
     private readonly Queue<GamePhase> _remainingPhases;
     private readonly List<GameEvent> _events = new();
+    public double Support { get; }
     
-    internal GameState(GameSetup setup, IReadOnlyList<GameRole> shuffledRoles)
+    internal GameState(GameSetup setup, IReadOnlyList<GameRole> shuffledRoles, double support)
     {
         setup.Validate();
         _gameSetup = setup;
@@ -24,24 +24,59 @@ public class GameState
         AssignOrderIndexToEachPlayer(setup.Players);
         foreach (var slot in AllSlots)
         {
-            AddEvent(new DealtCardEvent(slot.StartRole, slot), false);
+            AddEvent(new DealtCardEvent(slot.Role, slot), false);
         }
-        _allPhases = setup.Phases;
-        _remainingPhases = new Queue<GamePhase>(_allPhases);
+        _remainingPhases = new Queue<GamePhase>(setup.Phases);
         Root = this;
+        Support = support;
     }    
 
-    internal GameState(GameState parentState)
+    internal GameState(GameState parentState, double support)
     {
         _remainingPhases = new Queue<GamePhase>(parentState._remainingPhases.Skip(1));
         _gameSetup = parentState._gameSetup;
-        _allPhases = parentState._allPhases.ToArray();
         _events.AddRange(parentState.Events);
         _centerSlots = parentState.CenterSlots.Select(c => new GameSlot(c)).ToArray();
         _playerSlots = parentState.PlayerSlots.Select(c => new GameSlot(c)).ToArray();
         Parent = parentState;
         Root = parentState.Root;
+        Support = support;
     }
+    
+    /// <summary>
+    /// Create a gamestate variant with a fixed set of slots. This method is used for swapping cards only.
+    /// </summary>
+    internal GameState(GameState parentState, IEnumerable<GameSlot> playerSlots, IEnumerable<GameSlot> centerSlots)
+    {
+        _remainingPhases = new Queue<GamePhase>(parentState._remainingPhases);
+        _gameSetup = parentState._gameSetup;
+        _events.AddRange(parentState.Events);
+        _centerSlots = centerSlots.ToArray();
+        _playerSlots = playerSlots.ToArray();
+        Parent = parentState.Parent;
+        Root = parentState.Root;
+        Support = parentState.Support;
+    }
+    
+    /// <summary>
+    /// This constructor is intended only for unit tests
+    /// </summary>
+    public GameState(IEnumerable<Player> players, IEnumerable<GameRole> roles, IEnumerable<GamePhase> remainingPhases, IEnumerable<GameEvent> priorEvents)
+    {
+        GameSetup setup = new();
+        setup.AddPlayers(players.ToArray());
+        setup.AddRoles(roles.ToArray());
+        
+        _gameSetup = setup;
+        _remainingPhases = new Queue<GamePhase>(remainingPhases);
+        _events.AddRange(priorEvents);
+        _playerSlots = BuildPlayerSlots(setup.Players, setup.Roles.ToList());
+        _centerSlots = BuildCenterSlots(setup.Players, setup.Roles.ToList());
+        
+        Parent = null;
+        Root = this;
+        Support = 1;
+    }    
 
     private static void AssignOrderIndexToEachPlayer(IEnumerable<Player> players)
     {
@@ -99,33 +134,38 @@ public class GameState
 
         // Start with all permutations
         List<GameEvent> observedEvents = Events.Where(e => e.IsObservedBy(player)).ToList();
-        IEnumerable<GamePermutation> phasePermutations = _gameSetup.GetPermutationsAtPhase(CurrentPhase);
-        List<GamePermutation> validPermutations = phasePermutations.Where(p => p.IsPossibleGivenEvents(observedEvents)).ToList();
+        List<GameState> phasePermutations = _gameSetup.GetPermutationsAtPhase(CurrentPhase).ToList();
+        if (!phasePermutations.Any())
+            throw new InvalidOperationException("No phase permutations found for phase " + (CurrentPhase?.Name ?? "Voting") + " for player " + player.Name);
+        
+        List<GameState> validPermutations = phasePermutations.Where(p => p.IsPossibleGivenEvents(observedEvents)).ToList();
+        if (!validPermutations.Any())
+            throw new InvalidOperationException("No valid permutations found for phase " + (CurrentPhase?.Name ?? "Voting") + " for player " + player.Name);
         
         double startPopulation = validPermutations.Sum(p => p.Support);
         
         // Calculate starting role probabilities
         foreach (var slot in AllSlots)
         {
-            foreach (var role in Roles.DistinctBy(r => r.Name))
+            foreach (var role in Roles.Distinct())
             {
                 // Figure out the number of possible worlds where the slot had the role at the start
-                double startRoleSupport = validPermutations.Where(p => p.State.GetSlot(slot.Name).StartRole.Name == role.Name)
+                double startRoleSupport = validPermutations.Where(p => p.Root[slot.Name].Role == role)
                                               .Sum(p => p.Support);
 
-                probabilities.RegisterStartRoleProbabilities(slot, role.Name, startRoleSupport, startPopulation);
+                probabilities.RegisterStartRoleProbabilities(slot, role, startRoleSupport, startPopulation);
                 
                 // Figure out the number of possible worlds where the slot currently has the role
-                double currentRoleSupport = validPermutations.Where(p => p.State.GetSlot(slot.Name).BeginningOfPhaseRole.Name == role.Name)
+                double currentRoleSupport = validPermutations.Where(p => p[slot.Name].Role == role)
                     .Sum(p => p.Support);
 
-                probabilities.RegisterCurrentRoleProbabilities(slot, role.Name, currentRoleSupport, startPopulation);
-                
+                probabilities.RegisterCurrentRoleProbabilities(slot, role, currentRoleSupport, startPopulation);
             }
         }
         
         return probabilities;
     }
+    
     public GameState RunToEnd()
     {
         if (IsGameOver)
@@ -142,7 +182,7 @@ public class GameState
         if (CurrentPhase is null)
             throw new InvalidOperationException("Cannot run the next phase; no current phase");
 
-        GameState nextState = new(this);
+        GameState nextState = new(this, Support);
 
         return CurrentPhase.Run(nextState);
     }
@@ -190,19 +230,10 @@ public class GameState
     public GameSlot GetSlot(string slotName)
         => AllSlots.First(s => s.Name == slotName);
 
+    public GameSlot this[string slotName] => GetSlot(slotName);
+    
     public override string ToString() 
-        => $"{string.Join(",", PlayerSlots.Select(p => p.BeginningOfPhaseRole.Name))}[{string.Join(",", CenterSlots.Select(p => p.BeginningOfPhaseRole.Name))}]";
-
-    internal void SwapRoles(GameSlot slot1, GameSlot slot2)
-    {
-        if (slot1.BeginningOfPhaseRole != slot1.EndOfPhaseRole)
-            throw new InvalidOperationException("Swapping roles encountered a slot1 that was already swapped");
-        if (slot2.BeginningOfPhaseRole != slot2.EndOfPhaseRole)
-            throw new InvalidOperationException("Swapping roles encountered a slot2 that was already swapped");
-        
-        slot1.EndOfPhaseRole = slot2.BeginningOfPhaseRole;
-        slot2.EndOfPhaseRole = slot1.BeginningOfPhaseRole;
-    }
+        => $"{string.Join(",", PlayerSlots.Select(p => p.Role))}[{string.Join(",", CenterSlots.Select(p => p.Role))}]";
 
     internal void SendRolesToControllers()
     {
@@ -210,6 +241,52 @@ public class GameState
         foreach (var dealtEvent in _events.OfType<DealtCardEvent>())
         {
             dealtEvent.Player?.Controller.ObservedEvent(dealtEvent, this);
+        }
+    }
+    
+    public bool IsPossibleGivenEvents(IEnumerable<GameEvent> events) 
+        => events.All(e => e.IsPossibleInGameState(this));
+
+    public GameRole GetStartRole(GameSlot gameSlot)
+        => GetStartRole(gameSlot.Name);
+    
+    public GameRole GetStartRole(string name) 
+        => Root[name].Role;
+    
+    public GameRole GetStartRole(Player player) 
+        => GetStartRole(player.Name);
+
+    public GameState SwapRoles(string slot1, string slot2)
+    {
+        GameSlot[] slots = AllSlots.ToArray();
+        
+        GameSlot s1 = slots.First(s => s.Name == slot1);
+        GameSlot s2 = slots.First(s => s.Name == slot2);
+
+        GameRole role1 = s1.Role;
+        GameRole role2 = s2.Role;
+
+        GameSlot[] playerSlots = slots.Where(s => s.Player is not null)
+            .Select(SlotMutator)
+            .ToArray();
+
+        GameSlot[] centerSlots = slots.Where(s => s.Player is null)
+            .Select(SlotMutator)
+            .ToArray();
+
+        return new GameState(this, playerSlots, centerSlots);
+
+        GameSlot SlotMutator(GameSlot s)
+        {
+            if (s == s1)
+            {
+                return new GameSlot(s.Name, role2, s.Player);
+            } else if (s == s2)
+            {
+                return new GameSlot(s.Name, role1, s.Player);
+            }
+
+            return new GameSlot(s);
         }
     }
 }

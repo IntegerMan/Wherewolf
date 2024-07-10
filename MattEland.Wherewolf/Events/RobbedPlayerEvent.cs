@@ -22,32 +22,36 @@ public class RobbedPlayerEvent : GameEvent
     public override bool IsObservedBy(Player player) 
         => Player == player;
 
-    public override string Description => $"{Player.Name} robbed {Target.Name} and saw their new role is {NewRole.Name}";
+    public override string Description => $"{Player.Name} robbed {Target.Name} and saw their new role is {NewRole}";
     public override bool IsPossibleInGameState(GameState state)
     {
         // Robbers can't rob themselves
         if (Target == Player) return false;
         
         // Find the game state just prior to robbery
-        GameState robbingState = state;
-        while (robbingState.CurrentPhase == null || robbingState.CurrentPhase.Name == "Robber")
+        GameState beforeRobState = state;
+        while (beforeRobState.CurrentPhase is not { Name: "Robber" })
         {
-            robbingState = robbingState.Parent!;
+            beforeRobState = beforeRobState.Parent!;
+        }
+
+        GameState afterRobState = state;
+        while (afterRobState.Parent != beforeRobState)
+        {
+            afterRobState = afterRobState.Parent!;
         }
         
         // Only allow players who started as robbers to rob
-        GameSlot robberSlot = robbingState.GetPlayerSlot(Player);
-        if (robberSlot.StartRole.Name != "Robber") return false;
-        
-        GameSlot targetSlot = robbingState.GetPlayerSlot(Target);
+        if (state.GetStartRole(Player) != GameRole.Robber) return false;
+
+        GameRole robbersOldRole = beforeRobState[Player.Name].Role;
         
         // Any setup that didn't start with the target having the robbed card cannot be considered
-        if (targetSlot.BeginningOfPhaseRole.Name != this.NewRole.Name) return false;
-        if (robberSlot.EndOfPhaseRole.Name != this.NewRole.Name) return false;
-        if (targetSlot.EndOfPhaseRole.Name != robberSlot.BeginningOfPhaseRole.Name) return false;
-        if (robberSlot.EndOfPhaseRole.Name != targetSlot.BeginningOfPhaseRole.Name) return false;
+        if (beforeRobState[Target.Name].Role != this.NewRole) return false;
+        if (beforeRobState[Player.Name].Role != robbersOldRole) return false;
+        if (afterRobState[Player.Name].Role != this.NewRole) return false;
+        if (afterRobState[Target.Name].Role != robbersOldRole) return false;
 
         return true;
     }
-    
 }

@@ -49,7 +49,7 @@ public class StartGameTests : GameTestsBase
         // Arrange
         GameSetup gameSetup = new();
         AddMinimumRequiredPlayers(gameSetup);
-        gameSetup.AddRoles(new VillagerRole(), new WerewolfRole(), new VillagerRole());
+        gameSetup.AddRoles(GameRole.Villager, GameRole.Werewolf, GameRole.Villager);
         
         // Act
         ShouldThrowExtensions.ShouldThrow<InvalidOperationException>(() => gameSetup.StartGame());
@@ -63,7 +63,7 @@ public class StartGameTests : GameTestsBase
         // Arrange
         GameSetup gameSetup = new();
         AddMinimumRequiredPlayers(gameSetup);
-        gameSetup.AddRoles(new VillagerRole(), new VillagerRole(), new VillagerRole(), new VillagerRole(), new VillagerRole(), new VillagerRole());
+        gameSetup.AddRoles(GameRole.Villager, GameRole.Villager, GameRole.Villager, GameRole.Villager, GameRole.Villager, GameRole.Villager);
         
         // Act
         ShouldThrowExtensions.ShouldThrow<InvalidOperationException>(() => gameSetup.StartGame());
@@ -77,7 +77,7 @@ public class StartGameTests : GameTestsBase
         // Arrange
         GameSetup gameSetup = new();
         AddMinimumRequiredPlayers(gameSetup);
-        gameSetup.AddRoles(new WerewolfRole(), new WerewolfRole(), new WerewolfRole(), new WerewolfRole(), new WerewolfRole(), new WerewolfRole());
+        gameSetup.AddRoles(GameRole.Werewolf, GameRole.Werewolf, GameRole.Werewolf, GameRole.Werewolf, GameRole.Werewolf, GameRole.Werewolf);
         
         // Act
         ShouldThrowExtensions.ShouldThrow<InvalidOperationException>(() => gameSetup.StartGame());
@@ -164,29 +164,6 @@ public class StartGameTests : GameTestsBase
         state.CenterSlots[1].Name.ShouldBe("Center 2");
         state.CenterSlots[2].Name.ShouldBe("Center 3");
     }  
-
-    [Fact]
-    public void StartGameShouldResultInRoleBeingAssignedToOnlyOneSlot()
-    {
-        // Arrange
-        GameSetup gameSetup = new();
-        AddMinimumRequiredPlayers(gameSetup);
-        AddMinimumRequiredRoles(gameSetup);
-        
-        // Act
-        GameState state = gameSetup.StartGame();
-
-        // Assert
-        state.ShouldNotBeNull();
-        foreach (var role in gameSetup.Roles)
-        {
-            int playerRoles = state.PlayerSlots.Count(s => s.StartRole == role);
-            int centerRoles = state.CenterSlots.Count(s => s.StartRole == role);
-            
-            Math.Max(playerRoles, centerRoles).ShouldBe(1);
-            (playerRoles + centerRoles).ShouldBe(1);
-        }
-    }
 
     [Fact]
     public void StartGameShouldGenerateCardDealtEventsToAllSlots()

@@ -16,8 +16,8 @@ public abstract class GameTestsBase
     protected static void AddMinimumRequiredRoles(GameSetup gameSetup)
     {
         gameSetup.AddRoles(
-            new WerewolfRole(), new WerewolfRole(),
-            new VillagerRole(), new VillagerRole(), new VillagerRole(), new VillagerRole() 
+            GameRole.Werewolf, GameRole.Werewolf,
+            GameRole.Villager, GameRole.Villager, GameRole.Villager, GameRole.Villager 
         );
     }
 }

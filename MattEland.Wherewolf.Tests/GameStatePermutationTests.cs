@@ -12,7 +12,7 @@ public class GameStatePermutationTests
         // Arrange
         GameSetup setup = new();
         setup.AddPlayers(new Player("A", new RandomController()), new Player("B", new RandomController()), new Player("C", new RandomController()));
-        setup.AddRoles(new WerewolfRole(), new WerewolfRole(), new VillagerRole(), new VillagerRole(), new VillagerRole(), new VillagerRole());
+        setup.AddRoles(GameRole.Werewolf, GameRole.Werewolf, GameRole.Villager, GameRole.Villager, GameRole.Villager, GameRole.Villager);
         GameState startState = setup.StartGame(new NonShuffler());
 
         // Act
@@ -31,8 +31,8 @@ public class GameStatePermutationTests
         GameSetup setup = new();
         setup.AddPlayers(new Player("A", new RandomController()), new Player("B", new RandomController()),
             new Player("C", new RandomController()));
-        setup.AddRoles(new WerewolfRole(), new WerewolfRole(), new VillagerRole(), new VillagerRole(),
-            new VillagerRole(), new VillagerRole());
+        setup.AddRoles(GameRole.Werewolf, GameRole.Werewolf, GameRole.Villager, GameRole.Villager,
+            GameRole.Villager, GameRole.Villager);
         GameState startState = setup.StartGame(new NonShuffler());
 
         // Act
@@ -49,7 +49,7 @@ public class GameStatePermutationTests
         // Arrange
         GameSetup setup = new();
         setup.AddPlayers(new Player("A", new RandomController()), new Player("B", new RandomController()), new Player("C", new RandomController()));
-        setup.AddRoles(new WerewolfRole(), new WerewolfRole(), new VillagerRole(), new VillagerRole(), new VillagerRole(), new VillagerRole());
+        setup.AddRoles(GameRole.Werewolf, GameRole.Werewolf, GameRole.Villager, GameRole.Villager, GameRole.Villager, GameRole.Villager);
         GameState startState = setup.StartGame(new NonShuffler());
 
         // Act
@@ -67,7 +67,7 @@ public class GameStatePermutationTests
         // Arrange
         GameSetup setup = new();
         setup.AddPlayers(new Player("A", new RandomController()), new Player("B", new RandomController()), new Player("C", new RandomController()));
-        setup.AddRoles(new WerewolfRole(), new WerewolfRole(), new VillagerRole(), new VillagerRole(), new VillagerRole(), new VillagerRole());
+        setup.AddRoles(GameRole.Werewolf, GameRole.Werewolf, GameRole.Villager, GameRole.Villager, GameRole.Villager, GameRole.Villager);
         GameState startState = setup.StartGame(new NonShuffler());
 
         // Act
@@ -89,7 +89,7 @@ public class GameStatePermutationTests
         // Arrange
         GameSetup setup = new();
         setup.AddPlayers(new Player("A", new RandomController()), new Player("B", new RandomController()), new Player("C", new RandomController()));
-        setup.AddRoles(new WerewolfRole(), new WerewolfRole(), new VillagerRole(), new VillagerRole(), new VillagerRole(), new VillagerRole());
+        setup.AddRoles(GameRole.Werewolf, GameRole.Werewolf, GameRole.Villager, GameRole.Villager, GameRole.Villager, GameRole.Villager);
 
         // Act
         GameState startState = setup.StartGame(new NonShuffler());

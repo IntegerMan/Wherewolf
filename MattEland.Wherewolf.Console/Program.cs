@@ -18,10 +18,10 @@ gameSetup.AddPlayers(
         new Player("Jimothy", new RandomController())
     );
 gameSetup.AddRoles(
-        new RobberRole(), 
-        new InsomniacRole(), 
-        new VillagerRole(), new VillagerRole(), 
-        new WerewolfRole(), new WerewolfRole()
+        GameRole.Robber, 
+        GameRole.Insomniac, 
+        GameRole.Villager, GameRole.Villager, 
+        GameRole.Werewolf, GameRole.Werewolf
     );
     
 GameState gameState = gameSetup.StartGame(new NonShuffler());
@@ -87,7 +87,8 @@ void RenderProbabilitiesTable(Player player, GameSetup setup, GameState state, b
     probabilitiesTable.Title($"[Yellow]{player.GetPlayerMarkup()}'s {(isStart ? "Start" : "Final")} Role Perceptions[/]");
     probabilitiesTable.AddColumn("Player");
 
-    foreach (var role in setup.Roles.DistinctBy(r => r.Name).OrderBy(r => r.Name))
+    List<GameRole> orderedRoles = setup.Roles.Distinct().OrderBy(r => r.ToString()).ToList();
+    foreach (var role in orderedRoles)
     {
         probabilitiesTable.AddColumn(role.AsMarkdown());
     }
@@ -100,8 +101,9 @@ void RenderProbabilitiesTable(Player player, GameSetup setup, GameState state, b
             : probabilities.GetCurrentProbabilities(otherSlot);
 
         List<string> values = [otherSlot.GetSlotMarkup()];
-        foreach (var (_, probability) in slotProbabilities.Role.OrderBy(r => r.Key))
+        foreach (var role in orderedRoles)
         {
+            double probability = slotProbabilities[role];
             switch (probability)
             {
                 case 0:

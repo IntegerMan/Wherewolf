@@ -1,3 +1,5 @@
+using MattEland.Wherewolf.Roles;
+
 namespace MattEland.Wherewolf;
 
 public class PlayerProbabilities
@@ -5,7 +7,7 @@ public class PlayerProbabilities
     private readonly Dictionary<GameSlot, SlotRoleProbabilities> _currentRoleProbabilities = new();
     private readonly Dictionary<GameSlot, SlotRoleProbabilities> _startRoleProbabilities = new();
 
-    public void RegisterCurrentRoleProbabilities(GameSlot slot, string role, double support, double population)
+    public void RegisterCurrentRoleProbabilities(GameSlot slot, GameRole role, double support, double population)
     {
         if (!_currentRoleProbabilities.TryGetValue(slot, out SlotRoleProbabilities? probabilities))
         {
@@ -16,7 +18,7 @@ public class PlayerProbabilities
         probabilities.SetProbability(role, support, population);
     }
 
-    public void RegisterStartRoleProbabilities(GameSlot slot, string role, double support, double population)
+    public void RegisterStartRoleProbabilities(GameSlot slot, GameRole role, double support, double population)
     {
         if (!_startRoleProbabilities.TryGetValue(slot, out SlotRoleProbabilities? probabilities))
         {

@@ -16,14 +16,15 @@ public class InsomniacSawFinalCardEvent : GameEvent
     public override bool IsObservedBy(Player player) 
         => Player == player;
 
-    public override string Description => Role.Name == "Insomniac"
-        ? $"{Player.Name} saw that they were still the {Role.Name}"
-        : $"{Player.Name} saw that they were now the {Role.Name}";
+    public override string Description => Role == GameRole.Insomniac
+        ? $"{Player.Name} saw that they were still the {Role}"
+        : $"{Player.Name} saw that they were now the {Role}";
     
     public override bool IsPossibleInGameState(GameState state)
     {
         GameSlot playerSlot = state.GetPlayerSlot(Player);
+        GameRole startRole = state.Root[Player.Name].Role;
         
-        return playerSlot.StartRole.Name == "Insomniac" && playerSlot.EndOfPhaseRole.Name == this.Role.Name;
+        return startRole == GameRole.Insomniac && playerSlot.Role == this.Role;
     }
 }

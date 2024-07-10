@@ -19,7 +19,7 @@ public class InsomniacRoleTests : RoleTestBase
         SlotRoleProbabilities playerProbabilities = playerProbs.GetCurrentProbabilities(gameState.GetPlayerSlot(player));
 
         // Assert
-        playerProbabilities.Role["Insomniac"].ShouldBe(1);
+        playerProbabilities.Role[GameRole.Insomniac].ShouldBe(1);
     }
     
     [Fact]
@@ -34,7 +34,7 @@ public class InsomniacRoleTests : RoleTestBase
 
         // Assert
         observedEvents.OfType<InsomniacSawFinalCardEvent>().Count().ShouldBe(1);
-        observedEvents.OfType<InsomniacSawFinalCardEvent>().Single().Role.Name.ShouldBe("Insomniac");
+        observedEvents.OfType<InsomniacSawFinalCardEvent>().Single().Role.ShouldBe(GameRole.Insomniac);
     }
     
     [Fact]
@@ -49,7 +49,7 @@ public class InsomniacRoleTests : RoleTestBase
 
         // Assert
         observedEvents.OfType<InsomniacSawFinalCardEvent>().Count().ShouldBe(1);
-        observedEvents.OfType<InsomniacSawFinalCardEvent>().Single().Role.Name.ShouldBe("Robber");
+        observedEvents.OfType<InsomniacSawFinalCardEvent>().Single().Role.ShouldBe(GameRole.Robber);
     }
     
     [Fact]
@@ -64,7 +64,7 @@ public class InsomniacRoleTests : RoleTestBase
         SlotRoleProbabilities playerProbabilities = playerProbs.GetCurrentProbabilities(gameState.GetPlayerSlot(player));
 
         // Assert
-        playerProbabilities["Insomniac"].ShouldBe(1);
+        playerProbabilities[GameRole.Insomniac].ShouldBe(1);
     }
     
     [Fact]
@@ -79,10 +79,9 @@ public class InsomniacRoleTests : RoleTestBase
         SlotRoleProbabilities playerProbabilities = playerProbs.GetCurrentProbabilities(gameState.GetPlayerSlot(player));
 
         // Assert
-        gameState.GetPlayerSlot(player).EndOfPhaseRole.Name.ShouldBe("Robber");
-        playerProbabilities["Robber"].ShouldBe(1);
+        gameState.GetPlayerSlot(player).Role.ShouldBe(GameRole.Robber);
+        playerProbabilities[GameRole.Robber].ShouldBe(1);
     }
-    
         
     [Fact]
     public void InsomniacShouldNotBeCertainOfStartingRobberWhenRobbed()
@@ -97,7 +96,7 @@ public class InsomniacRoleTests : RoleTestBase
         SlotRoleProbabilities thiefProbabilities = playerProbs.GetStartProbabilities(gameState.GetPlayerSlot(robber));
 
         // Assert
-        thiefProbabilities["Robber"].ShouldBeLessThan(1);
+        thiefProbabilities[GameRole.Robber].ShouldBeLessThan(1);
     }
     
     private static GameState RunInsomniacGame(bool robPlayer)
@@ -108,13 +107,13 @@ public class InsomniacRoleTests : RoleTestBase
             new Player("Thief", new FixedSelectionController(robPlayer ? "Player" : "Other")),
             new Player("Other", new RandomController()));
         setup.AddRoles(
-            new InsomniacRole(), // this will go to our player
-            new RobberRole(),
-            new WerewolfRole(),
+            GameRole.Insomniac, // this will go to our player
+            GameRole.Robber,
+            GameRole.Werewolf,
             // Center Cards
-            new VillagerRole(),
-            new VillagerRole(),
-            new WerewolfRole()
+            GameRole.Villager,
+            GameRole.Villager,
+            GameRole.Werewolf
         );
         return setup.StartGame(new NonShuffler()).RunToEnd();
     }
