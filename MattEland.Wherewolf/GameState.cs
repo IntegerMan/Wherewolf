@@ -138,17 +138,6 @@ public class GameState
         if (!phasePermutations.Any())
             throw new InvalidOperationException("No phase permutations found for phase " + (CurrentPhase?.Name ?? "Voting") + " for player " + player.Name);
         
-        // For testing specific permutations...
-        /*
-        phasePermutations = phasePermutations.Where(p => p["Player"].Role == GameRole.Robber)
-                                             .Where(p => p["Target"].Role == GameRole.Werewolf)
-                                             .Where(p => p["Other"].Role == GameRole.Villager)
-                                             .Where(p => p["Center 1"].Role == GameRole.Villager)
-                                             .Where(p => p["Center 2"].Role == GameRole.Villager)
-                                             .Where(p => p["Center 3"].Role == GameRole.Werewolf)
-                                             .ToList();
-                                             */
-        
         List<GameState> validPermutations = phasePermutations.Where(p => p.IsPossibleGivenEvents(observedEvents)).ToList();
         if (!validPermutations.Any())
             throw new InvalidOperationException("No valid permutations found for phase " + (CurrentPhase?.Name ?? "Voting") + " for player " + player.Name);

@@ -136,11 +136,6 @@ public class GameSetup
         }
         
         string nextPhaseName = possibleStates.First().CurrentPhase?.Name ?? "Voting";
-
-        if (phaseName == "Robber")
-        {
-            Console.Write("Robble");
-        }
         _phasePermutations[phaseName] = possibleStates;
         
         BuildPermutationsForNextPhase(possibleStates, nextPhaseName);
@@ -169,5 +164,54 @@ public class GameSetup
         }
 
         return _phasePermutations[currentPhase?.Name ?? "Voting"];
+    }
+
+    public IEnumerable<Dictionary<Player, Player?>> GetVotingPermutations()
+    {
+        foreach (var result in GetVotingPermutations(Players.First(), new Dictionary<Player, Player?>()))
+        {
+            yield return result;
+        }
+    }
+    
+    private IEnumerable<Dictionary<Player, Player?>> GetVotingPermutations(Player player, IDictionary<Player, Player?> baseDictionary)
+    {
+        IEnumerable<Player?> playerChoices = GetPlayerVotingPermutations(player);
+        
+        foreach (var choice in playerChoices)
+        {
+            Dictionary<Player, Player?> subset = new(baseDictionary)
+            {
+                [player] = choice
+            };
+
+            Player? nextPlayer = Players.FirstOrDefault(p => !subset.ContainsKey(p));
+            if (nextPlayer == null)
+            {
+                yield return subset;
+            }
+            else
+            {
+                foreach (var result in GetVotingPermutations(nextPlayer, subset))
+                {
+                    yield return result;
+                }
+            }
+        }
+    }    
+
+    private IEnumerable<Player?> GetPlayerVotingPermutations(Player player)
+    {
+        foreach (var otherPlayer in Players)
+        {
+            if (otherPlayer == player)
+            {
+                yield return null;
+            }
+            else
+            {
+                yield return otherPlayer;
+            }
+        }
     }
 }
