@@ -150,4 +150,131 @@ public class VoteResultTests
         results.DeadPlayers.Count().ShouldBe(1);
         results.DeadPlayers.ShouldContain(c);
     }
+        
+    [Fact]
+    public void KillingAPlayerShouldResultInTheirRoleDead()
+    {
+        // Arrange
+        Player a = new("A", new RandomController()); // Werewolf
+        Player b = new("B", new RandomController()); // Werewolf
+        Player c = new("C", new RandomController()); // Villager
+        Player d = new("D", new RandomController()); // Villager
+        
+        GameSetup setup = new();
+        setup.AddPlayers(a, b, c, d);
+        setup.AddRole(GameRole.Werewolf, 2);
+        setup.AddRole(GameRole.Villager, 5);
+
+        GameState state = setup.StartGame(new NonShuffler()).RunToEnd();
+        Dictionary<Player, int> votes = new()
+        {
+            [a] = 0,
+            [b] = 0,
+            [c] = 3,
+            [d] = 1
+        };
+        
+        // Act
+        var results = state.DetermineGameResults(votes);
+
+        // Assert
+        results.DeadRoles.Count().ShouldBe(1);
+        results.DeadRoles.ShouldContain(GameRole.Villager);
+    }
+    
+        
+    [Fact]
+    public void KillingTwoPlayersShouldResultInTheirRolesDead()
+    {
+        // Arrange
+        Player a = new("A", new RandomController()); // Werewolf
+        Player b = new("B", new RandomController()); // Werewolf
+        Player c = new("C", new RandomController()); // Villager
+        Player d = new("D", new RandomController()); // Villager
+        
+        GameSetup setup = new();
+        setup.AddPlayers(a, b, c, d);
+        setup.AddRole(GameRole.Werewolf, 2);
+        setup.AddRole(GameRole.Villager, 5);
+
+        GameState state = setup.StartGame(new NonShuffler()).RunToEnd();
+        Dictionary<Player, int> votes = new()
+        {
+            [a] = 0,
+            [b] = 2,
+            [c] = 2,
+            [d] = 0
+        };
+        
+        // Act
+        var results = state.DetermineGameResults(votes);
+
+        // Assert
+        results.DeadRoles.Count().ShouldBe(2);
+        results.DeadRoles.ShouldContain(GameRole.Villager);
+        results.DeadRoles.ShouldContain(GameRole.Werewolf);
+    }
+    
+       
+    [Fact]
+    public void KillingTwoIdenticalPlayersShouldResultInOneRoleDead()
+    {
+        // Arrange
+        Player a = new("A", new RandomController()); // Werewolf
+        Player b = new("B", new RandomController()); // Werewolf
+        Player c = new("C", new RandomController()); // Villager
+        Player d = new("D", new RandomController()); // Villager
+        
+        GameSetup setup = new();
+        setup.AddPlayers(a, b, c, d);
+        setup.AddRole(GameRole.Werewolf, 2);
+        setup.AddRole(GameRole.Villager, 5);
+
+        GameState state = setup.StartGame(new NonShuffler()).RunToEnd();
+        Dictionary<Player, int> votes = new()
+        {
+            [a] = 0,
+            [b] = 0,
+            [c] = 2,
+            [d] = 2
+        };
+        
+        // Act
+        var results = state.DetermineGameResults(votes);
+
+        // Assert
+        results.DeadRoles.Count().ShouldBe(1);
+        results.DeadRoles.ShouldContain(GameRole.Villager);
+    }       
+    
+    [Fact]
+    public void KillingNoPlayersShouldResultInNoRolesDead()
+    {
+        // Arrange
+        Player a = new("A", new RandomController()); // Werewolf
+        Player b = new("B", new RandomController()); // Werewolf
+        Player c = new("C", new RandomController()); // Villager
+        Player d = new("D", new RandomController()); // Villager
+        
+        GameSetup setup = new();
+        setup.AddPlayers(a, b, c, d);
+        setup.AddRole(GameRole.Werewolf, 2);
+        setup.AddRole(GameRole.Villager, 5);
+
+        GameState state = setup.StartGame(new NonShuffler()).RunToEnd();
+        Dictionary<Player, int> votes = new()
+        {
+            [a] = 0,
+            [b] = 0,
+            [c] = 0,
+            [d] = 0
+        };
+        
+        // Act
+        var results = state.DetermineGameResults(votes);
+
+        // Assert
+        results.DeadRoles.ShouldBeEmpty();
+    }
+    
 }

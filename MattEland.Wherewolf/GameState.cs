@@ -306,6 +306,6 @@ public class GameState
         IEnumerable<Player> dead = votes.Where(kvp => kvp.Value == maxVotes && kvp.Value >= minExecutionVotes)
             .Select(kvp => kvp.Key);
 
-        return new GameResult(dead);
+        return new GameResult(dead, this);
     }
 }
