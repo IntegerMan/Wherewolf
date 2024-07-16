@@ -277,4 +277,141 @@ public class VoteResultTests
         results.DeadRoles.ShouldBeEmpty();
     }
     
+    [Fact]
+    public void WinningPlayersShouldIncludeEvilForNoWerewolfDead()
+    {
+        // Arrange
+        Player a = new("A", new RandomController()); // Werewolf
+        Player b = new("B", new RandomController()); // Werewolf
+        Player c = new("C", new RandomController()); // Villager
+        Player d = new("D", new RandomController()); // Villager
+        
+        GameSetup setup = new();
+        setup.AddPlayers(a, b, c, d);
+        setup.AddRole(GameRole.Werewolf, 2);
+        setup.AddRole(GameRole.Villager, 5);
+
+        GameState state = setup.StartGame(new NonShuffler()).RunToEnd();
+        Dictionary<Player, int> votes = new()
+        {
+            [a] = 0,
+            [b] = 0,
+            [c] = 0,
+            [d] = 0
+        };
+        
+        // Act
+        var results = state.DetermineGameResults(votes);
+
+        // Assert
+        results.WinningTeam.ShouldBe(Team.Werewolf);
+        results.WinningPlayers.ShouldContain(a);
+        results.WinningPlayers.ShouldContain(b);
+        results.LosingPlayers.ShouldContain(c);
+        results.LosingPlayers.ShouldContain(d);
+    }
+    
+    [Fact]
+    public void WinningPlayersShouldIncludeGoodForWerewolfDead()
+    {
+        // Arrange
+        Player a = new("A", new RandomController()); // Werewolf
+        Player b = new("B", new RandomController()); // Werewolf
+        Player c = new("C", new RandomController()); // Villager
+        Player d = new("D", new RandomController()); // Villager
+        
+        GameSetup setup = new();
+        setup.AddPlayers(a, b, c, d);
+        setup.AddRole(GameRole.Werewolf, 2);
+        setup.AddRole(GameRole.Villager, 5);
+
+        GameState state = setup.StartGame(new NonShuffler()).RunToEnd();
+        Dictionary<Player, int> votes = new()
+        {
+            [a] = 2, 
+            [b] = 0,
+            [c] = 2, // will be dead, but still wins since villager team
+            [d] = 0
+        };
+        
+        // Act
+        var results = state.DetermineGameResults(votes);
+
+        // Assert
+        results.WinningTeam.ShouldBe(Team.Villager);
+        results.LosingPlayers.ShouldContain(a);
+        results.LosingPlayers.ShouldContain(b);
+        results.WinningPlayers.ShouldContain(c);
+        results.WinningPlayers.ShouldContain(d);
+    }    
+    
+    [Fact]
+    public void WinningPlayersShouldIncludeGoodForSkipOnNoEvils()
+    {
+        // Arrange
+        Player a = new("A", new RandomController()); // Villager
+        Player b = new("B", new RandomController()); // Villager
+        Player c = new("C", new RandomController()); // Villager
+        Player d = new("D", new RandomController()); // Villager
+        
+        GameSetup setup = new();
+        setup.AddPlayers(a, b, c, d);
+        setup.AddRole(GameRole.Villager, 5);
+        setup.AddRole(GameRole.Werewolf, 2);
+
+        GameState state = setup.StartGame(new NonShuffler()).RunToEnd();
+        Dictionary<Player, int> votes = new()
+        {
+            [a] = 0,
+            [b] = 0,
+            [c] = 0,
+            [d] = 0
+        };
+        
+        // Act
+        var results = state.DetermineGameResults(votes);
+
+        // Assert
+        results.WinningTeam.ShouldBe(Team.Villager);
+        results.WinningPlayers.ShouldContain(a);
+        results.WinningPlayers.ShouldContain(b);
+        results.WinningPlayers.ShouldContain(c);
+        results.WinningPlayers.ShouldContain(d);
+        results.LosingPlayers.ShouldBeEmpty();
+    }
+    
+    [Fact]
+    public void WinningPlayersBeEmptyForAllGoodWithExecution()
+    {
+        // Arrange
+        Player a = new("A", new RandomController()); // Villager
+        Player b = new("B", new RandomController()); // Villager
+        Player c = new("C", new RandomController()); // Villager
+        Player d = new("D", new RandomController()); // Villager
+        
+        GameSetup setup = new();
+        setup.AddPlayers(a, b, c, d);
+        setup.AddRole(GameRole.Villager, 5);
+        setup.AddRole(GameRole.Werewolf, 2);
+
+        GameState state = setup.StartGame(new NonShuffler()).RunToEnd();
+        Dictionary<Player, int> votes = new()
+        {
+            [a] = 3,
+            [b] = 1,
+            [c] = 0,
+            [d] = 0
+        };
+        
+        // Act
+        var results = state.DetermineGameResults(votes);
+
+        // Assert
+        results.WinningTeam.ShouldBe(Team.Werewolf);
+        results.WinningPlayers.ShouldBeEmpty();
+        results.LosingPlayers.ShouldContain(a);
+        results.LosingPlayers.ShouldContain(b);
+        results.LosingPlayers.ShouldContain(c);
+        results.LosingPlayers.ShouldContain(d);
+    }           
 }
