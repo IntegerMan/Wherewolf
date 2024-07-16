@@ -289,4 +289,23 @@ public class GameState
             return new GameSlot(s);
         }
     }
+
+    public GameResult DetermineGameResults(Dictionary<Player, int> votes)
+    {
+        int totalVotes = votes.Values.Sum();
+        int skips = votes.Keys.Count - totalVotes;
+        int maxVotes = votes.Values.Max();
+
+        // Players with 1 vote won't die unless at least 1 person skips
+        int minExecutionVotes = 2;
+        if (skips > 0)
+        {
+            minExecutionVotes = 1;
+        }
+        
+        IEnumerable<Player> dead = votes.Where(kvp => kvp.Value == maxVotes && kvp.Value >= minExecutionVotes)
+            .Select(kvp => kvp.Key);
+
+        return new GameResult(dead);
+    }
 }
