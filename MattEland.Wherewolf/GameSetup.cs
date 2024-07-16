@@ -214,4 +214,27 @@ public class GameSetup
             }
         }
     }
+
+    public static Dictionary<Player, int> GetVotingResults(Dictionary<Player, Player?> votes)
+    {
+        // TODO: This will probably need to be revisited to support the Hunter / Bodyguard
+
+        Dictionary<Player, int> voteTotals = new();
+        
+        // Initialize everyone at 0 votes. This ensures they're in the dictionary
+        foreach (var player in votes.Keys)
+        {
+            voteTotals[player] = 0;
+        }
+
+        // Tabulate votes, skipping abstentions
+        foreach (var target in votes.Values)
+        {
+            if (target == null) continue;
+
+            voteTotals[target]++;
+        }
+        
+        return voteTotals;
+    }
 }
