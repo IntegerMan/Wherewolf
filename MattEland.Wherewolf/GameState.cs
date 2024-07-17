@@ -133,15 +133,8 @@ public class GameState
         PlayerProbabilities probabilities = new();
 
         // Start with all permutations
-        List<GameEvent> observedEvents = Events.Where(e => e.IsObservedBy(player)).ToList();
-        List<GameState> phasePermutations = _gameSetup.GetPermutationsAtPhase(CurrentPhase).ToList();
-        if (!phasePermutations.Any())
-            throw new InvalidOperationException("No phase permutations found for phase " + (CurrentPhase?.Name ?? "Voting") + " for player " + player.Name);
-        
-        List<GameState> validPermutations = phasePermutations.Where(p => p.IsPossibleGivenEvents(observedEvents)).ToList();
-        if (!validPermutations.Any())
-            throw new InvalidOperationException("No valid permutations found for phase " + (CurrentPhase?.Name ?? "Voting") + " for player " + player.Name);
-        
+        List<GameState> validPermutations = GetPossibleGameStatesForPlayer(player);
+
         double startPopulation = validPermutations.Sum(p => p.Support);
         
         // Calculate starting role probabilities
@@ -165,7 +158,20 @@ public class GameState
         
         return probabilities;
     }
-    
+
+    private List<GameState> GetPossibleGameStatesForPlayer(Player player)
+    {
+        List<GameEvent> observedEvents = Events.Where(e => e.IsObservedBy(player)).ToList();
+        List<GameState> phasePermutations = _gameSetup.GetPermutationsAtPhase(CurrentPhase).ToList();
+        if (!phasePermutations.Any())
+            throw new InvalidOperationException("No phase permutations found for phase " + (CurrentPhase?.Name ?? "Voting") + " for player " + player.Name);
+        
+        List<GameState> validPermutations = phasePermutations.Where(p => p.IsPossibleGivenEvents(observedEvents)).ToList();
+        if (!validPermutations.Any())
+            throw new InvalidOperationException("No valid permutations found for phase " + (CurrentPhase?.Name ?? "Voting") + " for player " + player.Name);
+        return validPermutations;
+    }
+
     public GameState RunToEnd()
     {
         if (IsGameOver)
@@ -307,5 +313,46 @@ public class GameState
             .Select(kvp => kvp.Key);
 
         return new GameResult(dead, this);
+    }
+
+    public Dictionary<Player, float> GetVoteVictoryProbabilities(Player player)
+    {
+        List<Dictionary<Player, Player>> permutations = _gameSetup.GetVotingPermutations().ToList();
+
+        // Build a collection of results based on who the player voted for - for every world this player thinks might be valid
+        Dictionary<Player, List<GameResult>> results = new();
+        foreach (var state in GetPossibleGameStatesForPlayer(player))
+        {
+            state.AddGameStateVoteResultPossibilities(player, permutations, results);
+        }
+
+        // Calculate win % for each
+        Dictionary<Player, float> winProbability = new();
+        foreach (var kvp in results)
+        {
+            winProbability[kvp.Key] = kvp.Value.Average(r => r.WinningPlayers.Contains(player) ? 1f : 0f);
+        }
+
+        return winProbability;
+    }
+
+    private void AddGameStateVoteResultPossibilities(Player player, IEnumerable<Dictionary<Player, Player>> permutations, Dictionary<Player, List<GameResult>> results)
+    {
+        foreach (var perm in permutations)
+        {
+            Dictionary<Player, int> votes = GameSetup.GetVotingResults(perm);
+            
+            GameResult gameResult = DetermineGameResults(votes);
+
+            Player action = perm[player];
+            if (!results.ContainsKey(action))
+            {
+                results[action] = [gameResult];
+            }
+            else
+            {
+                results[action].Add(gameResult);
+            }
+        }
     }
 }

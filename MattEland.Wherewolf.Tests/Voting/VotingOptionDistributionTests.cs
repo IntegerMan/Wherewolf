@@ -18,7 +18,7 @@ public class VotingOptionDistributionTests
         var permutations = setup.GetVotingPermutations().ToList();
 
         // Assert
-        permutations.Count.ShouldBe(27);
+        permutations.Count.ShouldBe(8);
     }
     
     [Fact]
@@ -35,7 +35,7 @@ public class VotingOptionDistributionTests
         var permutations = setup.GetVotingPermutations().ToList();
 
         // Assert
-        permutations.Count.ShouldBe(256);
+        permutations.Count.ShouldBe(81);
     }    
     
     [Fact]
@@ -53,6 +53,6 @@ public class VotingOptionDistributionTests
         var permutations = setup.GetVotingPermutations().ToList();
 
         // Assert
-        permutations.Count.ShouldBe(3125);
+        permutations.Count.ShouldBe(1024);
     }    
 }

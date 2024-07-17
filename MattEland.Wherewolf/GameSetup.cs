@@ -166,21 +166,21 @@ public class GameSetup
         return _phasePermutations[currentPhase?.Name ?? "Voting"];
     }
 
-    public IEnumerable<Dictionary<Player, Player?>> GetVotingPermutations()
+    public IEnumerable<Dictionary<Player, Player>> GetVotingPermutations()
     {
-        foreach (var result in GetVotingPermutations(Players.First(), new Dictionary<Player, Player?>()))
+        foreach (var result in GetVotingPermutations(Players.First(), new Dictionary<Player, Player>()))
         {
             yield return result;
         }
     }
     
-    private IEnumerable<Dictionary<Player, Player?>> GetVotingPermutations(Player player, IDictionary<Player, Player?> baseDictionary)
+    private IEnumerable<Dictionary<Player, Player>> GetVotingPermutations(Player player, IDictionary<Player, Player> baseDictionary)
     {
-        IEnumerable<Player?> playerChoices = GetPlayerVotingPermutations(player);
+        IEnumerable<Player> playerChoices = GetPlayerVotingPermutations(player);
         
         foreach (var choice in playerChoices)
         {
-            Dictionary<Player, Player?> subset = new(baseDictionary)
+            Dictionary<Player, Player> subset = new(baseDictionary)
             {
                 [player] = choice
             };
@@ -200,22 +200,18 @@ public class GameSetup
         }
     }    
 
-    private IEnumerable<Player?> GetPlayerVotingPermutations(Player player)
+    private IEnumerable<Player> GetPlayerVotingPermutations(Player player)
     {
         foreach (var otherPlayer in Players)
         {
-            if (otherPlayer == player)
-            {
-                yield return null;
-            }
-            else
+            if (otherPlayer != player)
             {
                 yield return otherPlayer;
             }
         }
     }
 
-    public static Dictionary<Player, int> GetVotingResults(Dictionary<Player, Player?> votes)
+    public static Dictionary<Player, int> GetVotingResults(Dictionary<Player, Player> votes)
     {
         // TODO: This will probably need to be revisited to support the Hunter / Bodyguard
 
@@ -227,11 +223,9 @@ public class GameSetup
             voteTotals[player] = 0;
         }
 
-        // Tabulate votes, skipping abstentions
+        // Tabulate votes
         foreach (var target in votes.Values)
         {
-            if (target == null) continue;
-
             voteTotals[target]++;
         }
         
