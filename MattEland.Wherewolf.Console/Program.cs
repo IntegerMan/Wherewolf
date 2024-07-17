@@ -60,6 +60,9 @@ foreach (var player in gameSetup.Players)
     // Probabilities table
     RenderProbabilitiesTable(player, gameSetup, gameState, isStart: true);
     RenderProbabilitiesTable(player, gameSetup, gameState, isStart: false);
+    
+    // Vote table
+    RenderVoteWinPercents(player, gameState);
 }
 
 void AddGameEventNodeToTree(GameEvent evt, Tree tree, IEnumerable<GameSlot> slots, IEnumerable<GameRole> roles, IEnumerable<Player> players, bool includeObservedBy = true)
@@ -104,22 +107,31 @@ void RenderProbabilitiesTable(Player player, GameSetup setup, GameState state, b
         foreach (var role in orderedRoles)
         {
             double probability = slotProbabilities[role];
-            switch (probability)
-            {
-                case 0:
-                    values.Add("[Gray39]0.0%[/]");
-                    break;
-                case 1:
-                    values.Add("[White]100.0%[/]");
-                    break;
-                default:
-                    values.Add($"[Grey62]{probability:P1}[/]");
-                    break;
-            }
+            var probStr = GetFormattedPercent(probability);
+
+            values.Add(probStr);
         }
         probabilitiesTable.AddRow(values.ToArray());
     }
     
     AnsiConsole.Write(probabilitiesTable);
     AnsiConsole.WriteLine();
+}
+
+string GetFormattedPercent(double value) 
+    => value switch
+    {
+        0 => "[Gray39]0.0%[/]",
+        1 => "[White]100.0%[/]",
+        _ => $"[Grey62]{value:P1}[/]"
+    };
+
+void RenderVoteWinPercents(Player player1, GameState gameState1)
+{
+    Table voteTable = new();
+    voteTable.Title($"{player1.GetPlayerMarkup()} Perceived Vote Win %'s");
+    voteTable.AddColumns(gameState1.Players.Where(p => p != player1).Select(p => p.GetPlayerMarkup()).ToArray());
+    var probabilities = gameState1.GetVoteVictoryProbabilities(player1);
+    voteTable.AddRow(gameState1.Players.Where(p => p != player1).Select(p => GetFormattedPercent(probabilities[p])).ToArray());
+    AnsiConsole.Write(voteTable);
 }
