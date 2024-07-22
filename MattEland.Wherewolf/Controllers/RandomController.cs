@@ -10,4 +10,6 @@ public class RandomController : PlayerController
     public override string SelectRobberTarget(string[] otherPlayerNames)
         => otherPlayerNames.ElementAt(_rand.Next(otherPlayerNames.Length));
 
+    public override Player GetPlayerVote(Player votingPlayer, GameState gameState)
+        => gameState.Players.Where(p => p != votingPlayer).ElementAt(_rand.Next(gameState.Players.Count() - 1));
 }

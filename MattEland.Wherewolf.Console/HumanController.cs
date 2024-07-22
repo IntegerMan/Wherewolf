@@ -25,4 +25,14 @@ public class HumanController : PlayerController
         string message = DisplayHelpers.StylizeEventMessage(gameEvent.Description, state.AllSlots, state.Roles);
         AnsiConsole.MarkupLine(message);
     }
+
+    public override Player GetPlayerVote(Player votingPlayer, GameState gameState)
+    {
+        SelectionPrompt<Player> playerPrompt = new();
+        playerPrompt.Title("Who are you voting for?");
+        playerPrompt.AddChoices(gameState.Players.Where(p => p != votingPlayer));
+        playerPrompt.Converter = p => p.GetPlayerMarkup();
+
+        return AnsiConsole.Prompt(playerPrompt);
+    }
 }

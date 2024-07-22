@@ -104,7 +104,7 @@ public class InsomniacRoleTests : RoleTestBase
         GameSetup setup = new();
         setup.AddPlayers(
             new Player("Player", new RandomController()),
-            new Player("Thief", new FixedSelectionController(robPlayer ? "Player" : "Other")),
+            new Player("Thief", new FixedSelectionController(robPlayer ? "Player" : "Other", "Player")),
             new Player("Other", new RandomController()));
         setup.AddRoles(
             GameRole.Insomniac, // this will go to our player

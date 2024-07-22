@@ -11,4 +11,6 @@ public abstract class PlayerController
     public virtual void ObservedEvent(GameEvent gameEvent, GameState state)
     {
     }
+
+    public abstract Player GetPlayerVote(Player votingPlayer, GameState gameState);
 }

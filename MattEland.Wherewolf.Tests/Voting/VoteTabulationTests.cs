@@ -19,7 +19,7 @@ public class VoteTabulationTests
         };
 
         // Act
-        var results = GameSetup.GetVotingResults(votes);
+        var results = GameState.GetVotingResults(votes);
         
         // Assert
         results.ShouldNotBeNull();
@@ -44,7 +44,7 @@ public class VoteTabulationTests
         };
 
         // Act
-        var results = GameSetup.GetVotingResults(votes);
+        var results = GameState.GetVotingResults(votes);
         
         // Assert
         results.ShouldNotBeNull();
@@ -71,7 +71,7 @@ public class VoteTabulationTests
         };
 
         // Act
-        var results = GameSetup.GetVotingResults(votes);
+        var results = GameState.GetVotingResults(votes);
         
         // Assert
         results.ShouldNotBeNull();

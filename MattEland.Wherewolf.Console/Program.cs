@@ -25,8 +25,53 @@ gameSetup.AddRoles(
     );
     
 GameState gameState = gameSetup.StartGame(new NonShuffler());
+gameState = gameState.RunToEndOfNight();
+
+Dictionary<Player, Player> votes = new();
+
+// Display Player States
+foreach (var player in gameSetup.Players)
+{
+    if (player.Controller is HumanController)
+    {
+        // Player divider
+        Rule rule = new(player.GetPlayerMarkup());
+        AnsiConsole.Write(rule);
+        AnsiConsole.WriteLine();
+
+        // Observed events tree
+        Tree playerTree = new($"[Yellow]Observed Events for {player.GetPlayerMarkup()}[/]");
+
+        foreach (var gameEvent in gameState.Events.Where(e => e.IsObservedBy(player)))
+        {
+            AddGameEventNodeToTree(gameEvent, playerTree, gameState.AllSlots, gameState.Roles, gameState.Players,
+                includeObservedBy: false);
+        }
+
+        AnsiConsole.Write(playerTree);
+        AnsiConsole.WriteLine();
+
+        // Probabilities table
+        RenderProbabilitiesTable(player, gameSetup, gameState, isStart: true);
+        RenderProbabilitiesTable(player, gameSetup, gameState, isStart: false);
+
+        // Vote table
+        RenderVoteWinPercents(player, gameState);
+    }
+}
+
+// This will cause the voting to actually occur
 gameState = gameState.RunToEnd();
 
+// Display the game results
+GameResult result = gameState.GameResult!;
+AnsiConsole.WriteLine("Game Results");
+AnsiConsole.MarkupLine("Dead Players: " + string.Join(", ", result.DeadPlayers.Select(p => p.GetPlayerMarkup())));
+AnsiConsole.MarkupLine("Winning Team: " + result.WinningTeam);
+AnsiConsole.MarkupLine("Winning Players: " + string.Join(", ", result.WinningPlayers.Select(p => p.GetPlayerMarkup())));
+AnsiConsole.WriteLine();
+
+// Post-Game Information
 DisplayHelpers.DisplaySummaryTable(gameState);
 AnsiConsole.WriteLine();
 
@@ -37,33 +82,6 @@ foreach (var gameEvent in gameState.Events)
 }
 AnsiConsole.Write(eventTree);
 AnsiConsole.WriteLine();
-
-// Display Player States
-foreach (var player in gameSetup.Players)
-{
-    // Player divider
-    Rule rule = new(player.GetPlayerMarkup());
-    AnsiConsole.Write(rule);
-    AnsiConsole.WriteLine();
-    
-    // Observed events tree
-    Tree playerTree = new($"[Yellow]Observed Events for {player.GetPlayerMarkup()}[/]");
-    
-    foreach (var gameEvent in gameState.Events.Where(e => e.IsObservedBy(player)))
-    {
-        AddGameEventNodeToTree(gameEvent, playerTree, gameState.AllSlots, gameState.Roles, gameState.Players, includeObservedBy: false);
-    }
-    
-    AnsiConsole.Write(playerTree);
-    AnsiConsole.WriteLine();
-    
-    // Probabilities table
-    RenderProbabilitiesTable(player, gameSetup, gameState, isStart: true);
-    RenderProbabilitiesTable(player, gameSetup, gameState, isStart: false);
-    
-    // Vote table
-    RenderVoteWinPercents(player, gameState);
-}
 
 void AddGameEventNodeToTree(GameEvent evt, Tree tree, IEnumerable<GameSlot> slots, IEnumerable<GameRole> roles, IEnumerable<Player> players, bool includeObservedBy = true)
 {

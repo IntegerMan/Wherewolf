@@ -182,6 +182,18 @@ public class GameState
         GameState nextState = RunNext();
         return nextState.RunToEnd();
     }
+    
+
+    public GameState RunToEndOfNight()
+    {
+        if (CurrentPhase is VotingPhase)
+        {
+            return this;
+        }
+
+        GameState nextState = RunNext();
+        return nextState.RunToEndOfNight();
+    }    
 
     private GameState RunNext()
     {
@@ -213,6 +225,7 @@ public class GameState
     }
     public GameState? Parent { get; }
     public GameState Root { get; }
+    public GameResult? GameResult { get; internal set; }
 
     public void AddEvent(GameEvent newEvent, bool broadcastToController = true)
     {
@@ -296,6 +309,9 @@ public class GameState
         }
     }
 
+    public GameResult DetermineGameResults(Dictionary<Player, Player> votes) 
+        => DetermineGameResults(GameState.GetVotingResults(votes));
+
     public GameResult DetermineGameResults(Dictionary<Player, int> votes)
     {
         int totalVotes = votes.Values.Sum();
@@ -335,12 +351,33 @@ public class GameState
 
         return winProbability;
     }
+    
+    public static Dictionary<Player, int> GetVotingResults(Dictionary<Player, Player> votes)
+    {
+        // TODO: This will probably need to be revisited to support the Hunter / Bodyguard
+
+        Dictionary<Player, int> voteTotals = new();
+        
+        // Initialize everyone at 0 votes. This ensures they're in the dictionary
+        foreach (var player in votes.Keys)
+        {
+            voteTotals[player] = 0;
+        }
+
+        // Tabulate votes
+        foreach (var target in votes.Values)
+        {
+            voteTotals[target]++;
+        }
+        
+        return voteTotals;
+    }
 
     private void AddGameStateVoteResultPossibilities(Player player, IEnumerable<Dictionary<Player, Player>> permutations, Dictionary<Player, List<GameResult>> results)
     {
         foreach (var perm in permutations)
         {
-            Dictionary<Player, int> votes = GameSetup.GetVotingResults(perm);
+            Dictionary<Player, int> votes = GetVotingResults(perm);
             
             GameResult gameResult = DetermineGameResults(votes);
 

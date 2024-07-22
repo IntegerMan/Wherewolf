@@ -82,7 +82,8 @@ public class GameSetup
     {
         List<GamePhase> phases = new()
         {
-            new SetupNightPhase() // This diagnostic phase should always be present
+            new SetupNightPhase(), // This diagnostic phase should always be present
+            new VotingPhase() // This is what will trigger voting
         };
         
         foreach (var nightPhaseType in Roles.Distinct().SelectMany(r => r.GetNightPhasesForRole()))
@@ -209,26 +210,5 @@ public class GameSetup
                 yield return otherPlayer;
             }
         }
-    }
-
-    public static Dictionary<Player, int> GetVotingResults(Dictionary<Player, Player> votes)
-    {
-        // TODO: This will probably need to be revisited to support the Hunter / Bodyguard
-
-        Dictionary<Player, int> voteTotals = new();
-        
-        // Initialize everyone at 0 votes. This ensures they're in the dictionary
-        foreach (var player in votes.Keys)
-        {
-            voteTotals[player] = 0;
-        }
-
-        // Tabulate votes
-        foreach (var target in votes.Values)
-        {
-            voteTotals[target]++;
-        }
-        
-        return voteTotals;
     }
 }
