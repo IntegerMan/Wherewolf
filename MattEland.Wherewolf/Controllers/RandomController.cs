@@ -1,3 +1,5 @@
+using MattEland.Wherewolf.Roles;
+
 namespace MattEland.Wherewolf.Controllers;
 
 public class RandomController : PlayerController
@@ -12,4 +14,7 @@ public class RandomController : PlayerController
 
     public override Player GetPlayerVote(Player votingPlayer, GameState gameState)
         => gameState.Players.Where(p => p != votingPlayer).ElementAt(_rand.Next(gameState.Players.Count() - 1));
+
+    public override GameRole GetInitialRoleClaim(GameState gameState)
+        => gameState.Roles.ElementAt(_rand.Next(gameState.Roles.Count() - 1));
 }

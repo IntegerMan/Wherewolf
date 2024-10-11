@@ -1,5 +1,6 @@
 using MattEland.Wherewolf.Controllers;
 using MattEland.Wherewolf.Events;
+using MattEland.Wherewolf.Roles;
 using Spectre.Console;
 
 namespace MattEland.Wherewolf.Console;
@@ -34,5 +35,15 @@ public class HumanController : PlayerController
         playerPrompt.Converter = p => p.GetPlayerMarkup();
 
         return AnsiConsole.Prompt(playerPrompt);
+    }
+
+    public override GameRole GetInitialRoleClaim(GameState gameState)
+    {
+        SelectionPrompt<GameRole> rolePrompt = new();
+        rolePrompt.Title("What role are you claiming?");
+        rolePrompt.AddChoices(gameState.Roles);
+        rolePrompt.Converter = r => r.AsMarkdown();
+        
+        return AnsiConsole.Prompt(rolePrompt);
     }
 }

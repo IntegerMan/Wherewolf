@@ -1,3 +1,5 @@
+using MattEland.Wherewolf.Roles;
+
 namespace MattEland.Wherewolf.Controllers;
 
 public class FixedSelectionController : PlayerController
@@ -26,4 +28,6 @@ public class FixedSelectionController : PlayerController
         string next = _selection.Dequeue();
         return gameState.Players.Single(p => p.Name == next);
     }
+
+    public override GameRole GetInitialRoleClaim(GameState gameState) => Enum.Parse<GameRole>(_selection.Dequeue());
 }
