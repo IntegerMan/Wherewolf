@@ -71,7 +71,7 @@ public class WerewolfRoleTests : RoleTestBase
             GameRole.Villager
         );
         setup.AddPlayers(
-            new Player("A", new FixedSelectionController("Center 2", "B")),
+            new Player("A", new FixedSelectionController("Center 2", "B", "Villager")),
             new Player("B", new RandomController()),
             new Player("C", new RandomController())
         );

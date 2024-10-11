@@ -83,6 +83,7 @@ public class GameSetup
         List<GamePhase> phases = new()
         {
             new SetupNightPhase(), // This diagnostic phase should always be present
+            new InitialRoleClaimPhase(), // The first day social phase where players claim their roles
             new VotingPhase() // This is what will trigger voting
         };
         

@@ -20,6 +20,7 @@ public class InitialRoleClaimPhase : GamePhase
     public override string Name => "Initial Role Claim";
     public override IEnumerable<GameState> BuildPossibleStates(GameState priorState)
     {
-        throw new NotImplementedException();
+        // TODO: May need to create permutations potentially for each player's potential claims.
+        yield return new GameState(priorState, priorState.Support);
     }
 }

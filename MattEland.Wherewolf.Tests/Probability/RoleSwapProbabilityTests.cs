@@ -11,7 +11,7 @@ public class RoleSwapProbabilityTests
         // Arrange
         GameSetup gameSetup = new();
         gameSetup.AddPlayers(
-            new Player("Matt", new FixedSelectionController("Rufus")),
+            new Player("Matt", new FixedSelectionController("Rufus", "Insomniac")),
             new Player("Rufus", new RandomController()),
             new Player("Jimothy", new RandomController())
         );
@@ -43,7 +43,7 @@ public class RoleSwapProbabilityTests
         // Arrange
         GameSetup gameSetup = new();
         gameSetup.AddPlayers(
-            new Player("Matt", new FixedSelectionController("Rufus")),
+            new Player("Matt", new FixedSelectionController("Rufus", "Insomniac")),
             new Player("Rufus", new RandomController()),
             new Player("Jimothy", new RandomController())
         );
