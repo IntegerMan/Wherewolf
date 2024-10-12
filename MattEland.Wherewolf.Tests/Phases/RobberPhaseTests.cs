@@ -13,7 +13,7 @@ public class RobberPhaseTests
     {
         // Arrange
         RobberNightPhase phase = new();
-        Player[] players = [new("Robber", new RandomController()), new("WW", new RandomController()), new("Villager", new RandomController())];
+        Player[] players = [new("Robber", new RandomController(new ClaimStartingRoleStrategy())), new("WW", new RandomController()), new("Villager", new RandomController())];
         GameRole[] roles =
         [
             GameRole.Robber, GameRole.Werewolf, GameRole.Villager, GameRole.Villager, GameRole.Villager,
@@ -37,9 +37,9 @@ public class RobberPhaseTests
         // Arrange
         RobberNightPhase phase = new();
         Player[] players = [
-            new("Robber", new RandomController()), 
-            new("WW", new RandomController()), 
-            new("Villager", new RandomController())
+            new("Robber", new RandomController(new ClaimStartingRoleStrategy())), 
+            new("WW", new RandomController(new ClaimStartingRoleStrategy())), 
+            new("Villager", new RandomController(new ClaimStartingRoleStrategy()))
         ];
         GameRole[] roles =
         [

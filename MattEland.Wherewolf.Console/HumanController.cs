@@ -37,7 +37,7 @@ public class HumanController : PlayerController
         return AnsiConsole.Prompt(playerPrompt);
     }
 
-    public override GameRole GetInitialRoleClaim(GameState gameState)
+    public override GameRole GetInitialRoleClaim(Player player, GameState gameState)
     {
         SelectionPrompt<GameRole> rolePrompt = new();
         rolePrompt.Title("What role are you claiming?");

@@ -8,9 +8,9 @@ public class VoteTabulationTests
     public void VotingResultsShouldTabulateVotesForSinglePlayer()
     {
         // Arrange
-        Player a = new("A", new RandomController());
-        Player b = new("B", new RandomController());
-        Player c = new("C", new RandomController());
+        Player a = new("A", new RandomController(new ClaimStartingRoleStrategy()));
+        Player b = new("B", new RandomController(new ClaimStartingRoleStrategy()));
+        Player c = new("C", new RandomController(new ClaimStartingRoleStrategy()));
         Dictionary<Player, Player?> votes = new Dictionary<Player, Player?>
         {
             [a] = b,
@@ -33,9 +33,9 @@ public class VoteTabulationTests
     public void VotingResultsShouldTabulateCircleVote()
     {
         // Arrange
-        Player a = new("A", new RandomController());
-        Player b = new("B", new RandomController());
-        Player c = new("C", new RandomController());
+        Player a = new("A", new RandomController(new ClaimStartingRoleStrategy()));
+        Player b = new("B", new RandomController(new ClaimStartingRoleStrategy()));
+        Player c = new("C", new RandomController(new ClaimStartingRoleStrategy()));
         Dictionary<Player, Player?> votes = new Dictionary<Player, Player?>
         {
             [a] = b,
@@ -58,10 +58,10 @@ public class VoteTabulationTests
     public void VotingResultsShouldTabulateTieVotes()
     {
         // Arrange
-        Player a = new("A", new RandomController());
-        Player b = new("B", new RandomController());
-        Player c = new("C", new RandomController());
-        Player d = new("D", new RandomController());
+        Player a = new("A", new RandomController(new ClaimStartingRoleStrategy()));
+        Player b = new("B", new RandomController(new ClaimStartingRoleStrategy()));
+        Player c = new("C", new RandomController(new ClaimStartingRoleStrategy()));
+        Player d = new("D", new RandomController(new ClaimStartingRoleStrategy()));
         Dictionary<Player, Player?> votes = new Dictionary<Player, Player?>
         {
             [a] = b,

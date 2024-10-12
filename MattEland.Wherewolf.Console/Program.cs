@@ -14,8 +14,8 @@ AnsiConsole.WriteLine();
 GameSetup gameSetup = new();
 gameSetup.AddPlayers(
         new Player("Matt", new HumanController()),
-        new Player("Rufus", new RandomController()),
-        new Player("Jimothy", new RandomController())
+        new Player("Rufus", new RandomController(new ClaimStartingRoleStrategy())),
+        new Player("Jimothy", new RandomController(new ClaimStartingRoleStrategy()))
     );
 gameSetup.AddRoles(
         GameRole.Robber, 

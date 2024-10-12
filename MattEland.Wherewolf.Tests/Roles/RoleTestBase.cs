@@ -25,8 +25,8 @@ public abstract class RoleTestBase
     private static void AddPlayersToGame(GameSetup gameSetup)
     {
         gameSetup.AddPlayers(
-            new Player("A", new RandomController()), 
-            new Player("B", new RandomController()), 
-            new Player("C", new RandomController()));
+            new Player("A", new RandomController(new ClaimStartingRoleStrategy())), 
+            new Player("B", new RandomController(new ClaimStartingRoleStrategy())), 
+            new Player("C", new RandomController(new ClaimStartingRoleStrategy())));
     }
 }

@@ -15,5 +15,5 @@ public abstract class PlayerController
 
     public abstract Player GetPlayerVote(Player votingPlayer, GameState gameState);
 
-    public abstract GameRole GetInitialRoleClaim(GameState gameState);
+    public abstract GameRole GetInitialRoleClaim(Player player, GameState gameState);
 }
