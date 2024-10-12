@@ -2,9 +2,9 @@ using MattEland.Wherewolf.Roles;
 
 namespace MattEland.Wherewolf.Events;
 
-public class RoleClaimedEvent : GameEvent
+public class StartRoleClaimedEvent : GameEvent
 {
-    public RoleClaimedEvent(Player player, GameRole role)
+    public StartRoleClaimedEvent(Player player, GameRole role)
     {
         this.Player = player;
         this.ClaimedRole = role;
@@ -14,6 +14,6 @@ public class RoleClaimedEvent : GameEvent
     public GameRole ClaimedRole { get;  }
     public override bool IsObservedBy(Player player) => true;
 
-    public override string Description => $"{Player.Name} claimed their role was {ClaimedRole}";
+    public override string Description => $"{Player.Name} claimed their starting role was {ClaimedRole}";
     public override bool IsPossibleInGameState(GameState state) => state.Roles.Contains(ClaimedRole);
 }

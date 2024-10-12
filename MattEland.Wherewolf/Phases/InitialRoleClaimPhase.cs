@@ -10,7 +10,7 @@ public class InitialRoleClaimPhase : GamePhase
         foreach (var player in newState.Players)
         {
             GameRole role = player.Controller.GetInitialRoleClaim(player, newState);
-            newState.AddEvent(new RoleClaimedEvent(player, role));
+            newState.AddEvent(new StartRoleClaimedEvent(player, role));
         }
 
         return newState;
