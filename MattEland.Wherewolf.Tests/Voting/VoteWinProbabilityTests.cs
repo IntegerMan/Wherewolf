@@ -1,5 +1,7 @@
 using MattEland.Wherewolf.Controllers;
+using MattEland.Wherewolf.Probability;
 using MattEland.Wherewolf.Roles;
+using MattEland.Wherewolf.Setup;
 
 namespace MattEland.Wherewolf.Tests.Voting;
 
@@ -22,7 +24,7 @@ public class VoteWinProbabilityTests
         GameState state = setup.StartGame(new NonShuffler()).RunToEnd();
         
         // Act
-        var probabilities = state.GetVoteVictoryProbabilities(a);
+        var probabilities = VotingHelper.GetVoteVictoryProbabilities(a, state);
         
         // Assert
         probabilities.Keys.Count.ShouldBe(2);
@@ -45,7 +47,7 @@ public class VoteWinProbabilityTests
         GameState state = setup.StartGame(new NonShuffler()).RunToEnd();
         
         // Act
-        var probabilities = state.GetVoteVictoryProbabilities(a);
+        var probabilities = VotingHelper.GetVoteVictoryProbabilities(a, state);
         
         // Assert
         probabilities.Keys.Count.ShouldBe(2);

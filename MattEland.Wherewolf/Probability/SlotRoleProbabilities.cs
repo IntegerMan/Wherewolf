@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.ObjectModel;
 using MattEland.Wherewolf.Roles;
 
-namespace MattEland.Wherewolf;
+namespace MattEland.Wherewolf.Probability;
 
 public class SlotRoleProbabilities : IEnumerable<KeyValuePair<GameRole, double>>
 {

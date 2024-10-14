@@ -1,5 +1,6 @@
 using MattEland.Wherewolf.Controllers;
 using MattEland.Wherewolf.Roles;
+using MattEland.Wherewolf.Setup;
 
 namespace MattEland.Wherewolf.Tests.Voting;
 

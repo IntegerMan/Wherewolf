@@ -2,7 +2,9 @@
 using MattEland.Wherewolf.Console;
 using MattEland.Wherewolf.Controllers;
 using MattEland.Wherewolf.Events;
+using MattEland.Wherewolf.Probability;
 using MattEland.Wherewolf.Roles;
+using MattEland.Wherewolf.Setup;
 using Spectre.Console;
 
 // Header
@@ -149,7 +151,7 @@ void RenderVoteWinPercents(Player player1, GameState gameState1)
     Table voteTable = new();
     voteTable.Title($"{player1.GetPlayerMarkup()} Perceived Vote Win %'s");
     voteTable.AddColumns(gameState1.Players.Where(p => p != player1).Select(p => p.GetPlayerMarkup()).ToArray());
-    var probabilities = gameState1.GetVoteVictoryProbabilities(player1);
+    var probabilities = VotingHelper.GetVoteVictoryProbabilities(player1, gameState1);
     voteTable.AddRow(gameState1.Players.Where(p => p != player1).Select(p => GetFormattedPercent(probabilities[p])).ToArray());
     AnsiConsole.Write(voteTable);
 }

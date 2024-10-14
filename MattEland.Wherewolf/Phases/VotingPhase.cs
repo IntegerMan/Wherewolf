@@ -1,4 +1,5 @@
 using MattEland.Wherewolf.Events;
+using MattEland.Wherewolf.Probability;
 
 namespace MattEland.Wherewolf.Phases;
 
@@ -15,7 +16,8 @@ public class VotingPhase : GamePhase
             votes[p] = vote;
         }
 
-        GameResult result = newState.DetermineGameResults(votes);
+        Dictionary<Player,int> votingResults = VotingHelper.GetVotingResults(votes);
+        GameResult result = newState.DetermineGameResults(votingResults);
         newState.GameResult = result;
         
         return newState;

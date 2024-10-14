@@ -2,7 +2,7 @@
 using MattEland.Wherewolf.Roles;
 using MoreLinq;
 
-namespace MattEland.Wherewolf;
+namespace MattEland.Wherewolf.Setup;
 
 public class GameSetup
 {

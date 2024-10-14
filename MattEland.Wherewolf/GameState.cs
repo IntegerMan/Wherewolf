@@ -1,6 +1,8 @@
 using MattEland.Wherewolf.Events;
 using MattEland.Wherewolf.Phases;
+using MattEland.Wherewolf.Probability;
 using MattEland.Wherewolf.Roles;
+using MattEland.Wherewolf.Setup;
 
 namespace MattEland.Wherewolf;
 
@@ -133,7 +135,7 @@ public class GameState
         PlayerProbabilities probabilities = new();
 
         // Start with all permutations
-        List<GameState> validPermutations = GetPossibleGameStatesForPlayer(player);
+        List<GameState> validPermutations = VotingHelper.GetPossibleGameStatesForPlayer(player, this);
 
         double startPopulation = validPermutations.Sum(p => p.Support);
         
@@ -159,18 +161,6 @@ public class GameState
         return probabilities;
     }
 
-    private List<GameState> GetPossibleGameStatesForPlayer(Player player)
-    {
-        List<GameEvent> observedEvents = Events.Where(e => e.IsObservedBy(player)).ToList();
-        List<GameState> phasePermutations = _gameSetup.GetPermutationsAtPhase(CurrentPhase).ToList();
-        if (!phasePermutations.Any())
-            throw new InvalidOperationException("No phase permutations found for phase " + (CurrentPhase?.Name ?? "Voting") + " for player " + player.Name);
-        
-        List<GameState> validPermutations = phasePermutations.Where(p => p.IsPossibleGivenEvents(observedEvents)).ToList();
-        if (!validPermutations.Any())
-            throw new InvalidOperationException("No valid permutations found for phase " + (CurrentPhase?.Name ?? "Voting") + " for player " + player.Name);
-        return validPermutations;
-    }
 
     public GameState RunToEnd()
     {
@@ -226,6 +216,7 @@ public class GameState
     public GameState? Parent { get; }
     public GameState Root { get; }
     public GameResult? GameResult { get; internal set; }
+    public GameSetup Setup => _gameSetup;
 
     public void AddEvent(GameEvent newEvent, bool broadcastToController = true)
     {
@@ -309,9 +300,6 @@ public class GameState
         }
     }
 
-    public GameResult DetermineGameResults(Dictionary<Player, Player> votes) 
-        => DetermineGameResults(GameState.GetVotingResults(votes));
-
     public GameResult DetermineGameResults(Dictionary<Player, int> votes)
     {
         int totalVotes = votes.Values.Sum();
@@ -329,67 +317,5 @@ public class GameState
             .Select(kvp => kvp.Key);
 
         return new GameResult(dead, this);
-    }
-
-    public Dictionary<Player, float> GetVoteVictoryProbabilities(Player player)
-    {
-        List<Dictionary<Player, Player>> permutations = _gameSetup.GetVotingPermutations().ToList();
-
-        // Build a collection of results based on who the player voted for - for every world this player thinks might be valid
-        Dictionary<Player, List<GameResult>> results = new();
-        foreach (var state in GetPossibleGameStatesForPlayer(player))
-        {
-            state.AddGameStateVoteResultPossibilities(player, permutations, results);
-        }
-
-        // Calculate win % for each
-        Dictionary<Player, float> winProbability = new();
-        foreach (var kvp in results)
-        {
-            winProbability[kvp.Key] = kvp.Value.Average(r => r.WinningPlayers.Contains(player) ? 1f : 0f);
-        }
-
-        return winProbability;
-    }
-    
-    public static Dictionary<Player, int> GetVotingResults(Dictionary<Player, Player> votes)
-    {
-        // TODO: This will probably need to be revisited to support the Hunter / Bodyguard
-
-        Dictionary<Player, int> voteTotals = new();
-        
-        // Initialize everyone at 0 votes. This ensures they're in the dictionary
-        foreach (var player in votes.Keys)
-        {
-            voteTotals[player] = 0;
-        }
-
-        // Tabulate votes
-        foreach (var target in votes.Values)
-        {
-            voteTotals[target]++;
-        }
-        
-        return voteTotals;
-    }
-
-    private void AddGameStateVoteResultPossibilities(Player player, IEnumerable<Dictionary<Player, Player>> permutations, Dictionary<Player, List<GameResult>> results)
-    {
-        foreach (var perm in permutations)
-        {
-            Dictionary<Player, int> votes = GetVotingResults(perm);
-            
-            GameResult gameResult = DetermineGameResults(votes);
-
-            Player action = perm[player];
-            if (!results.ContainsKey(action))
-            {
-                results[action] = [gameResult];
-            }
-            else
-            {
-                results[action].Add(gameResult);
-            }
-        }
     }
 }

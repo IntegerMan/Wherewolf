@@ -1,6 +1,6 @@
 using MattEland.Wherewolf.Roles;
 
-namespace MattEland.Wherewolf;
+namespace MattEland.Wherewolf.Probability;
 
 public class PlayerProbabilities
 {
