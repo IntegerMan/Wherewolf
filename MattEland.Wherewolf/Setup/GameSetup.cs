@@ -212,4 +212,6 @@ public class GameSetup
             }
         }
     }
+
+    public List<GameState> GetSetupPermutations() => _phasePermutations["Setup"];
 }
