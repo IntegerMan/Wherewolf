@@ -8,10 +8,20 @@ namespace MattEland.Wherewolf.Probability;
 /// is to evaluate each possible game state and how a player would vote in each state based on
 /// believing the claim, and how it would impact the player's win probability.
 /// </summary>
-public class RoleClaimVotingProbabilities
+public static class RoleClaimVotingProbabilities
 {
-    public void CalculateVoteImpact(GameState state, Player claimer, GameRole roleClaim)
+    /// <summary>
+    /// Calculates the claimer's likelihood percentage of being voted given a specific claim
+    /// </summary>
+    /// <param name="state">The game state, according to the claimer</param>
+    /// <param name="claimer">The player potentially making the role claim</param>
+    /// <param name="roleClaim">The role claim</param>
+    /// <returns>The likelihood of being voted given that claim</returns>
+    public static double CalculateLikelihoodOfBeingVoted(GameState state, Player claimer, GameRole roleClaim)
     {
+        long timesEvaluated = 0;
+        long timesVoted = 0;
+        
         PlayerProbabilities probabilities = state.CalculateProbabilities(claimer);
         
         foreach (var otherPlayer in state.Players.Where(p => p != claimer))
@@ -31,17 +41,23 @@ public class RoleClaimVotingProbabilities
                 }
             }
             
-            // Now that we have a full set of worlds, we need to figure out who the player votes for
-            Dictionary<Player, int> votes = new();
+            // TODO: We need to do something with the role claim here. Maybe add an event into a world copy or make an assumption?
+            
+            // Now that we have a full set of worlds, we need to figure out who the player votes for and tabulate the number of times it is the player
             foreach (var world in states)
             {
-                // TODO: This is probably not good enough, and definitely won't work with human players
-                Player vote = otherPlayer.Controller.GetPlayerVote(otherPlayer, world);
-                if (!votes.TryAdd(vote, 1))
+                Player vote = VotingHelper.GetMostLikelyWinningVote(world, otherPlayer);
+                timesEvaluated++;
+                if (vote == claimer)
                 {
-                    votes[vote]++;
+                    timesVoted++;
                 }
             }
         }
+
+        if (timesEvaluated <= 0) return 0;
+        
+        // ReSharper disable once PossibleLossOfFraction
+        return timesVoted / timesEvaluated;
     }
 }

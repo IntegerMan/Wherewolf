@@ -81,4 +81,11 @@ public static class VotingHelper
         
         return voteTotals;
     }
+
+    public static Player GetMostLikelyWinningVote(GameState world, Player votingPlayer)
+    {
+        Dictionary<Player, float> probabilities = GetVoteVictoryProbabilities(votingPlayer, world);
+        
+        return probabilities.MaxBy(kvp => kvp.Value).Key;
+    }
 }

@@ -1,5 +1,6 @@
 using MattEland.Wherewolf.Controllers;
 using MattEland.Wherewolf.Events;
+using MattEland.Wherewolf.Probability;
 using MattEland.Wherewolf.Roles;
 using Spectre.Console;
 
@@ -47,7 +48,7 @@ public class HumanController : PlayerController
         prompt.Title("What role are you claiming you started as? (Actual: " + gameState.GetStartRole(player).AsMarkdown() + ")");
         prompt.AddChoices(gameState.Roles.Distinct());
         prompt.HighlightStyle(new Style(foreground: Color.White));
-        prompt.Converter = r => r.AsMarkdown();
+        prompt.Converter = r => $"{r.AsMarkdown()} ({RoleClaimVotingProbabilities.CalculateLikelihoodOfBeingVoted(gameState, player, r):P2} Likely to be voted)";
         
         return AnsiConsole.Prompt(prompt);
     }
