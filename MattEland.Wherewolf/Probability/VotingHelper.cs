@@ -82,10 +82,21 @@ public static class VotingHelper
         return voteTotals;
     }
 
-    public static Player GetMostLikelyWinningVote(GameState world, Player votingPlayer)
+    public static Player GetMostLikelyWinningVote(GameState world, Player votingPlayer, Random randomizer)
     {
         Dictionary<Player, float> probabilities = GetVoteVictoryProbabilities(votingPlayer, world);
+
+        float maxProb = probabilities.Max(kvp => kvp.Value);
+
+        List<KeyValuePair<Player, float>> atMax = probabilities.Where(kvp => kvp.Value >= maxProb).ToList();
         
-        return probabilities.MaxBy(kvp => kvp.Value).Key;
+        if (atMax.Count > 1)
+        {
+            return atMax[randomizer.Next(atMax.Count)].Key;
+        }
+        else
+        {
+            return atMax.First().Key;
+        }
     }
 }

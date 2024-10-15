@@ -14,9 +14,10 @@ public class MostLikelyWinningVoteCalculationTests : GameTestsBase
         AddMinimumRequiredRoles(setup); // WW, WW, Villager
         GameState gameState = setup.StartGame(new NonShuffler());
         gameState = gameState.RunToEndOfNight();
+        Random rand = new();
         
         // Act
-        Player vote = VotingHelper.GetMostLikelyWinningVote(gameState, gameState.Players.First());
+        Player vote = VotingHelper.GetMostLikelyWinningVote(gameState, gameState.Players.First(), rand);
         
         // Assert
         vote.Name.ShouldBe("C");

@@ -19,6 +19,7 @@ public static class RoleClaimVotingProbabilities
     /// <returns>The likelihood of being voted given that claim</returns>
     public static double CalculateLikelihoodOfBeingVoted(GameState state, Player claimer, GameRole roleClaim)
     {
+        Random rand = new();
         long timesEvaluated = 0;
         long timesVoted = 0;
         
@@ -46,7 +47,7 @@ public static class RoleClaimVotingProbabilities
             // Now that we have a full set of worlds, we need to figure out who the player votes for and tabulate the number of times it is the player
             foreach (var world in states)
             {
-                Player vote = VotingHelper.GetMostLikelyWinningVote(world, otherPlayer);
+                Player vote = VotingHelper.GetMostLikelyWinningVote(world, otherPlayer, rand);
                 timesEvaluated++;
                 if (vote == claimer)
                 {
