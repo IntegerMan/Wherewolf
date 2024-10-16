@@ -48,7 +48,7 @@ public class HumanController : PlayerController
         prompt.Title("What role are you claiming you started as? (Actual: " + gameState.GetStartRole(player).AsMarkdown() + ")");
         prompt.AddChoices(gameState.Roles.Distinct());
         prompt.HighlightStyle(new Style(foreground: Color.White));
-        prompt.Converter = r => $"{r.AsMarkdown()} ({RoleClaimVotingProbabilities.CalculateLikelihoodOfBeingVoted(gameState, player, r):P2} Likely to be voted)";
+        prompt.Converter = r => $"{r.AsMarkdown()} ({RoleClaimVotingProbabilities.CalculateAverageBeliefProbability(gameState, player, r):P2} Likely to be believed)";
         
         return AnsiConsole.Prompt(prompt);
     }
