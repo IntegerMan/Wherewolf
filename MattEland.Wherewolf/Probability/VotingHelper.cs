@@ -27,24 +27,38 @@ public static class VotingHelper
         return winProbability;
     }        
     
-    public static bool DoesPlayerWinWithBestVotingOptions(Player player, GameState state)
+    public static float PlayerWinPercentWithBestVotingOption(Player player, GameState state)
     {
-        Dictionary<Player, Player> votes = new();
-        Random rand = new();
+        // Build a set of probabilities for each player voting for each other player
+        Dictionary<Player, Dictionary<Player, float>> playerVoteProbabilities = new();
         foreach (var votingPlayer in state.Players)
         {
-            Dictionary<Player, float> probs = GetVoteVictoryProbabilities(votingPlayer, state);
-            var bestOptions = probs.Where(kvp => Math.Abs(kvp.Value - probs.Values.Max()) < double.Epsilon).ToList();
-            var bestOption = bestOptions.Count == 1 ? bestOptions[0] : bestOptions.MinBy(_ => rand.Next());
-            
-            votes[votingPlayer] = bestOption.Key;
+            playerVoteProbabilities[votingPlayer] = GetVoteVictoryProbabilities(votingPlayer, state);
         }
         
-        Dictionary<Player, int> voteTotals = GetVotingResults(votes);
+        // Loop through each combination of votes and calculate the win probability for the player
+        float winWeight = 0f;
+        float totalWeight = 0f;
+        foreach (var perm in state.Setup.GetVotingPermutations())
+        {
+            Dictionary<Player, int> votes = GetVotingResults(perm);
+            GameResult gameResult = state.DetermineGameResults(votes);
+
+            float weight = 0f;
+            foreach (var kvp in perm)
+            {
+                weight += playerVoteProbabilities[kvp.Key][kvp.Value];
+            }
+
+            totalWeight += weight;
+            
+            if (gameResult.WinningPlayers.Contains(player))
+            {
+                winWeight += weight;
+            }
+        }
         
-        GameResult gameResult = state.DetermineGameResults(voteTotals);
-        
-        return gameResult.WinningPlayers.Contains(player);
+        return winWeight / totalWeight;
     }    
     
     public static float GetAssumedStartRoleVictoryProbabilities(Player player, GameState state, GameRole role)
@@ -68,17 +82,14 @@ public static class VotingHelper
         }
 
         // Given these roles, assume the player voted for the person who gives them the highest win probability (randomize ties)
-        int wins = 0;
+        float winPercent = 0;
         foreach (var perm in permutations)
         {
-            if (DoesPlayerWinWithBestVotingOptions(player, perm))
-            {
-                wins++;
-            }
+            winPercent += PlayerWinPercentWithBestVotingOption(player, perm);
         }
 
         // Return the average win probability for the player
-        return wins / (float)permutations.Count;
+        return winPercent / permutations.Count;
     }
 
     public static List<GameState> GetPossibleGameStatesForPlayer(Player player, GameState state)
