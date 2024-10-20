@@ -7,6 +7,8 @@ public class VotingPhase : GamePhase
 {
     public override GameState Run(GameState newState)
     {
+        newState.AddEvent(new GamePhaseAnnouncedEvent("Everyone, vote for one other player."));
+        
         Dictionary<Player, Player> votes = new();
         foreach (var p in newState.Players)
         {

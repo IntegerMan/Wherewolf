@@ -46,7 +46,6 @@ public class HumanController : PlayerController
 
     public override GameRole GetInitialRoleClaim(Player player, GameState gameState)
     {
-        
         SelectionPrompt<GameRole> prompt = new();
         prompt.Title("What role are you claiming you started as? (Actual: " + gameState.GetStartRole(player).AsMarkdown() + ")");
         prompt.AddChoices(gameState.Roles.Distinct());

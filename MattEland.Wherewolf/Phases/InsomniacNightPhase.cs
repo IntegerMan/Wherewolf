@@ -7,6 +7,8 @@ public class InsomniacNightPhase : GamePhase
 {
     public override GameState Run(GameState newState)
     {
+        newState.AddEvent(new GamePhaseAnnouncedEvent("Insomniac, wake up and look at your card."));
+        
         InsomniacSawFinalCardEvent? insomniacEvent = BuildInsomniacEventIfRelevant(newState);
         if (insomniacEvent is not null)
         {

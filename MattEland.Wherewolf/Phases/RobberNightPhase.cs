@@ -9,6 +9,8 @@ public class RobberNightPhase : GamePhase
     
     public override GameState Run(GameState newState)
     {
+        newState.AddEvent(new GamePhaseAnnouncedEvent("Robber, wake up and exchange cards with another player, then look at your new card."));
+        
         GameSlot? robber = newState.PlayerSlots.SingleOrDefault(p => newState.GetStartRole(p) == GameRole.Robber);
         if (robber is not null)
         {

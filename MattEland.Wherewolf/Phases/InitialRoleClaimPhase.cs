@@ -7,6 +7,8 @@ public class InitialRoleClaimPhase : GamePhase
 {
     public override GameState Run(GameState newState)
     {
+        newState.AddEvent(new GamePhaseAnnouncedEvent("Everyone, wake up and claim the role you started as."));
+        
         foreach (var player in newState.Players)
         {
             GameRole role = player.Controller.GetInitialRoleClaim(player, newState);
