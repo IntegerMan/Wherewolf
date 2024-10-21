@@ -16,8 +16,8 @@ public class RandomController : PlayerController
     public override string SelectLoneWolfCenterCard(string[] centerSlotNames) 
         => centerSlotNames.ElementAt(_rand.Next(centerSlotNames.Length));
 
-    public override string SelectRobberTarget(string[] otherPlayerNames)
-        => otherPlayerNames.ElementAt(_rand.Next(otherPlayerNames.Length));
+    public override Player SelectRobberTarget(Player[] otherPlayers, GameState state, Player robber)
+        => otherPlayers.ElementAt(_rand.Next(otherPlayers.Length));
 
     public override Player GetPlayerVote(Player votingPlayer, GameState gameState)
         => gameState.Players.Where(p => p != votingPlayer).ElementAt(_rand.Next(gameState.Players.Count() - 1));

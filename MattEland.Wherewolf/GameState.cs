@@ -187,12 +187,24 @@ public class GameState
 
     private GameState RunNext()
     {
-        if (CurrentPhase is null)
+        GamePhase? phase = CurrentPhase;
+        if (phase is null)
             throw new InvalidOperationException("Cannot run the next phase; no current phase");
 
         GameState nextState = new(this, Support);
 
-        return CurrentPhase.Run(nextState);
+        foreach (var player in Players) 
+        {
+            player.Controller.RunningPhase(phase, this);
+        }
+        GameState next = phase.Run(nextState);
+
+        foreach (var player in Players) 
+        {
+            player.Controller.RanPhase(phase, this);
+        }
+        
+        return next;
     }
 
     public bool IsGameOver => _remainingPhases.Count == 0;

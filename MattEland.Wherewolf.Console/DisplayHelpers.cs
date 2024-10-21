@@ -83,6 +83,9 @@ public static class DisplayHelpers
         {
             message = message.Replace(role.ToString(), role.AsMarkdown(), StringComparison.OrdinalIgnoreCase);
         }
+        
+        message = message.Replace("Werewolves", "[Maroon]Werewolves[/]", StringComparison.OrdinalIgnoreCase);
+        message = message.Replace("Everyone", "[White Bold]Everyone[/]", StringComparison.OrdinalIgnoreCase);
 
         return message;
     }

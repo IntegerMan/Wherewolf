@@ -19,10 +19,10 @@ public class FixedSelectionController : PlayerController
         return centerSlotNames.Single(s => s == next);
     }
 
-    public override string SelectRobberTarget(string[] otherPlayerNames)
+    public override Player SelectRobberTarget(Player[] otherPlayers, GameState state, Player robber)
     {
         string next = _selection.Dequeue();
-        return otherPlayerNames.Single(s => s == next);
+        return otherPlayers.Single(s => s.Name == next);
     }
 
     public override Player GetPlayerVote(Player votingPlayer, GameState gameState)

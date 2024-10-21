@@ -1,5 +1,6 @@
 using MattEland.Wherewolf.Controllers;
 using MattEland.Wherewolf.Events;
+using MattEland.Wherewolf.Phases;
 using MattEland.Wherewolf.Probability;
 using MattEland.Wherewolf.Roles;
 using Spectre.Console;
@@ -8,6 +9,13 @@ namespace MattEland.Wherewolf.Console;
 
 public class HumanController : PlayerController
 {
+    public override void RanPhase(GamePhase phase, GameState gameState)
+    {
+        base.RanPhase(phase, gameState);
+
+        AnsiConsole.WriteLine();
+    }
+
     public override string SelectLoneWolfCenterCard(string[] centerSlotNames)
     {
         return AnsiConsole.Prompt(new SelectionPrompt<string>()
@@ -15,13 +23,24 @@ public class HumanController : PlayerController
             .AddChoices(centerSlotNames));
     }
 
-    public override string SelectRobberTarget(string[] otherPlayerNames)
+    public override Player SelectRobberTarget(Player[] otherPlayers, GameState state, Player robber)
     {
-        SelectionPrompt<string> prompt = new SelectionPrompt<string>();
-        prompt.Title("Select a player to rob");
-        prompt.AddChoices(otherPlayerNames);
+        PlayerProbabilities probs = state.CalculateProbabilities(robber);
+        SelectionPrompt<Player> prompt = new();
+        prompt.Title(robber.GetPlayerMarkup() + ", select a player to rob");
+        prompt.AddChoices(otherPlayers);
         prompt.HighlightStyle(new Style(foreground: Color.White));
-        // TODO: prompt.Converter = p => p.GetPlayerMarkup();
+        prompt.Converter = p =>
+        {
+            // TODO: This should use current probabilities as of before this phase, not the start probabilities
+            IEnumerable<string> playerProbs = probs.GetStartProbabilities(state.GetPlayerSlot(p))
+                .Where(r => r.Value > 0)
+                .OrderByDescending(r => r.Value)
+                .ThenBy(r => r.Key.ToString())
+                .Select(r => $"{r.Key.AsMarkdown()} {r.Value:P2}");
+            
+            return $"{p.GetPlayerMarkup()} ({string.Join(", ", playerProbs)})";
+        };
 
         return AnsiConsole.Prompt(prompt);
     }

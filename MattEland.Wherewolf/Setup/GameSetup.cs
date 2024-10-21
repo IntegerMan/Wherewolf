@@ -94,6 +94,14 @@ public class GameSetup
 
         _phases.Clear();
         _phases.AddRange(phases.OrderBy(p => p.Order));
+        
+        // Link backwards
+        GamePhase? priorPhase = null;
+        foreach (var phase in _phases)
+        {
+            phase.PriorPhase = priorPhase;
+            priorPhase = phase;
+        }
     }
 
     internal void Validate()
@@ -157,7 +165,7 @@ public class GameSetup
             _phasePermutations["Setup"].Add(state);
         }
     }
-
+    
     public IEnumerable<GameState> GetPermutationsAtPhase(GamePhase? currentPhase)
     {
         if (!_phasePermutations.Any())

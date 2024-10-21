@@ -15,13 +15,11 @@ public class RobberNightPhase : GamePhase
         if (robber is not null)
         {
             // Figure out who we're robbing
-            string[] targets = newState.Players.Where(p => p != robber.Player)
-                                               .Select(p => p.Name)
+            Player[] targets = newState.Players.Where(p => p != robber.Player)
                                                .ToArray();
-            string targetName = robber.Player!.Controller.SelectRobberTarget(targets);
-            GameSlot target = newState.PlayerSlots.Single(p => p.Name == targetName);
+            Player target = robber.Player!.Controller.SelectRobberTarget(targets, newState, robber.Player);
             
-            newState = PerformRobbery(newState, target, robber, broadcast: true);
+            newState = PerformRobbery(newState, newState.GetPlayerSlot(target), robber, broadcast: true);
         }
 
         return newState;
