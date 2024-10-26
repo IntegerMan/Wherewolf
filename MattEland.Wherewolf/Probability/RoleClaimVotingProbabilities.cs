@@ -29,8 +29,8 @@ public static class RoleClaimVotingProbabilities
         {
             PlayerProbabilities targetProbs = perm.CalculateProbabilities(otherPlayer);
             SlotRoleProbabilities claimerStartProbs = targetProbs.GetStartProbabilities(perm.GetPlayerSlot(claimer));
-            double prob = claimerStartProbs[roleClaim];
-            totalProbability += prob;
+            SlotProbability slotProbs = claimerStartProbs[roleClaim];
+            totalProbability += slotProbs.Probability;
             timesEvaluated++;
         }
         

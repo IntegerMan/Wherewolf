@@ -112,9 +112,11 @@ public static class DisplayHelpers
             List<string> values = [otherSlot.GetSlotMarkup()];
             foreach (var role in orderedRoles)
             {
-                double probability = slotProbabilities[role];
-                var probStr = GetFormattedPercent(probability);
-
+                SlotProbability slotProbability = slotProbabilities[role];
+                double probability = slotProbability.Probability;
+                string probStr = $"{GetFormattedPercent(probability)} " +
+                                 $"{string.Join(", ", slotProbability.SupportingClaims.Select(p => p.GetPlayerMarkup()))}";
+                
                 values.Add(probStr);
             }
             probabilitiesTable.AddRow(values.ToArray());

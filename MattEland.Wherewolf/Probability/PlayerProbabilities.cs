@@ -15,7 +15,7 @@ public class PlayerProbabilities
             _currentRoleProbabilities[slot] = probabilities;
         }
 
-        probabilities.SetProbability(role, support, population);
+        probabilities.SetProbability(role, support, population, Enumerable.Empty<Player>());
     }
 
     public void RegisterStartRoleProbabilities(GameSlot slot, GameRole role, double support, double population)
@@ -26,7 +26,7 @@ public class PlayerProbabilities
             _startRoleProbabilities[slot] = probabilities;
         }
 
-        probabilities.SetProbability(role, support, population);
+        probabilities.SetProbability(role, support, population, Enumerable.Empty<Player>());
     }
     
 

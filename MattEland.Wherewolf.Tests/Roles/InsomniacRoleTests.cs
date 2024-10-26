@@ -3,7 +3,6 @@ using MattEland.Wherewolf.Events;
 using MattEland.Wherewolf.Probability;
 using MattEland.Wherewolf.Roles;
 using MattEland.Wherewolf.Setup;
-using MattEland.Wherewolf.Tests.Helpers;
 
 namespace MattEland.Wherewolf.Tests.Roles;
 
@@ -21,7 +20,7 @@ public class InsomniacRoleTests : RoleTestBase
         SlotRoleProbabilities playerProbabilities = playerProbs.GetCurrentProbabilities(gameState.GetPlayerSlot(player));
 
         // Assert
-        playerProbabilities.Role[GameRole.Insomniac].ShouldBe(1);
+        playerProbabilities.Role[GameRole.Insomniac].Probability.ShouldBe(1);
     }
     
     [Fact]
@@ -66,7 +65,7 @@ public class InsomniacRoleTests : RoleTestBase
         SlotRoleProbabilities playerProbabilities = playerProbs.GetCurrentProbabilities(gameState.GetPlayerSlot(player));
 
         // Assert
-        playerProbabilities[GameRole.Insomniac].ShouldBe(1);
+        playerProbabilities[GameRole.Insomniac].Probability.ShouldBe(1);
     }
     
     [Fact]
@@ -82,7 +81,7 @@ public class InsomniacRoleTests : RoleTestBase
 
         // Assert
         gameState.GetPlayerSlot(player).Role.ShouldBe(GameRole.Robber);
-        playerProbabilities[GameRole.Robber].ShouldBe(1);
+        playerProbabilities[GameRole.Robber].Probability.ShouldBe(1);
     }
         
     [Fact]
@@ -98,7 +97,7 @@ public class InsomniacRoleTests : RoleTestBase
         SlotRoleProbabilities thiefProbabilities = playerProbs.GetStartProbabilities(gameState.GetPlayerSlot(robber));
 
         // Assert
-        thiefProbabilities[GameRole.Robber].ShouldBeLessThan(1);
+        thiefProbabilities[GameRole.Robber].Probability.ShouldBeLessThan(1);
     }
     
     private static GameState RunInsomniacGame(bool robPlayer)
