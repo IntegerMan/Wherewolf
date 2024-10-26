@@ -8,16 +8,24 @@ public class VotingPhase : GamePhase
     public override GameState Run(GameState newState)
     {
         newState.AddEvent(new GamePhaseAnnouncedEvent("Everyone, vote for one other player."));
-        
+
+        List<VotedEvent> voteEvents = new(newState.Players.Count());
         Dictionary<Player, Player> votes = new();
         foreach (var p in newState.Players)
         {
             Player vote = p.Controller.GetPlayerVote(p, newState);
             
-            newState.AddEvent(new VotedEvent(p, vote));
+            voteEvents.Add(new VotedEvent(p, vote));
             votes[p] = vote;
         }
 
+        // Add all the vote events.
+        // This is done after votes are gathered so later players don't see votes of earlier players until all have voted
+        foreach (var vote in voteEvents)
+        {
+            newState.AddEvent(vote);
+        }
+        
         Dictionary<Player,int> votingResults = VotingHelper.GetVotingResults(votes);
         GameResult result = newState.DetermineGameResults(votingResults);
         newState.GameResult = result;

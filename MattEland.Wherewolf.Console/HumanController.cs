@@ -1,3 +1,4 @@
+using System.Text;
 using MattEland.Wherewolf.Controllers;
 using MattEland.Wherewolf.Events;
 using MattEland.Wherewolf.Phases;
@@ -72,8 +73,10 @@ public class HumanController : PlayerController
         prompt.Converter = r =>
         {
             float winProb = VotingHelper.GetAssumedStartRoleVictoryProbabilities(player, gameState, r);
-                
-            return $"{r.AsMarkdown()} ({RoleClaimVotingProbabilities.CalculateAverageBeliefProbability(gameState, player, r):P2} Likely to be believed, {winProb:P2} probable to win)";
+            return $"{r.AsMarkdown()} (Est. Avg. Probability: {string.Join(", ", 
+                gameState.Players.Where(p => p != player)
+                                 .Select(p => $"{p.GetPlayerMarkup()}: {RoleClaimVotingProbabilities.CalculateAverageBeliefProbability(gameState, player, p, r):P2}")
+                )}, {winProb:P2} probable to win)";
         };
         
         return AnsiConsole.Prompt(prompt);

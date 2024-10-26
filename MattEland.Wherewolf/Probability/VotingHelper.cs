@@ -69,6 +69,10 @@ public static class VotingHelper
                                                   .ToList();
         
         // Remove ones where other players started as roles the player knows they couldn't have started as
+        /* If this is enabled the player won't consider claiming roles that can't be true for all players.
+         This can cause issues if the player was a robber and robbed a unique role when they're looking at claiming that
+         unique role, since they know for sure one other player will not believe the claim. Victory would still be possible
+         but it'd be harder. Maybe enable this and tweak logic once support-based world consideration is implemented?
         PlayerProbabilities probabilities = state.CalculateProbabilities(player);
         foreach (var otherPlayer in state.Players.Where(p => p != player))
         {
@@ -80,6 +84,7 @@ public static class VotingHelper
                 }
             }
         }
+        */
 
         // Given these roles, assume the player voted for the person who gives them the highest win probability (randomize ties)
         float winPercent = 0;
@@ -87,7 +92,7 @@ public static class VotingHelper
         {
             winPercent += PlayerWinPercentWithBestVotingOption(player, perm);
         }
-
+        
         // Return the average win probability for the player
         return winPercent / permutations.Count;
     }
