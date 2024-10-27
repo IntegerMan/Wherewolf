@@ -16,4 +16,7 @@ public class StartRoleClaimedEvent : GameEvent
 
     public override string Description => $"{Player.Name} claimed their starting role was {ClaimedRole}";
     public override bool IsPossibleInGameState(GameState state) => state.Roles.Contains(ClaimedRole);
+
+    public bool IsClaimValidFor(GameState gameState) 
+        => gameState.GetStartRole(Player) == ClaimedRole;
 }

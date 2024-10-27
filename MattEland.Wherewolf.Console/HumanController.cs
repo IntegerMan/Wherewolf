@@ -36,7 +36,7 @@ public class HumanController : PlayerController
             // TODO: This should use current probabilities as of before this phase, not the start probabilities
             IEnumerable<string> playerProbs = probs.GetStartProbabilities(state.GetPlayerSlot(p))
                 .Where(r => r.Value.Probability > 0)
-                .OrderByDescending(r => r.Value)
+                .OrderByDescending(r => r.Value.Probability)
                 .ThenBy(r => r.Key.ToString())
                 .Select(r => $"{r.Key.AsMarkdown()} {r.Value.Probability:P2}");
             
@@ -77,6 +77,7 @@ public class HumanController : PlayerController
     
     public override Player GetPlayerVote(Player votingPlayer, GameState gameState)
     {
+        DisplayHelpers.RenderProbabilitiesTable(votingPlayer, gameState.Setup, gameState, isStart: true);
         DisplayHelpers.RenderProbabilitiesTable(votingPlayer, gameState.Setup, gameState, isStart: false);
         
         Dictionary<Player, float> probs = VotingHelper.GetVoteVictoryProbabilities(votingPlayer, gameState);

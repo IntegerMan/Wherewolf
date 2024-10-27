@@ -10,11 +10,26 @@ public static class VotingHelper
     {
         List<Dictionary<Player, Player>> permutations = state.Setup.GetVotingPermutations().ToList();
 
-        // Build a collection of results based on who the player voted for - for every world this player thinks might be valid
+        // Build a collection of results based on whom the player voted for - for every world this player thinks might be valid
         Dictionary<Player, List<GameResult>> results = new();
         foreach (var possibleState in GetPossibleGameStatesForPlayer(player, state))
         {
-            AddGameStateVoteResultPossibilities(possibleState, player, permutations, results);
+            foreach (var perm in (IEnumerable<Dictionary<Player, Player>>)permutations)
+            {
+                Dictionary<Player, int> votes = GetVotingResults(perm);
+            
+                GameResult gameResult = possibleState.DetermineGameResults(votes);
+
+                Player action = perm[player];
+                if (!results.TryGetValue(action, out List<GameResult>? value))
+                {
+                    results[action] = [gameResult];
+                }
+                else
+                {
+                    value.Add(gameResult);
+                }
+            }
         }
 
         // Calculate win % for each
@@ -25,9 +40,9 @@ public static class VotingHelper
         }
 
         return winProbability;
-    }        
-    
-    public static float PlayerWinPercentWithBestVotingOption(Player player, GameState state)
+    }
+
+    private static float CalculatePlayerWinPercentWithBestVotingOption(Player player, GameState state)
     {
         // Build a set of probabilities for each player voting for each other player
         Dictionary<Player, Dictionary<Player, float>> playerVoteProbabilities = new();
@@ -51,7 +66,6 @@ public static class VotingHelper
             }
 
             totalWeight += weight;
-            
             if (gameResult.WinningPlayers.Contains(player))
             {
                 winWeight += weight;
@@ -87,14 +101,18 @@ public static class VotingHelper
         */
 
         // Given these roles, assume the player voted for the person who gives them the highest win probability (randomize ties)
+        // We're going to weight the results, though, so things that are claimed are treated more likely vote targets than non-claims
+        int totalWeight = 0;
         float winPercent = 0;
         foreach (var perm in permutations)
         {
-            winPercent += PlayerWinPercentWithBestVotingOption(player, perm);
+            int permWeight = 1 + perm.ObservedSupport(player);
+            winPercent += CalculatePlayerWinPercentWithBestVotingOption(player, perm) * permWeight;
+            totalWeight += permWeight;
         }
         
-        // Return the average win probability for the player
-        return winPercent / permutations.Count;
+        // Return the average win probability for the player, taking probability of scenarios given claims into account
+        return winPercent / totalWeight;
     }
 
     public static List<GameState> GetPossibleGameStatesForPlayer(Player player, GameState state)
@@ -110,28 +128,8 @@ public static class VotingHelper
             throw new InvalidOperationException("No valid permutations found for phase " + (currentPhase?.Name ?? "Voting") + " for player " + player.Name);
         
         return validPermutations;
-    }    
-    
-    private static void AddGameStateVoteResultPossibilities(GameState state, Player player, IEnumerable<Dictionary<Player, Player>> permutations, Dictionary<Player, List<GameResult>> results)
-    {
-        foreach (var perm in permutations)
-        {
-            Dictionary<Player, int> votes = GetVotingResults(perm);
-            
-            GameResult gameResult = state.DetermineGameResults(votes);
+    }
 
-            Player action = perm[player];
-            if (!results.ContainsKey(action))
-            {
-                results[action] = [gameResult];
-            }
-            else
-            {
-                results[action].Add(gameResult);
-            }
-        }
-    }    
-    
     public static Dictionary<Player, int> GetVotingResults(Dictionary<Player, Player> votes)
     {
         // TODO: This will probably need to be revisited to support the Hunter / Bodyguard

@@ -139,6 +139,8 @@ public class GameState
 
         double startPopulation = validPermutations.Sum(p => p.Support);
         
+        IEnumerable<StartRoleClaimedEvent> claimedEvents = Events.OfType<StartRoleClaimedEvent>();
+
         // Calculate starting role probabilities
         foreach (var slot in AllSlots)
         {
@@ -148,13 +150,20 @@ public class GameState
                 double startRoleSupport = validPermutations.Where(p => p.Root[slot.Name].Role == role)
                                               .Sum(p => p.Support);
 
-                probabilities.RegisterStartRoleProbabilities(slot, role, startRoleSupport, startPopulation);
+                IEnumerable<Player> startSupport = claimedEvents
+                    .Where(e => e.ClaimedRole == role && e.Player == slot.Player && e.IsClaimValidFor(this))
+                    .Select(e => e.Player)
+                    .Where(e => e != player)
+                    .Distinct();
+                
+                probabilities.RegisterStartRoleProbabilities(slot, role, startRoleSupport, startPopulation, startSupport);
                 
                 // Figure out the number of possible worlds where the slot currently has the role
-                double currentRoleSupport = validPermutations.Where(p => p[slot.Name].Role == role)
-                    .Sum(p => p.Support);
+                IEnumerable<GameState> endGameStates = validPermutations.Where(p => p[slot.Name].Role == role);
+                double currentRoleSupport = endGameStates.Sum(p => p.Support);
 
-                probabilities.RegisterCurrentRoleProbabilities(slot, role, currentRoleSupport, startPopulation);
+
+                probabilities.RegisterCurrentRoleProbabilities(slot, role, currentRoleSupport, startPopulation, Enumerable.Empty<Player>());
             }
         }
         
@@ -329,5 +338,12 @@ public class GameState
             .Select(kvp => kvp.Key);
 
         return new GameResult(dead, this);
+    }
+
+    public int ObservedSupport(Player player)
+    {
+        IEnumerable<StartRoleClaimedEvent> claims = Events.OfType<StartRoleClaimedEvent>();
+        
+        return claims.Count(c => c.Player != player && c.IsClaimValidFor(this));
     }
 }
