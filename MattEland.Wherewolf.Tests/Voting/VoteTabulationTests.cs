@@ -12,7 +12,7 @@ public class VoteTabulationTests
         Player a = new("A", new RandomController(new ClaimStartingRoleStrategy()));
         Player b = new("B", new RandomController(new ClaimStartingRoleStrategy()));
         Player c = new("C", new RandomController(new ClaimStartingRoleStrategy()));
-        Dictionary<Player, Player?> votes = new Dictionary<Player, Player?>
+        Dictionary<Player, Player> votes = new()
         {
             [a] = b,
             [b] = c,
@@ -20,7 +20,7 @@ public class VoteTabulationTests
         };
 
         // Act
-        var results = VotingHelper.GetVotingResults(votes);
+        Dictionary<Player, int> results = VotingHelper.GetVotingResults(votes);
         
         // Assert
         results.ShouldNotBeNull();
@@ -37,7 +37,7 @@ public class VoteTabulationTests
         Player a = new("A", new RandomController(new ClaimStartingRoleStrategy()));
         Player b = new("B", new RandomController(new ClaimStartingRoleStrategy()));
         Player c = new("C", new RandomController(new ClaimStartingRoleStrategy()));
-        Dictionary<Player, Player?> votes = new Dictionary<Player, Player?>
+        Dictionary<Player, Player> votes = new()
         {
             [a] = b,
             [b] = c,
@@ -63,7 +63,7 @@ public class VoteTabulationTests
         Player b = new("B", new RandomController(new ClaimStartingRoleStrategy()));
         Player c = new("C", new RandomController(new ClaimStartingRoleStrategy()));
         Player d = new("D", new RandomController(new ClaimStartingRoleStrategy()));
-        Dictionary<Player, Player?> votes = new Dictionary<Player, Player?>
+        Dictionary<Player, Player> votes = new()
         {
             [a] = b,
             [b] = c,

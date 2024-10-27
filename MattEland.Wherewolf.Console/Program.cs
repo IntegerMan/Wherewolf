@@ -20,12 +20,12 @@ try
         new Player("Matt", new HumanController())
     );
     gameSetup.AddRoles(
+        GameRole.Villager,
+        GameRole.Werewolf,
+        GameRole.Villager,
         GameRole.Insomniac,
         GameRole.Werewolf,
-        GameRole.Robber,
-        GameRole.Villager,
-        GameRole.Villager,
-        GameRole.Werewolf
+        GameRole.Robber
     );
 
     GameState gameState = gameSetup.StartGame(new NonShuffler());
@@ -50,6 +50,9 @@ try
     GameResult result = gameState.GameResult!;
     AnsiConsole.WriteLine();
     AnsiConsole.MarkupLine("[Bold]Game Results[/]");
+    AnsiConsole.MarkupLine("Votes: " + string.Join(", ", result.Votes.OrderByDescending(kvp => kvp.Value)
+                                                                     .ThenBy(kvp => kvp.Key.ToString())
+                                                                     .Select(kvp => $"{kvp.Key.GetPlayerMarkup()}: {kvp.Value}")));
     AnsiConsole.MarkupLine("Dead Players: " + string.Join(", ", result.DeadPlayers.Select(p => p.GetPlayerMarkup())));
     AnsiConsole.MarkupLine("Winning Team: " + result.WinningTeam.AsMarkdown());
     AnsiConsole.MarkupLine("Winning Players: " +

@@ -3,7 +3,7 @@ using MattEland.Wherewolf.Roles;
 
 namespace MattEland.Wherewolf;
 
-public class GameResult(IEnumerable<Player> dead, GameState state)
+public class GameResult(IEnumerable<Player> dead, GameState state, IDictionary<Player, int> votes)
 {
     public IEnumerable<Player> DeadPlayers { get; } = dead.ToImmutableList();
     public IEnumerable<GameRole> DeadRoles => DeadPlayers.Select(p => state[p.Name].Role).Distinct();
@@ -51,4 +51,6 @@ public class GameResult(IEnumerable<Player> dead, GameState state)
             return state.PlayerSlots.Where(s => s.Role.GetTeam() != winningTeam).Select(s => s.Player!);
         }
     }
+
+    public IDictionary<Player, int> Votes => votes;
 }

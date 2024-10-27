@@ -321,7 +321,7 @@ public class GameState
         }
     }
 
-    public GameResult DetermineGameResults(Dictionary<Player, int> votes)
+    public GameResult DetermineGameResults(IDictionary<Player, int> votes)
     {
         int totalVotes = votes.Values.Sum();
         int skips = votes.Keys.Count - totalVotes;
@@ -337,7 +337,7 @@ public class GameState
         IEnumerable<Player> dead = votes.Where(kvp => kvp.Value == maxVotes && kvp.Value >= minExecutionVotes)
             .Select(kvp => kvp.Key);
 
-        return new GameResult(dead, this);
+        return new GameResult(dead, this, votes);
     }
 
     public int ObservedSupport(Player player)
