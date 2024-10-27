@@ -36,6 +36,7 @@ public static class VotingHelper
         Dictionary<Player, float> winProbability = new();
         foreach (var kvp in results)
         {
+            // TODO: It'd be good to factor in likelihood of each scenario based on claims
             winProbability[kvp.Key] = kvp.Value.Average(r => r.WinningPlayers.Contains(player) ? 1f : 0f);
         }
 

@@ -7,6 +7,8 @@ public class RandomController : PlayerController
     private readonly Random _rand;
     private readonly IRoleClaimStrategy _roleClaimStrategy;
 
+    protected Random Rand => _rand;
+
     public RandomController(IRoleClaimStrategy? roleClaimStrategy = null, Random? rand = null)
     {
         _roleClaimStrategy = roleClaimStrategy ?? new ClaimStartingRoleStrategy();

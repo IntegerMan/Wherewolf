@@ -15,8 +15,8 @@ try
     // Game setup
     GameSetup gameSetup = new();
     gameSetup.AddPlayers(
-        new Player("Rufus", new RandomController(new ClaimStartingRoleStrategy())),
-        new Player("Jimothy", new RandomController(new ClaimStartingRoleStrategy())),
+        new Player("Rufus", new RandomOptimalVoteController(new ClaimStartingRoleStrategy())),
+        new Player("Jimothy", new RandomOptimalVoteController(new ClaimStartingRoleStrategy())),
         new Player("Matt", new HumanController())
     );
     gameSetup.AddRoles(
