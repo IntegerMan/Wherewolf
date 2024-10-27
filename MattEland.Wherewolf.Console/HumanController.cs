@@ -75,17 +75,23 @@ public class HumanController : PlayerController
         return AnsiConsole.Prompt(prompt);
     }
     
-    public override Player GetPlayerVote(Player votingPlayer, GameState gameState)
+    public override Player GetPlayerVote(Player votingPlayer, GameState state)
     {
-        DisplayHelpers.RenderProbabilitiesTable(votingPlayer, gameState.Setup, gameState, isStart: true);
-        DisplayHelpers.RenderProbabilitiesTable(votingPlayer, gameState.Setup, gameState, isStart: false);
+        DisplayHelpers.RenderProbabilitiesTable(votingPlayer, state.Setup, state, isStart: true);
+        DisplayHelpers.RenderProbabilitiesTable(votingPlayer, state.Setup, state, isStart: false);
         
-        Dictionary<Player, float> probs = VotingHelper.GetVoteVictoryProbabilities(votingPlayer, gameState);
+        Dictionary<Player, float> probs = VotingHelper.GetVoteVictoryProbabilities(votingPlayer, state);
         
         SelectionPrompt<Player> prompt = new();
         prompt.Title("Who are you voting for?");
-        prompt.AddChoices(gameState.Players.Where(p => p != votingPlayer));
-        prompt.Converter = p => $"{p.GetPlayerMarkup()} ({probs[p]:P2} likely to result in a win)";
+        prompt.AddChoices(state.Players.Where(p => p != votingPlayer));
+        prompt.Converter = p =>
+        {
+            string claim = state.Events.OfType<StartRoleClaimedEvent>().First(c => c.Player == p).ClaimedRole
+                .AsMarkdown();
+            
+            return $"{p.GetPlayerMarkup()} (Claims {claim}, {probs[p]:P2} likely to result in a win)";
+        };
 
         return AnsiConsole.Prompt(prompt);
     }

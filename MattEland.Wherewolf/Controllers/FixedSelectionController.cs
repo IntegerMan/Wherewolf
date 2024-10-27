@@ -25,10 +25,10 @@ public class FixedSelectionController : PlayerController
         return otherPlayers.Single(s => s.Name == next);
     }
 
-    public override Player GetPlayerVote(Player votingPlayer, GameState gameState)
+    public override Player GetPlayerVote(Player votingPlayer, GameState state)
     {
         string next = _selection.Dequeue();
-        return gameState.Players.Single(p => p.Name == next);
+        return state.Players.Single(p => p.Name == next);
     }
 
     public override GameRole GetInitialRoleClaim(Player player, GameState gameState) => 
