@@ -1,5 +1,4 @@
 using MattEland.Wherewolf.Probability;
-using MattEland.Wherewolf.Roles;
 
 namespace MattEland.Wherewolf.Controllers;
 
@@ -12,7 +11,6 @@ public class RandomOptimalVoteController : RandomController
 
     public override Player GetPlayerVote(Player votingPlayer, GameState state)
     {
-        // TODO: This doesn't take claims into account
         Dictionary<Player, float> bestProbabilities = VotingHelper.GetVoteVictoryProbabilities(votingPlayer, state);
 
         float maxProb = bestProbabilities.Values.Max();

@@ -14,11 +14,20 @@ public static class VotingHelper
         Dictionary<Player, List<GameResult>> results = new();
         foreach (var possibleState in GetPossibleGameStatesForPlayer(player, state))
         {
+            int supportingClaims = possibleState.Events
+                .OfType<StartRoleClaimedEvent>()
+                .Count(e => e.Player != player && e.IsClaimValidFor(possibleState));
+
+            if (supportingClaims > 0)
+            {
+                int i = 42;
+            }
+            
             foreach (var perm in (IEnumerable<Dictionary<Player, Player>>)permutations)
             {
                 Dictionary<Player, int> votes = GetVotingResults(perm);
-            
-                GameResult gameResult = possibleState.DetermineGameResults(votes);
+                
+                GameResult gameResult = possibleState.DetermineGameResults(votes, supportingClaims);
 
                 Player action = perm[player];
                 if (!results.TryGetValue(action, out List<GameResult>? value))
@@ -36,8 +45,19 @@ public static class VotingHelper
         Dictionary<Player, float> winProbability = new();
         foreach (var kvp in results)
         {
-            // TODO: It'd be good to factor in likelihood of each scenario based on claims
-            winProbability[kvp.Key] = kvp.Value.Average(r => r.WinningPlayers.Contains(player) ? 1f : 0f);
+            IEnumerable<GameResult> resultsForPlayer = kvp.Value;
+            
+            float totalWeight = 0;
+            float cumulatedValue = 0;
+            
+            foreach (var result in resultsForPlayer)
+            {
+                int weight = 1 + result.SupportingClaims;
+                totalWeight += weight;
+                cumulatedValue += result.WinningPlayers.Contains(player) ? weight : 0;
+            }
+            
+            winProbability[kvp.Key] = cumulatedValue / totalWeight;
         }
 
         return winProbability;
@@ -52,15 +72,19 @@ public static class VotingHelper
             playerVoteProbabilities[votingPlayer] = GetVoteVictoryProbabilities(votingPlayer, state);
         }
         
+        int supportingClaims = state.Events
+            .OfType<StartRoleClaimedEvent>()
+            .Count(e => e.Player != player && e.IsClaimValidFor(state));
+        
         // Loop through each combination of votes and calculate the win probability for the player
         float winWeight = 0f;
         float totalWeight = 0f;
         foreach (var perm in state.Setup.GetVotingPermutations())
         {
             Dictionary<Player, int> votes = GetVotingResults(perm);
-            GameResult gameResult = state.DetermineGameResults(votes);
-
-            float weight = 0f;
+            GameResult gameResult = state.DetermineGameResults(votes, supportingClaims);
+            
+            float weight = 0f; // TODO: The weight here might want to also include supportingClaims
             foreach (var kvp in perm)
             {
                 weight += playerVoteProbabilities[kvp.Key][kvp.Value];
