@@ -28,7 +28,7 @@ public class HumanController : PlayerController
     {
         PlayerProbabilities probs = state.CalculateProbabilities(robber);
         SelectionPrompt<Player> prompt = new();
-        prompt.Title(robber.GetPlayerMarkup() + ", select a player to rob");
+        prompt.Title($"{robber.GetPlayerMarkup()}, select a player to rob");
         prompt.AddChoices(otherPlayers);
         prompt.HighlightStyle(new Style(foreground: Color.White));
         prompt.Converter = p =>
@@ -38,7 +38,7 @@ public class HumanController : PlayerController
                 .Where(r => r.Value.Probability > 0)
                 .OrderByDescending(r => r.Value.Probability)
                 .ThenBy(r => r.Key.ToString())
-                .Select(r => $"{r.Key.AsMarkdown()} {r.Value.Probability:P2}");
+                .Select(r => $"{r.Key.AsMarkdown()} {r.Value.Probability:P0}");
             
             return $"{p.GetPlayerMarkup()} ({string.Join(", ", playerProbs)})";
         };
@@ -56,7 +56,7 @@ public class HumanController : PlayerController
     {
         SelectionPrompt<GameRole> prompt = new();
         GameRole startRole = gameState.GetStartRole(player);
-        prompt.Title("What role are you claiming you started as? (Actual: " + startRole.AsMarkdown() + ")");
+        prompt.Title($"What role are you claiming you started as? (Actual: {startRole.AsMarkdown()})");
         prompt.HighlightStyle(new Style(foreground: Color.White));
         
         List<GameRole> roles = [startRole];
@@ -68,8 +68,8 @@ public class HumanController : PlayerController
             float winProb = VotingHelper.GetAssumedStartRoleVictoryProbabilities(player, gameState, r);
             return $"{r.AsMarkdown()} (Est. Avg. Probability: {string.Join(", ", 
                 gameState.Players.Where(p => p != player)
-                                 .Select(p => $"{p.GetPlayerMarkup()}: {RoleClaimVotingProbabilities.CalculateAverageBeliefProbability(gameState, player, p, r):P2}")
-                )}, {winProb:P2} probable to win)";
+                                 .Select(p => $"{p.GetPlayerMarkup()}: {RoleClaimVotingProbabilities.CalculateAverageBeliefProbability(gameState, player, p, r):P0}")
+                )}, {winProb:P0} probable to win)";
         };
         
         return AnsiConsole.Prompt(prompt);
@@ -77,10 +77,8 @@ public class HumanController : PlayerController
     
     public override Player GetPlayerVote(Player votingPlayer, GameState state)
     {
-        DisplayHelpers.RenderProbabilitiesTable(votingPlayer, state.Setup, state, isStart: true);
-        DisplayHelpers.RenderProbabilitiesTable(votingPlayer, state.Setup, state, isStart: false);
-        
-        Dictionary<Player, float> probs = VotingHelper.GetVoteVictoryProbabilities(votingPlayer, state);
+        PlayerProbabilities playerProbs = state.CalculateProbabilities(votingPlayer);
+        Dictionary<Player, float> victoryProbs = VotingHelper.GetVoteVictoryProbabilities(votingPlayer, state);
         
         SelectionPrompt<Player> prompt = new();
         prompt.Title("Who are you voting for?");
@@ -90,7 +88,19 @@ public class HumanController : PlayerController
             string claim = state.Events.OfType<StartRoleClaimedEvent>().First(c => c.Player == p).ClaimedRole
                 .AsMarkdown();
             
-            return $"{p.GetPlayerMarkup()} (Claims {claim}, {probs[p]:P2} likely to result in a win)";
+            /*
+            string start = string.Join(", ", playerProbs.GetStartProbabilities(state.GetPlayerSlot(p))
+                .Where(kvp => kvp.Value.Probability > 0)
+                .OrderByDescending(kvp => kvp.Value.Probability)
+                .Select(kvp => $"{kvp.Key.AsMarkdown()}: {kvp.Value.Probability:P0}"));
+                */
+            
+            string current = string.Join(", ", playerProbs.GetCurrentProbabilities(state.GetPlayerSlot(p))
+                .Where(kvp => kvp.Value.Probability > 0)
+                .OrderByDescending(kvp => kvp.Value.Probability)
+                .Select(kvp => $"{kvp.Value.Probability:P0} {kvp.Key.AsMarkdown()}"));
+            
+            return $"{p.GetPlayerMarkup()} (Claims {claim}, ({current}), {victoryProbs[p]:P0} win chance)";
         };
 
         return AnsiConsole.Prompt(prompt);

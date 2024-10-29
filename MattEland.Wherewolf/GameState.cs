@@ -161,8 +161,7 @@ public class GameState
                 // Figure out the number of possible worlds where the slot currently has the role
                 IEnumerable<GameState> endGameStates = validPermutations.Where(p => p[slot.Name].Role == role);
                 double currentRoleSupport = endGameStates.Sum(p => p.Support);
-
-
+                
                 probabilities.RegisterCurrentRoleProbabilities(slot, role, currentRoleSupport, startPopulation, Enumerable.Empty<Player>());
             }
         }

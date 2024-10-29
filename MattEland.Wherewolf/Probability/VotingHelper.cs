@@ -12,10 +12,14 @@ public static class VotingHelper
 
         // Build a collection of results based on whom the player voted for - for every world this player thinks might be valid
         Dictionary<Player, List<GameResult>> results = new();
-        foreach (var possibleState in GetPossibleGameStatesForPlayer(player, state))
+        List<StartRoleClaimedEvent> claims = state.Events
+            .OfType<StartRoleClaimedEvent>()
+            .ToList();
+        
+        IEnumerable<GameState> possibleStates = GetPossibleGameStatesForPlayer(player, state);
+        foreach (var possibleState in possibleStates)
         {
-            int supportingClaims = possibleState.Events
-                .OfType<StartRoleClaimedEvent>()
+            int supportingClaims = claims
                 .Count(e => e.Player != player && e.IsClaimValidFor(possibleState));
 
             if (supportingClaims > 0)

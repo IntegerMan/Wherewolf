@@ -53,10 +53,10 @@ try
     AnsiConsole.MarkupLine("Votes: " + string.Join(", ", result.Votes.OrderByDescending(kvp => kvp.Value)
                                                                      .ThenBy(kvp => kvp.Key.ToString())
                                                                      .Select(kvp => $"{kvp.Key.GetPlayerMarkup()}: {kvp.Value}")));
-    AnsiConsole.MarkupLine("Dead Players: " + string.Join(", ", result.DeadPlayers.Select(p => p.GetPlayerMarkup())));
-    AnsiConsole.MarkupLine("Winning Team: " + result.WinningTeam.AsMarkdown());
-    AnsiConsole.MarkupLine("Winning Players: " +
-                           string.Join(", ", result.WinningPlayers.Select(p => p.GetPlayerMarkup())));
+    AnsiConsole.MarkupLine("Dead Players: " + string.Join(", ", result.DeadPlayers.Select(p =>
+        $"{p.GetPlayerMarkup()} ({gameState.GetPlayerSlot(p).Role.AsMarkdown()})")));
+    AnsiConsole.MarkupLine($"Winning Team: {result.WinningTeam.AsMarkdown()}");
+    AnsiConsole.MarkupLine($"Winning Players: {string.Join(", ", result.WinningPlayers.Select(p => p.GetPlayerMarkup()))}");
     AnsiConsole.WriteLine();
 
     // Post-Game Information
