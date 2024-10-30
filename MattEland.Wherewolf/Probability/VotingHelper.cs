@@ -104,41 +104,31 @@ public static class VotingHelper
         return winWeight / totalWeight;
     }    
     
-    public static float GetAssumedStartRoleVictoryProbabilities(Player player, GameState state, GameRole role)
+    public static float GetRoleClaimWinProbabilityPerception(Player player, GameState state, GameRole role)
     {
-        // Identify all starting game states where the player is the role
-        List<GameState> permutations = state.Setup.GetSetupPermutations()
-                                                  .Where(s => s.GetStartRole(player) == role)
-                                                  .ToList();
+        // Identify all possible current game states, given what the player knows
+        List<GameEvent> knownEvents = state.Events.Where(e => e.IsObservedBy(player))
+            .ToList();
+        List<GameState> permutations = state.Setup.GetPermutationsAtPhase(state.CurrentPhase)
+            .Where(p => p.IsPossibleGivenEvents(knownEvents))
+            .ToList();
         
-        // Remove ones where other players started as roles the player knows they couldn't have started as
-        /* If this is enabled the player won't consider claiming roles that can't be true for all players.
-         This can cause issues if the player was a robber and robbed a unique role when they're looking at claiming that
-         unique role, since they know for sure one other player will not believe the claim. Victory would still be possible
-         but it'd be harder. Maybe enable this and tweak logic once support-based world consideration is implemented?
-        PlayerProbabilities probabilities = state.CalculateProbabilities(player);
-        foreach (var otherPlayer in state.Players.Where(p => p != player))
-        {
-            foreach (var prob in probabilities.GetStartProbabilities(state.GetPlayerSlot(otherPlayer)))
-            {
-                if (prob.Value <= 0f)
-                {
-                    permutations = permutations.Where(s => s.GetStartRole(otherPlayer) != prob.Key).ToList();
-                }
-            }
-        }
-        */
-
-        // Given these roles, assume the player voted for the person who gives them the highest win probability (randomize ties)
-        // We're going to weight the results, though, so things that are claimed are treated more likely vote targets than non-claims
+        // Given this permutation mix, figure out how often this role claim results in victory
         int totalWeight = 0;
         float winPercent = 0;
         foreach (var perm in permutations)
         {
-            int permWeight = 1 + perm.ObservedSupport(player);
-            winPercent += CalculatePlayerWinPercentWithBestVotingOption(player, perm) * permWeight;
+            GameState possibleWorld = new GameState(perm, perm.Support);
+            possibleWorld.AddEvent(new StartRoleClaimedEvent(player, role), broadcastToController: false);
+            
+            int permWeight = 1 + possibleWorld.ObservedSupport(player);
+            winPercent += CalculatePlayerWinPercentWithBestVotingOption(player, possibleWorld) * permWeight;
             totalWeight += permWeight;
         }
+        
+        // Sanity check for divide by zero scenarios (no permutations found for player)
+        if (totalWeight <= 0)
+            throw new InvalidOperationException("No possible game states found for player " + player.Name);
         
         // Return the average win probability for the player, taking probability of scenarios given claims into account
         return winPercent / totalWeight;
@@ -180,7 +170,7 @@ public static class VotingHelper
         return voteTotals;
     }
 
-    public static Player GetMostLikelyWinningVote(GameState world, Player votingPlayer, Random randomizer)
+    public static Player GetMostLikelyWinningVote(GameState world, Player votingPlayer, Random rand)
     {
         Dictionary<Player, float> probabilities = GetVoteVictoryProbabilities(votingPlayer, world);
 
@@ -190,6 +180,6 @@ public static class VotingHelper
 
         return atMax.Count == 1 
             ? atMax.First().Key 
-            : atMax[randomizer.Next(atMax.Count)].Key;
+            : atMax[rand.Next(atMax.Count)].Key;
     }
 }

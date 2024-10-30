@@ -1,4 +1,5 @@
 using MattEland.Wherewolf.Probability;
+using MattEland.Wherewolf.Roles;
 
 namespace MattEland.Wherewolf.Controllers;
 

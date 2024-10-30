@@ -65,7 +65,7 @@ public class HumanController : PlayerController
         
         prompt.Converter = r =>
         {
-            float winProb = VotingHelper.GetAssumedStartRoleVictoryProbabilities(player, gameState, r);
+            float winProb = VotingHelper.GetRoleClaimWinProbabilityPerception(player, gameState, r);
             return $"{r.AsMarkdown()} (Est. Avg. Probability: {string.Join(", ", 
                 gameState.Players.Where(p => p != player)
                                  .Select(p => $"{p.GetPlayerMarkup()}: {RoleClaimVotingProbabilities.CalculateAverageBeliefProbability(gameState, player, p, r):P0}")

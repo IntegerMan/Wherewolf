@@ -13,10 +13,12 @@ try
     AnsiConsole.WriteLine();
 
     // Game setup
+    Random rand = new();
     GameSetup gameSetup = new();
+    IRoleClaimStrategy roleClaimStrategy = new ClaimSafestRoleStrategy(rand);
     gameSetup.AddPlayers(
-        new Player("Rufus", new RandomOptimalVoteController(new ClaimStartingRoleStrategy())),
-        new Player("Jimothy", new RandomOptimalVoteController(new ClaimStartingRoleStrategy())),
+        new Player("Rufus", new RandomOptimalVoteController(roleClaimStrategy)),
+        new Player("Jimothy", new RandomOptimalVoteController(roleClaimStrategy)),
         new Player("Matt", new HumanController())
     );
     gameSetup.AddRoles(
@@ -51,12 +53,15 @@ try
     AnsiConsole.WriteLine();
     AnsiConsole.MarkupLine("[Bold]Game Results[/]");
     AnsiConsole.MarkupLine("Votes: " + string.Join(", ", result.Votes.OrderByDescending(kvp => kvp.Value)
-                                                                     .ThenBy(kvp => kvp.Key.ToString())
-                                                                     .Select(kvp => $"{kvp.Key.GetPlayerMarkup()}: {kvp.Value}")));
+        .ThenBy(kvp => kvp.Key.ToString())
+        .Select(kvp => $"{kvp.Key.GetPlayerMarkup()}: {kvp.Value}")));
     AnsiConsole.MarkupLine("Dead Players: " + string.Join(", ", result.DeadPlayers.Select(p =>
         $"{p.GetPlayerMarkup()} ({gameState.GetPlayerSlot(p).Role.AsMarkdown()})")));
     AnsiConsole.MarkupLine($"Winning Team: {result.WinningTeam.AsMarkdown()}");
-    AnsiConsole.MarkupLine($"Winning Players: {string.Join(", ", result.WinningPlayers.Select(p => p.GetPlayerMarkup()))}");
+    AnsiConsole.MarkupLine(
+        $"Winning Players: {string.Join(", ", result.WinningPlayers.Select(p => $"{p.GetPlayerMarkup()} ({gameState.GetPlayerSlot(p).Role.AsMarkdown()})"))
+        }");
+
     AnsiConsole.WriteLine();
 
     // Post-Game Information
