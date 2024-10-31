@@ -1,5 +1,7 @@
+using MattEland.Wherewolf.Events;
 using MattEland.Wherewolf.Probability;
 using MattEland.Wherewolf.Roles;
+using MoreLinq;
 
 namespace MattEland.Wherewolf.Controllers;
 
@@ -14,32 +16,21 @@ public class ClaimSafestRoleStrategy : IRoleClaimStrategy
     
     public GameRole GetRoleClaim(Player player, GameState gameState)
     {
-        GameRole startRole = gameState.GetStartRole(player);
-
-        /*
-        if (startRole.GetTeam() == Team.Villager)
+        float best = -1f;
+        GameRole role = gameState.GetStartRole(player);
+        foreach (var possibleNextState in gameState.PossibleNextStates.OrderBy(_ => _rand.Next()))
         {
-            return startRole;
-        }
-        */
-
-        float best = -1;
-        Dictionary<GameRole, float> roleVictoryProbabilities = new();
-
-        foreach (var role in gameState.Roles.Distinct())
-        {
-            float probability = VotingHelper.GetRoleClaimWinProbabilityPerception(player, gameState, role);
-            if (probability > best)
+            float winPercent = VotingHelper.GetStateVictoryPercent(player, possibleNextState);
+            if (winPercent > best)
             {
-                best = probability;
+                best = winPercent;
+                StartRoleClaimedEvent claimEvent = possibleNextState.Events.OfType<StartRoleClaimedEvent>()
+                    .First(e => e.Player == player);
+
+                role = claimEvent.ClaimedRole;
             }
-            
-            roleVictoryProbabilities[role] = probability;
         }
         
-        return roleVictoryProbabilities
-            .Where(kvp => Math.Abs(kvp.Value - best) < double.Epsilon)
-            .MinBy(_ => _rand.Next())
-            .Key;
+        return role;
     }
 }

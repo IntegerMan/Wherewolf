@@ -14,7 +14,7 @@ public class InitialRoleClaimPhase : GamePhase
     
     public override GameState Run(GameState newState)
     {
-        GameRole role = _player.Controller.GetInitialRoleClaim(_player, newState);
+        GameRole role = _player.Controller.GetInitialRoleClaim(_player, newState.Parent!);
         newState.AddEvent(new StartRoleClaimedEvent(_player, role));
 
         return newState;
@@ -24,7 +24,15 @@ public class InitialRoleClaimPhase : GamePhase
     public override string Name => $"Initial Role Claim ({_player.Name})";
     public override IEnumerable<GameState> BuildPossibleStates(GameState priorState)
     {
-        // TODO: May need to create permutations potentially for each player's potential claims.
-        yield return new GameState(priorState, priorState.Support);
+        List<GameRole> roles = priorState.Roles.Distinct().ToList();
+        double support = priorState.Support / roles.Count;
+        
+        foreach (var role in roles)
+        {
+            GameState possibleState = new GameState(priorState, support);
+            possibleState.AddEvent(new StartRoleClaimedEvent(_player, role), broadcastToController: false);
+            
+            yield return possibleState;
+        }
     }
 }

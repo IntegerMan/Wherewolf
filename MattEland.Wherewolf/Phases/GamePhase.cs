@@ -9,4 +9,6 @@ public abstract class GamePhase
     public GamePhase? PriorPhase { get; internal set; }
 
     public abstract IEnumerable<GameState> BuildPossibleStates(GameState priorState);
+
+    public override string ToString() => Name;
 } 

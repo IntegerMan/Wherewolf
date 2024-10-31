@@ -13,8 +13,6 @@ public class HumanController : PlayerController
     public override void RanPhase(GamePhase phase, GameState gameState)
     {
         base.RanPhase(phase, gameState);
-
-        AnsiConsole.WriteLine();
     }
 
     public override string SelectLoneWolfCenterCard(string[] centerSlotNames)
@@ -33,7 +31,6 @@ public class HumanController : PlayerController
         prompt.HighlightStyle(new Style(foreground: Color.White));
         prompt.Converter = p =>
         {
-            // TODO: This should use current probabilities as of before this phase, not the start probabilities
             IEnumerable<string> playerProbs = probs.GetStartProbabilities(state.GetPlayerSlot(p))
                 .Where(r => r.Value.Probability > 0)
                 .OrderByDescending(r => r.Value.Probability)
@@ -63,14 +60,18 @@ public class HumanController : PlayerController
         roles.AddRange(gameState.Roles.Where(r => r != startRole).Distinct());
         prompt.AddChoices(roles);
         
+        IEnumerable<Player> otherPlayers = gameState.Players.Where(p => p != player);
+        
+        /*
         prompt.Converter = r =>
         {
-            float winProb = VotingHelper.GetRoleClaimWinProbabilityPerception(player, gameState, r);
-            return $"{r.AsMarkdown()} (Est. Avg. Probability: {string.Join(", ", 
-                gameState.Players.Where(p => p != player)
+            float winProb = 0; //VotingHelper.GetRoleClaimWinProbabilityPerception(player, gameState, r);
+
+            return $"{r.AsMarkdown()} (Est. Avg. Probability: {string.Join(", ", otherPlayers
                                  .Select(p => $"{p.GetPlayerMarkup()}: {RoleClaimVotingProbabilities.CalculateAverageBeliefProbability(gameState, player, p, r):P0}")
                 )}, {winProb:P0} probable to win)";
         };
+        */
         
         return AnsiConsole.Prompt(prompt);
     }

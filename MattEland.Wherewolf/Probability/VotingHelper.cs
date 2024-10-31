@@ -132,6 +132,34 @@ public static class VotingHelper
         
         // Return the average win probability for the player, taking probability of scenarios given claims into account
         return winPercent / totalWeight;
+    }    
+    
+    
+    public static float GetStateVictoryPercent(Player player, GameState state)
+    {
+        // Identify all possible current game states, given what the player knows
+        List<GameEvent> knownEvents = state.Events.Where(e => e.IsObservedBy(player))
+            .ToList();
+        List<GameState> permutations = state.Setup.GetPermutationsAtPhase(state.CurrentPhase)
+            .Where(p => p.IsPossibleGivenEvents(knownEvents))
+            .ToList();
+        
+        // Given this permutation mix, figure out how often this path results in victory for the player
+        int totalWeight = 0;
+        float winPercent = 0;
+        foreach (var perm in permutations)
+        {
+            int permWeight = 1 + perm.ObservedSupport(player);
+            winPercent += CalculatePlayerWinPercentWithBestVotingOption(player, perm) * permWeight;
+            totalWeight += permWeight;
+        }
+        
+        // Sanity check for divide by zero scenarios (no permutations found for player)
+        if (totalWeight <= 0)
+            throw new InvalidOperationException("No possible game states found for player " + player.Name);
+        
+        // Return the average win probability for the player, taking probability of scenarios given claims into account
+        return winPercent / totalWeight;
     }
 
     public static List<GameState> GetPossibleGameStatesForPlayer(Player player, GameState state)
