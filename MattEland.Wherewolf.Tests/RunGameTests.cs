@@ -1,3 +1,4 @@
+using MattEland.Wherewolf.Setup;
 using MattEland.Wherewolf.Tests.Helpers;
 
 namespace MattEland.Wherewolf.Tests;

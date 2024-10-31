@@ -1,6 +1,8 @@
 using MattEland.Wherewolf.Events;
 using MattEland.Wherewolf.Phases;
+using MattEland.Wherewolf.Probability;
 using MattEland.Wherewolf.Roles;
+using MattEland.Wherewolf.Setup;
 
 namespace MattEland.Wherewolf;
 
@@ -133,10 +135,12 @@ public class GameState
         PlayerProbabilities probabilities = new();
 
         // Start with all permutations
-        List<GameState> validPermutations = GetPossibleGameStatesForPlayer(player);
+        List<GameState> validPermutations = VotingHelper.GetPossibleGameStatesForPlayer(player, this);
 
         double startPopulation = validPermutations.Sum(p => p.Support);
         
+        IEnumerable<StartRoleClaimedEvent> claimedEvents = Events.OfType<StartRoleClaimedEvent>();
+
         // Calculate starting role probabilities
         foreach (var slot in AllSlots)
         {
@@ -146,31 +150,25 @@ public class GameState
                 double startRoleSupport = validPermutations.Where(p => p.Root[slot.Name].Role == role)
                                               .Sum(p => p.Support);
 
-                probabilities.RegisterStartRoleProbabilities(slot, role, startRoleSupport, startPopulation);
+                IEnumerable<Player> startSupport = claimedEvents
+                    .Where(e => e.ClaimedRole == role && e.Player == slot.Player && e.IsClaimValidFor(this))
+                    .Select(e => e.Player)
+                    .Where(e => e != player)
+                    .Distinct();
+                
+                probabilities.RegisterStartRoleProbabilities(slot, role, startRoleSupport, startPopulation, startSupport);
                 
                 // Figure out the number of possible worlds where the slot currently has the role
-                double currentRoleSupport = validPermutations.Where(p => p[slot.Name].Role == role)
-                    .Sum(p => p.Support);
-
-                probabilities.RegisterCurrentRoleProbabilities(slot, role, currentRoleSupport, startPopulation);
+                IEnumerable<GameState> endGameStates = validPermutations.Where(p => p[slot.Name].Role == role);
+                double currentRoleSupport = endGameStates.Sum(p => p.Support);
+                
+                probabilities.RegisterCurrentRoleProbabilities(slot, role, currentRoleSupport, startPopulation, Enumerable.Empty<Player>());
             }
         }
         
         return probabilities;
     }
 
-    private List<GameState> GetPossibleGameStatesForPlayer(Player player)
-    {
-        List<GameEvent> observedEvents = Events.Where(e => e.IsObservedBy(player)).ToList();
-        List<GameState> phasePermutations = _gameSetup.GetPermutationsAtPhase(CurrentPhase).ToList();
-        if (!phasePermutations.Any())
-            throw new InvalidOperationException("No phase permutations found for phase " + (CurrentPhase?.Name ?? "Voting") + " for player " + player.Name);
-        
-        List<GameState> validPermutations = phasePermutations.Where(p => p.IsPossibleGivenEvents(observedEvents)).ToList();
-        if (!validPermutations.Any())
-            throw new InvalidOperationException("No valid permutations found for phase " + (CurrentPhase?.Name ?? "Voting") + " for player " + player.Name);
-        return validPermutations;
-    }
 
     public GameState RunToEnd()
     {
@@ -186,7 +184,7 @@ public class GameState
 
     public GameState RunToEndOfNight()
     {
-        if (CurrentPhase is VotingPhase)
+        if (CurrentPhase is WakeUpPhase)
         {
             return this;
         }
@@ -197,12 +195,24 @@ public class GameState
 
     private GameState RunNext()
     {
-        if (CurrentPhase is null)
+        GamePhase? phase = CurrentPhase;
+        if (phase is null)
             throw new InvalidOperationException("Cannot run the next phase; no current phase");
 
         GameState nextState = new(this, Support);
 
-        return CurrentPhase.Run(nextState);
+        foreach (var player in Players) 
+        {
+            player.Controller.RunningPhase(phase, this);
+        }
+        GameState next = phase.Run(nextState);
+
+        foreach (var player in Players) 
+        {
+            player.Controller.RanPhase(phase, this);
+        }
+        
+        return next;
     }
 
     public bool IsGameOver => _remainingPhases.Count == 0;
@@ -226,6 +236,7 @@ public class GameState
     public GameState? Parent { get; }
     public GameState Root { get; }
     public GameResult? GameResult { get; internal set; }
+    public GameSetup Setup => _gameSetup;
 
     public void AddEvent(GameEvent newEvent, bool broadcastToController = true)
     {
@@ -309,10 +320,7 @@ public class GameState
         }
     }
 
-    public GameResult DetermineGameResults(Dictionary<Player, Player> votes) 
-        => DetermineGameResults(GameState.GetVotingResults(votes));
-
-    public GameResult DetermineGameResults(Dictionary<Player, int> votes)
+    public GameResult DetermineGameResults(IDictionary<Player, int> votes, int supportingClaims = 0)
     {
         int totalVotes = votes.Values.Sum();
         int skips = votes.Keys.Count - totalVotes;
@@ -328,68 +336,13 @@ public class GameState
         IEnumerable<Player> dead = votes.Where(kvp => kvp.Value == maxVotes && kvp.Value >= minExecutionVotes)
             .Select(kvp => kvp.Key);
 
-        return new GameResult(dead, this);
+        return new GameResult(dead, this, votes, supportingClaims);
     }
 
-    public Dictionary<Player, float> GetVoteVictoryProbabilities(Player player)
+    public int ObservedSupport(Player player)
     {
-        List<Dictionary<Player, Player>> permutations = _gameSetup.GetVotingPermutations().ToList();
-
-        // Build a collection of results based on who the player voted for - for every world this player thinks might be valid
-        Dictionary<Player, List<GameResult>> results = new();
-        foreach (var state in GetPossibleGameStatesForPlayer(player))
-        {
-            state.AddGameStateVoteResultPossibilities(player, permutations, results);
-        }
-
-        // Calculate win % for each
-        Dictionary<Player, float> winProbability = new();
-        foreach (var kvp in results)
-        {
-            winProbability[kvp.Key] = kvp.Value.Average(r => r.WinningPlayers.Contains(player) ? 1f : 0f);
-        }
-
-        return winProbability;
-    }
-    
-    public static Dictionary<Player, int> GetVotingResults(Dictionary<Player, Player> votes)
-    {
-        // TODO: This will probably need to be revisited to support the Hunter / Bodyguard
-
-        Dictionary<Player, int> voteTotals = new();
+        IEnumerable<StartRoleClaimedEvent> claims = Events.OfType<StartRoleClaimedEvent>();
         
-        // Initialize everyone at 0 votes. This ensures they're in the dictionary
-        foreach (var player in votes.Keys)
-        {
-            voteTotals[player] = 0;
-        }
-
-        // Tabulate votes
-        foreach (var target in votes.Values)
-        {
-            voteTotals[target]++;
-        }
-        
-        return voteTotals;
-    }
-
-    private void AddGameStateVoteResultPossibilities(Player player, IEnumerable<Dictionary<Player, Player>> permutations, Dictionary<Player, List<GameResult>> results)
-    {
-        foreach (var perm in permutations)
-        {
-            Dictionary<Player, int> votes = GetVotingResults(perm);
-            
-            GameResult gameResult = DetermineGameResults(votes);
-
-            Player action = perm[player];
-            if (!results.ContainsKey(action))
-            {
-                results[action] = [gameResult];
-            }
-            else
-            {
-                results[action].Add(gameResult);
-            }
-        }
+        return claims.Count(c => c.Player != player && c.IsClaimValidFor(this));
     }
 }

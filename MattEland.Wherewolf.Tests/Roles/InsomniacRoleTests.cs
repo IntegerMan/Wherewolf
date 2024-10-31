@@ -1,7 +1,8 @@
 using MattEland.Wherewolf.Controllers;
 using MattEland.Wherewolf.Events;
+using MattEland.Wherewolf.Probability;
 using MattEland.Wherewolf.Roles;
-using MattEland.Wherewolf.Tests.Helpers;
+using MattEland.Wherewolf.Setup;
 
 namespace MattEland.Wherewolf.Tests.Roles;
 
@@ -19,7 +20,7 @@ public class InsomniacRoleTests : RoleTestBase
         SlotRoleProbabilities playerProbabilities = playerProbs.GetCurrentProbabilities(gameState.GetPlayerSlot(player));
 
         // Assert
-        playerProbabilities.Role[GameRole.Insomniac].ShouldBe(1);
+        playerProbabilities.Role[GameRole.Insomniac].Probability.ShouldBe(1);
     }
     
     [Fact]
@@ -64,7 +65,7 @@ public class InsomniacRoleTests : RoleTestBase
         SlotRoleProbabilities playerProbabilities = playerProbs.GetCurrentProbabilities(gameState.GetPlayerSlot(player));
 
         // Assert
-        playerProbabilities[GameRole.Insomniac].ShouldBe(1);
+        playerProbabilities[GameRole.Insomniac].Probability.ShouldBe(1);
     }
     
     [Fact]
@@ -80,7 +81,7 @@ public class InsomniacRoleTests : RoleTestBase
 
         // Assert
         gameState.GetPlayerSlot(player).Role.ShouldBe(GameRole.Robber);
-        playerProbabilities[GameRole.Robber].ShouldBe(1);
+        playerProbabilities[GameRole.Robber].Probability.ShouldBe(1);
     }
         
     [Fact]
@@ -96,7 +97,7 @@ public class InsomniacRoleTests : RoleTestBase
         SlotRoleProbabilities thiefProbabilities = playerProbs.GetStartProbabilities(gameState.GetPlayerSlot(robber));
 
         // Assert
-        thiefProbabilities[GameRole.Robber].ShouldBeLessThan(1);
+        thiefProbabilities[GameRole.Robber].Probability.ShouldBeLessThan(1);
     }
     
     private static GameState RunInsomniacGame(bool robPlayer)
@@ -104,7 +105,7 @@ public class InsomniacRoleTests : RoleTestBase
         GameSetup setup = new();
         setup.AddPlayers(
             new Player("Player", new RandomController()),
-            new Player("Thief", new FixedSelectionController(robPlayer ? "Player" : "Other", "Player")),
+            new Player("Thief", new FixedSelectionController(new ClaimStartingRoleStrategy(), robPlayer ? "Player" : "Other", "Player")),
             new Player("Other", new RandomController()));
         setup.AddRoles(
             GameRole.Insomniac, // this will go to our player

@@ -1,5 +1,6 @@
 using MattEland.Wherewolf.Controllers;
 using MattEland.Wherewolf.Roles;
+using MattEland.Wherewolf.Setup;
 
 namespace MattEland.Wherewolf.Tests.Voting;
 
@@ -10,9 +11,9 @@ public class VotingOptionDistributionTests
     {
         // Arrange
         GameSetup setup = new();
-        setup.AddPlayers(new Player("A", new RandomController()), 
-            new Player("B", new RandomController()), 
-            new Player("C", new RandomController()));
+        setup.AddPlayers(new Player("A", new RandomController(new ClaimStartingRoleStrategy())), 
+            new Player("B", new RandomController(new ClaimStartingRoleStrategy())), 
+            new Player("C", new RandomController(new ClaimStartingRoleStrategy())));
 
         // Act
         var permutations = setup.GetVotingPermutations().ToList();
@@ -26,10 +27,10 @@ public class VotingOptionDistributionTests
     {
         // Arrange
         GameSetup setup = new();
-        setup.AddPlayers(new Player("A", new RandomController()), 
-            new Player("B", new RandomController()), 
-            new Player("C", new RandomController()),
-            new Player("D", new RandomController()));
+        setup.AddPlayers(new Player("A", new RandomController(new ClaimStartingRoleStrategy())), 
+            new Player("B", new RandomController(new ClaimStartingRoleStrategy())), 
+            new Player("C", new RandomController(new ClaimStartingRoleStrategy())),
+            new Player("D", new RandomController(new ClaimStartingRoleStrategy())));
 
         // Act
         var permutations = setup.GetVotingPermutations().ToList();
@@ -43,11 +44,11 @@ public class VotingOptionDistributionTests
     {
         // Arrange
         GameSetup setup = new();
-        setup.AddPlayers(new Player("A", new RandomController()), 
-            new Player("B", new RandomController()), 
-            new Player("C", new RandomController()),
-            new Player("D", new RandomController()),
-            new Player("E", new RandomController()));
+        setup.AddPlayers(new Player("A", new RandomController(new ClaimStartingRoleStrategy())), 
+            new Player("B", new RandomController(new ClaimStartingRoleStrategy())), 
+            new Player("C", new RandomController(new ClaimStartingRoleStrategy())),
+            new Player("D", new RandomController(new ClaimStartingRoleStrategy())),
+            new Player("E", new RandomController(new ClaimStartingRoleStrategy())));
 
         // Act
         var permutations = setup.GetVotingPermutations().ToList();

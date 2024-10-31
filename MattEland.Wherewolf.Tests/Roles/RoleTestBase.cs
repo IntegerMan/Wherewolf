@@ -1,5 +1,6 @@
 using MattEland.Wherewolf.Controllers;
 using MattEland.Wherewolf.Roles;
+using MattEland.Wherewolf.Setup;
 using MattEland.Wherewolf.Tests.Helpers;
 
 namespace MattEland.Wherewolf.Tests.Roles;
@@ -25,8 +26,8 @@ public abstract class RoleTestBase
     private static void AddPlayersToGame(GameSetup gameSetup)
     {
         gameSetup.AddPlayers(
-            new Player("A", new RandomController()), 
-            new Player("B", new RandomController()), 
-            new Player("C", new RandomController()));
+            new Player("A", new RandomController(new ClaimStartingRoleStrategy())), 
+            new Player("B", new RandomController(new ClaimStartingRoleStrategy())), 
+            new Player("C", new RandomController(new ClaimStartingRoleStrategy())));
     }
 }

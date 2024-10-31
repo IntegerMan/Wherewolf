@@ -1,4 +1,5 @@
 using MattEland.Wherewolf.Controllers;
+using MattEland.Wherewolf.Setup;
 
 namespace MattEland.Wherewolf.Tests;
 
@@ -21,7 +22,7 @@ public class GamePlayerTests
     {
         // Arrange
         GameSetup gameSetup = new();
-        Player player = new("Test", new RandomController());
+        Player player = new("Test", new RandomController(new ClaimStartingRoleStrategy()));
         
         // Act
         gameSetup.AddPlayer(player);
@@ -36,7 +37,7 @@ public class GamePlayerTests
     {
         // Arrange
         GameSetup gameSetup = new();
-        Player player = new("Test", new RandomController());
+        Player player = new("Test", new RandomController(new ClaimStartingRoleStrategy()));
         gameSetup.AddPlayer(player);
         
         // Act

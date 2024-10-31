@@ -12,6 +12,8 @@ public class SetupNightPhase : GamePhase
     
     public override GameState Run(GameState newState)
     {
+        newState.AddEvent(new GamePhaseAnnouncedEvent("Everyone, go to sleep."));
+
         return newState;
     }
 

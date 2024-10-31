@@ -2,7 +2,7 @@
 using MattEland.Wherewolf.Roles;
 using MoreLinq;
 
-namespace MattEland.Wherewolf;
+namespace MattEland.Wherewolf.Setup;
 
 public class GameSetup
 {
@@ -83,8 +83,15 @@ public class GameSetup
         List<GamePhase> phases = new()
         {
             new SetupNightPhase(), // This diagnostic phase should always be present
+            new WakeUpPhase(),
             new VotingPhase() // This is what will trigger voting
         };
+        
+        // Each player gets their on role claim phase - this makes it easier to represent possible claims for evaluation
+        foreach (var player in Players)
+        {
+            phases.Add(new InitialRoleClaimPhase(player));
+        }
         
         foreach (var nightPhaseType in Roles.Distinct().SelectMany(r => r.GetNightPhasesForRole()))
         {
@@ -93,6 +100,14 @@ public class GameSetup
 
         _phases.Clear();
         _phases.AddRange(phases.OrderBy(p => p.Order));
+        
+        // Link backwards
+        GamePhase? priorPhase = null;
+        foreach (var phase in _phases)
+        {
+            phase.PriorPhase = priorPhase;
+            priorPhase = phase;
+        }
     }
 
     internal void Validate()
@@ -156,7 +171,7 @@ public class GameSetup
             _phasePermutations["Setup"].Add(state);
         }
     }
-
+    
     public IEnumerable<GameState> GetPermutationsAtPhase(GamePhase? currentPhase)
     {
         if (!_phasePermutations.Any())
@@ -211,4 +226,6 @@ public class GameSetup
             }
         }
     }
+
+    public List<GameState> GetSetupPermutations() => _phasePermutations["Setup"];
 }

@@ -9,17 +9,17 @@ public class RobberNightPhase : GamePhase
     
     public override GameState Run(GameState newState)
     {
+        newState.AddEvent(new GamePhaseAnnouncedEvent("Robber, wake up and exchange cards with another player, then look at your new card."));
+        
         GameSlot? robber = newState.PlayerSlots.SingleOrDefault(p => newState.GetStartRole(p) == GameRole.Robber);
         if (robber is not null)
         {
             // Figure out who we're robbing
-            string[] targets = newState.Players.Where(p => p != robber.Player)
-                                               .Select(p => p.Name)
+            Player[] targets = newState.Players.Where(p => p != robber.Player)
                                                .ToArray();
-            string targetName = robber.Player!.Controller.SelectRobberTarget(targets);
-            GameSlot target = newState.PlayerSlots.Single(p => p.Name == targetName);
+            Player target = robber.Player!.Controller.SelectRobberTarget(targets, newState, robber.Player);
             
-            newState = PerformRobbery(newState, target, robber, broadcast: true);
+            newState = PerformRobbery(newState, newState.GetPlayerSlot(target), robber, broadcast: true);
         }
 
         return newState;

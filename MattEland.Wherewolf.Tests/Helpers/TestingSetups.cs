@@ -1,5 +1,6 @@
 using MattEland.Wherewolf.Controllers;
 using MattEland.Wherewolf.Roles;
+using MattEland.Wherewolf.Setup;
 
 namespace MattEland.Wherewolf.Tests.Helpers;
 
@@ -10,7 +11,7 @@ public class TestingSetups
         GameSetup setup = new();
         for (int i = 1; i <= playerCount; i++)
         {
-            setup.AddPlayer(new Player($"Player {i}", new RandomController()));
+            setup.AddPlayer(new Player($"Player {i}", new RandomController(new ClaimStartingRoleStrategy())));
             setup.AddRole(GameRole.Villager);
         }
         

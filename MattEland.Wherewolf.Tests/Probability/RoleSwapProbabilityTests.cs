@@ -1,5 +1,7 @@
 using MattEland.Wherewolf.Controllers;
+using MattEland.Wherewolf.Probability;
 using MattEland.Wherewolf.Roles;
+using MattEland.Wherewolf.Setup;
 
 namespace MattEland.Wherewolf.Tests.Probability;
 
@@ -11,7 +13,7 @@ public class RoleSwapProbabilityTests
         // Arrange
         GameSetup gameSetup = new();
         gameSetup.AddPlayers(
-            new Player("Matt", new FixedSelectionController("Rufus")),
+            new Player("Matt", new FixedSelectionController(new ClaimFixedRoleStrategy(GameRole.Insomniac),"Rufus")),
             new Player("Rufus", new RandomController()),
             new Player("Jimothy", new RandomController())
         );
@@ -31,10 +33,10 @@ public class RoleSwapProbabilityTests
         PlayerProbabilities playerProbs = gameState.CalculateProbabilities(matt);
         
         SlotRoleProbabilities endProbabilities = playerProbs.GetCurrentProbabilities(gameState.GetPlayerSlot(matt));
-        endProbabilities[GameRole.Insomniac].ShouldBe(1);
-        endProbabilities[GameRole.Robber].ShouldBe(0);
-        endProbabilities[GameRole.Villager].ShouldBe(0);
-        endProbabilities[GameRole.Werewolf].ShouldBe(0);
+        endProbabilities[GameRole.Insomniac].Probability.ShouldBe(1);
+        endProbabilities[GameRole.Robber].Probability.ShouldBe(0);
+        endProbabilities[GameRole.Villager].Probability.ShouldBe(0);
+        endProbabilities[GameRole.Werewolf].Probability.ShouldBe(0);
     }
     
     [Fact]
@@ -43,7 +45,7 @@ public class RoleSwapProbabilityTests
         // Arrange
         GameSetup gameSetup = new();
         gameSetup.AddPlayers(
-            new Player("Matt", new FixedSelectionController("Rufus")),
+            new Player("Matt", new FixedSelectionController(new ClaimFixedRoleStrategy(GameRole.Insomniac), "Rufus")),
             new Player("Rufus", new RandomController()),
             new Player("Jimothy", new RandomController())
         );
@@ -62,9 +64,9 @@ public class RoleSwapProbabilityTests
         Player matt = gameState.Players.Single(p => p.Name == "Matt");
         PlayerProbabilities playerProbs = gameState.CalculateProbabilities(matt);
         SlotRoleProbabilities startProbs = playerProbs.GetStartProbabilities(gameState.GetPlayerSlot(matt));
-        startProbs[GameRole.Robber].ShouldBe(1);
-        startProbs[GameRole.Insomniac].ShouldBe(0);
-        startProbs[GameRole.Villager].ShouldBe(0);
-        startProbs[GameRole.Werewolf].ShouldBe(0);
+        startProbs[GameRole.Robber].Probability.ShouldBe(1);
+        startProbs[GameRole.Insomniac].Probability.ShouldBe(0);
+        startProbs[GameRole.Villager].Probability.ShouldBe(0);
+        startProbs[GameRole.Werewolf].Probability.ShouldBe(0);
     }    
 }
