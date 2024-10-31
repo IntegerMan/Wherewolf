@@ -83,9 +83,15 @@ public class GameSetup
         List<GamePhase> phases = new()
         {
             new SetupNightPhase(), // This diagnostic phase should always be present
-            new InitialRoleClaimPhase(), // The first day social phase where players claim their roles
+            new WakeUpPhase(),
             new VotingPhase() // This is what will trigger voting
         };
+        
+        // Each player gets their on role claim phase - this makes it easier to represent possible claims for evaluation
+        foreach (var player in Players)
+        {
+            phases.Add(new InitialRoleClaimPhase(player));
+        }
         
         foreach (var nightPhaseType in Roles.Distinct().SelectMany(r => r.GetNightPhasesForRole()))
         {

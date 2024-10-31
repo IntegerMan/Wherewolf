@@ -64,7 +64,7 @@ try
 
     AnsiConsole.WriteLine();
 
-    // Post-Game Information
+    // Post-Game Information  
     DisplayHelpers.DisplaySummaryTable(gameState);
     AnsiConsole.WriteLine();
     return 0;

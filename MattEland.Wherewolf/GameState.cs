@@ -184,7 +184,7 @@ public class GameState
 
     public GameState RunToEndOfNight()
     {
-        if (CurrentPhase is VotingPhase)
+        if (CurrentPhase is WakeUpPhase)
         {
             return this;
         }
