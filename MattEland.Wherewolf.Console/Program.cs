@@ -19,7 +19,7 @@ try
     gameSetup.AddPlayers(
         new Player("Rufus", new RandomOptimalVoteController(roleClaimStrategy)),
         new Player("Jimothy", new RandomOptimalVoteController(roleClaimStrategy)),
-        new Player("Matt", new HumanController())
+        new Player("Matt", new RandomOptimalVoteController(roleClaimStrategy))
     );
     gameSetup.AddRoles(
         GameRole.Villager,
@@ -56,10 +56,10 @@ try
         .ThenBy(kvp => kvp.Key.ToString())
         .Select(kvp => $"{kvp.Key.GetPlayerMarkup()}: {kvp.Value}")));
     AnsiConsole.MarkupLine("Dead Players: " + string.Join(", ", result.DeadPlayers.Select(p =>
-        $"{p.GetPlayerMarkup()} ({gameState.GetPlayerSlot(p).Role.AsMarkdown()})")));
+        $"{p.GetPlayerMarkup()} ({gameState.GetSlot(p).Role.AsMarkdown()})")));
     AnsiConsole.MarkupLine($"Winning Team: {result.WinningTeam.AsMarkdown()}");
     AnsiConsole.MarkupLine(
-        $"Winning Players: {string.Join(", ", result.WinningPlayers.Select(p => $"{p.GetPlayerMarkup()} ({gameState.GetPlayerSlot(p).Role.AsMarkdown()})"))
+        $"Winning Players: {string.Join(", ", result.WinningPlayers.Select(p => $"{p.GetPlayerMarkup()} ({gameState.GetSlot(p).Role.AsMarkdown()})"))
         }");
 
     AnsiConsole.WriteLine();

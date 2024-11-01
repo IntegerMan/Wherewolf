@@ -31,7 +31,7 @@ public class HumanController : PlayerController
         prompt.HighlightStyle(new Style(foreground: Color.White));
         prompt.Converter = p =>
         {
-            IEnumerable<string> playerProbs = probs.GetStartProbabilities(state.GetPlayerSlot(p))
+            IEnumerable<string> playerProbs = probs.GetStartProbabilities(state.GetSlot(p))
                 .Where(r => r.Value.Probability > 0)
                 .OrderByDescending(r => r.Value.Probability)
                 .ThenBy(r => r.Key.ToString())
@@ -86,7 +86,7 @@ public class HumanController : PlayerController
         prompt.AddChoices(state.Players.Where(p => p != votingPlayer));
         prompt.Converter = p =>
         {
-            string claim = state.Events.OfType<StartRoleClaimedEvent>().First(c => c.Player == p).ClaimedRole
+            string claim = state.Claims.First(c => c.Player == p).ClaimedRole
                 .AsMarkdown();
             
             /*
@@ -96,7 +96,7 @@ public class HumanController : PlayerController
                 .Select(kvp => $"{kvp.Key.AsMarkdown()}: {kvp.Value.Probability:P0}"));
                 */
             
-            string current = string.Join(", ", playerProbs.GetCurrentProbabilities(state.GetPlayerSlot(p))
+            string current = string.Join(", ", playerProbs.GetCurrentProbabilities(state.GetSlot(p))
                 .Where(kvp => kvp.Value.Probability > 0)
                 .OrderByDescending(kvp => kvp.Value.Probability)
                 .Select(kvp => $"{kvp.Value.Probability:P0} {kvp.Key.AsMarkdown()}"));

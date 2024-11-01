@@ -22,7 +22,7 @@ public class InsomniacSawFinalCardEvent : GameEvent
     
     public override bool IsPossibleInGameState(GameState state)
     {
-        GameSlot playerSlot = state.GetPlayerSlot(Player);
+        GameSlot playerSlot = state.GetSlot(Player);
         GameRole startRole = state.Root[Player.Name].Role;
         
         return startRole == GameRole.Insomniac && playerSlot.Role == this.Role;

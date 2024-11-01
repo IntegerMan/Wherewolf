@@ -19,6 +19,7 @@ public class InitialRoleClaimPhaseTests : GameTestsBase
 
         // Assert
         endState.Events.OfType<StartRoleClaimedEvent>().Count().ShouldBe(gameSetup.Players.Count());
+        endState.Claims.Count().ShouldBe(gameSetup.Players.Count());
     }    
     
     [Fact]

@@ -17,7 +17,7 @@ public class InsomniacRoleTests : RoleTestBase
 
         // Act
         PlayerProbabilities playerProbs = gameState.CalculateProbabilities(player);
-        SlotRoleProbabilities playerProbabilities = playerProbs.GetCurrentProbabilities(gameState.GetPlayerSlot(player));
+        SlotRoleProbabilities playerProbabilities = playerProbs.GetCurrentProbabilities(gameState.GetSlot(player));
 
         // Assert
         playerProbabilities.Role[GameRole.Insomniac].Probability.ShouldBe(1);
@@ -62,7 +62,7 @@ public class InsomniacRoleTests : RoleTestBase
 
         // Act
         PlayerProbabilities playerProbs = gameState.CalculateProbabilities(player);
-        SlotRoleProbabilities playerProbabilities = playerProbs.GetCurrentProbabilities(gameState.GetPlayerSlot(player));
+        SlotRoleProbabilities playerProbabilities = playerProbs.GetCurrentProbabilities(gameState.GetSlot(player));
 
         // Assert
         playerProbabilities[GameRole.Insomniac].Probability.ShouldBe(1);
@@ -77,10 +77,10 @@ public class InsomniacRoleTests : RoleTestBase
 
         // Act
         PlayerProbabilities playerProbs = gameState.CalculateProbabilities(player);
-        SlotRoleProbabilities playerProbabilities = playerProbs.GetCurrentProbabilities(gameState.GetPlayerSlot(player));
+        SlotRoleProbabilities playerProbabilities = playerProbs.GetCurrentProbabilities(gameState.GetSlot(player));
 
         // Assert
-        gameState.GetPlayerSlot(player).Role.ShouldBe(GameRole.Robber);
+        gameState.GetSlot(player).Role.ShouldBe(GameRole.Robber);
         playerProbabilities[GameRole.Robber].Probability.ShouldBe(1);
     }
         
@@ -94,7 +94,7 @@ public class InsomniacRoleTests : RoleTestBase
 
         // Act
         PlayerProbabilities playerProbs = gameState.CalculateProbabilities(insomniac);
-        SlotRoleProbabilities thiefProbabilities = playerProbs.GetStartProbabilities(gameState.GetPlayerSlot(robber));
+        SlotRoleProbabilities thiefProbabilities = playerProbs.GetStartProbabilities(gameState.GetSlot(robber));
 
         // Assert
         thiefProbabilities[GameRole.Robber].Probability.ShouldBeLessThan(1);

@@ -24,8 +24,7 @@ public class ClaimSafestRoleStrategy : IRoleClaimStrategy
             if (winPercent > best)
             {
                 best = winPercent;
-                StartRoleClaimedEvent claimEvent = possibleNextState.Events.OfType<StartRoleClaimedEvent>()
-                    .First(e => e.Player == player);
+                StartRoleClaimedEvent claimEvent = possibleNextState.Claims.First(e => e.Player == player);
 
                 role = claimEvent.ClaimedRole;
             }

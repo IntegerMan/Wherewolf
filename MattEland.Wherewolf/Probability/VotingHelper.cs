@@ -11,37 +11,26 @@ public static class VotingHelper
         List<Dictionary<Player, Player>> permutations = state.Setup.GetVotingPermutations().ToList();
 
         // Build a collection of results based on whom the player voted for - for every world this player thinks might be valid
-        Dictionary<Player, List<GameResult>> results = new();
-        List<StartRoleClaimedEvent> claims = state.Events
-            .OfType<StartRoleClaimedEvent>()
-            .ToList();
+        Dictionary<Player, List<GameResult>> results = new(state.Players.Count() - 1);
+        foreach (var otherPlayer in state.Players.Where(p => p != player))
+        {
+            results[otherPlayer] = new();
+        }
+        IEnumerable<StartRoleClaimedEvent> claims = state.Claims;
         
         IEnumerable<GameState> possibleStates = GetPossibleGameStatesForPlayer(player, state);
+        Dictionary<Player, int> votes = new();
         foreach (var possibleState in possibleStates)
         {
-            int supportingClaims = claims
-                .Count(e => e.Player != player && e.IsClaimValidFor(possibleState));
-
-            if (supportingClaims > 0)
-            {
-                int i = 42;
-            }
+            int supportingClaims = claims.Count(e => e.Player != player && e.IsClaimValidFor(possibleState));
             
             foreach (var perm in (IEnumerable<Dictionary<Player, Player>>)permutations)
             {
-                Dictionary<Player, int> votes = GetVotingResults(perm);
+                GetVotingResults(perm, votes);
                 
                 GameResult gameResult = possibleState.DetermineGameResults(votes, supportingClaims);
 
-                Player action = perm[player];
-                if (!results.TryGetValue(action, out List<GameResult>? value))
-                {
-                    results[action] = [gameResult];
-                }
-                else
-                {
-                    value.Add(gameResult);
-                }
+                results[perm[player]].Add(gameResult);
             }
         }
 
@@ -76,16 +65,15 @@ public static class VotingHelper
             playerVoteProbabilities[votingPlayer] = GetVoteVictoryProbabilities(votingPlayer, state);
         }
         
-        int supportingClaims = state.Events
-            .OfType<StartRoleClaimedEvent>()
-            .Count(e => e.Player != player && e.IsClaimValidFor(state));
+        int supportingClaims = state.Claims.Count(e => e.Player != player && e.IsClaimValidFor(state));
         
         // Loop through each combination of votes and calculate the win probability for the player
         float winWeight = 0f;
         float totalWeight = 0f;
+        Dictionary<Player, int> votes = new();
         foreach (var perm in state.Setup.GetVotingPermutations())
         {
-            Dictionary<Player, int> votes = GetVotingResults(perm);
+            GetVotingResults(perm, votes);
             GameResult gameResult = state.DetermineGameResults(votes, supportingClaims);
             
             float weight = 0f; // TODO: The weight here might want to also include supportingClaims
@@ -162,15 +150,15 @@ public static class VotingHelper
         return winPercent / totalWeight;
     }
 
-    public static List<GameState> GetPossibleGameStatesForPlayer(Player player, GameState state)
+    public static IEnumerable<GameState> GetPossibleGameStatesForPlayer(Player player, GameState state)
     {
-        List<GameEvent> observedEvents = state.Events.Where(e => e.IsObservedBy(player)).ToList();
+        IEnumerable<GameEvent> observedEvents = state.Events.Where(e => e.IsObservedBy(player));
         GamePhase? currentPhase = state.CurrentPhase;
-        List<GameState> phasePermutations = state.Setup.GetPermutationsAtPhase(currentPhase).ToList();
+        IEnumerable<GameState> phasePermutations = state.Setup.GetPermutationsAtPhase(currentPhase);
         if (!phasePermutations.Any())
             throw new InvalidOperationException("No phase permutations found for phase " + (currentPhase?.Name ?? "Voting") + " for player " + player.Name);
-        
-        List<GameState> validPermutations = phasePermutations.Where(p => p.IsPossibleGivenEvents(observedEvents)).ToList();
+
+        IEnumerable<GameState> validPermutations = phasePermutations.Where(p => p.IsPossibleGivenEvents(observedEvents));
         if (!validPermutations.Any())
             throw new InvalidOperationException("No valid permutations found for phase " + (currentPhase?.Name ?? "Voting") + " for player " + player.Name);
         
@@ -179,10 +167,15 @@ public static class VotingHelper
 
     public static Dictionary<Player, int> GetVotingResults(Dictionary<Player, Player> votes)
     {
+        Dictionary<Player, int> voteTotals = new();
+
+        return GetVotingResults(votes, voteTotals);
+    }
+
+    private static Dictionary<Player, int> GetVotingResults(Dictionary<Player, Player> votes, Dictionary<Player, int> voteTotals)
+    {
         // TODO: This will probably need to be revisited to support the Hunter / Bodyguard
 
-        Dictionary<Player, int> voteTotals = new();
-        
         // Initialize everyone at 0 votes. This ensures they're in the dictionary
         foreach (var player in votes.Keys)
         {

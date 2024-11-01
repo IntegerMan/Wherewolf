@@ -13,6 +13,8 @@ public class GameState
     private readonly GameSlot[] _playerSlots;
     private readonly Queue<GamePhase> _remainingPhases;
     private readonly List<GameEvent> _events = new();
+    private readonly Dictionary<string, GameSlot> _slots = new();
+    private readonly List<StartRoleClaimedEvent> _claims;
     public double Support { get; }
     
     internal GameState(GameSetup setup, IReadOnlyList<GameRole> shuffledRoles, double support)
@@ -22,12 +24,18 @@ public class GameState
 
         _playerSlots = BuildPlayerSlots(setup.Players, shuffledRoles);
         _centerSlots = BuildCenterSlots(setup.Players, shuffledRoles);
+        foreach(var slot in AllSlots)
+        {
+            _slots[slot.Name] = slot;
+        }
 
         AssignOrderIndexToEachPlayer(setup.Players);
         foreach (var slot in AllSlots)
         {
             AddEvent(new DealtCardEvent(slot.Role, slot), false);
         }
+
+        _claims = new List<StartRoleClaimedEvent>(_playerSlots.Length);
         _remainingPhases = new Queue<GamePhase>(setup.Phases);
         Root = this;
         Support = support;
@@ -38,8 +46,13 @@ public class GameState
         _remainingPhases = new Queue<GamePhase>(parentState._remainingPhases.Skip(1));
         _gameSetup = parentState._gameSetup;
         _events.AddRange(parentState.Events);
+        _claims = _events.OfType<StartRoleClaimedEvent>().ToList();
         _centerSlots = parentState.CenterSlots.Select(c => new GameSlot(c)).ToArray();
         _playerSlots = parentState.PlayerSlots.Select(c => new GameSlot(c)).ToArray();
+        foreach(var slot in AllSlots)
+        {
+            _slots[slot.Name] = slot;
+        }
         Parent = parentState;
         Root = parentState.Root;
         Support = support;
@@ -53,8 +66,14 @@ public class GameState
         _remainingPhases = new Queue<GamePhase>(parentState._remainingPhases);
         _gameSetup = parentState._gameSetup;
         _events.AddRange(parentState.Events);
+        _claims = _events.OfType<StartRoleClaimedEvent>().ToList();
         _centerSlots = centerSlots.ToArray();
         _playerSlots = playerSlots.ToArray();
+        
+        foreach(var slot in AllSlots)
+        {
+            _slots[slot.Name] = slot;
+        }
         Parent = parentState.Parent;
         Root = parentState.Root;
         Support = parentState.Support;
@@ -72,14 +91,21 @@ public class GameState
         _gameSetup = setup;
         _remainingPhases = new Queue<GamePhase>(remainingPhases);
         _events.AddRange(priorEvents);
+        _claims = _events.OfType<StartRoleClaimedEvent>().ToList();
         _playerSlots = BuildPlayerSlots(setup.Players, setup.Roles.ToList());
         _centerSlots = BuildCenterSlots(setup.Players, setup.Roles.ToList());
+        foreach(var slot in AllSlots)
+        {
+            _slots[slot.Name] = slot;
+        }
         
         Parent = null;
         Root = this;
         Support = 1;
-    }    
+    }
 
+    public IEnumerable<StartRoleClaimedEvent> Claims => _claims;
+    
     private static void AssignOrderIndexToEachPlayer(IEnumerable<Player> players)
     {
         int order = 0;
@@ -135,7 +161,7 @@ public class GameState
         PlayerProbabilities probabilities = new();
 
         // Start with all permutations
-        List<GameState> validPermutations = VotingHelper.GetPossibleGameStatesForPlayer(player, this);
+        IEnumerable<GameState> validPermutations = VotingHelper.GetPossibleGameStatesForPlayer(player, this);
 
         double startPopulation = validPermutations.Sum(p => p.Support);
         
@@ -242,6 +268,11 @@ public class GameState
     {
         _events.Add(newEvent);
 
+        if (newEvent is StartRoleClaimedEvent claim)
+        {
+            _claims.Add(claim);
+        }
+
         if (broadcastToController)
         {
             foreach (var player in Players)
@@ -254,13 +285,14 @@ public class GameState
         }
     }
 
-    public GameSlot GetPlayerSlot(Player player) 
-        => _playerSlots.First(s => s.Player == player);
-
+    public GameSlot GetSlot(Player player)
+        => _slots[player.Name];
+    
     public GameSlot GetSlot(string slotName)
-        => AllSlots.First(s => s.Name == slotName);
+        => _slots[slotName];
 
-    public GameSlot this[string slotName] => GetSlot(slotName);
+    public GameSlot this[string slotName] 
+        => GetSlot(slotName);
     
     public override string ToString() 
         => $"{string.Join(",", PlayerSlots.Select(p => p.Role))}[{string.Join(",", CenterSlots.Select(p => p.Role))}]";
