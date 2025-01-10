@@ -1,4 +1,3 @@
-using System.Text;
 using MattEland.Wherewolf.Controllers;
 using MattEland.Wherewolf.Events;
 using MattEland.Wherewolf.Phases;

@@ -10,6 +10,7 @@ public class GameSetup
     private readonly List<Player> _players = new();
     private readonly List<GameRole> _roles = new();
     private readonly Dictionary<string, List<GameState>> _phasePermutations = new();
+    private VotePermutationsProvider? _votePermutations;
     public IEnumerable<Player> Players => _players.AsReadOnly();
     public IEnumerable<GameRole> Roles => _roles.AsReadOnly();
     public GamePhase[] Phases
@@ -25,12 +26,15 @@ public class GameSetup
         }
     }
 
+    public IDictionary<Player, Player>[] VotingPermutations => _votePermutations!.VotingPermutations;
+
     public void AddPlayer(Player player)
     {
         if (_players.Contains(player))
             throw new InvalidOperationException("Player has already been added");
 
         _players.Add(player);
+        _votePermutations = new VotePermutationsProvider(_players);
     }
 
     public void AddPlayers(params Player[] players)
@@ -180,51 +184,6 @@ public class GameSetup
         }
 
         return _phasePermutations[currentPhase?.Name ?? "Voting"];
-    }
-
-    public IEnumerable<Dictionary<Player, Player>> GetVotingPermutations()
-    {
-        foreach (var result in GetVotingPermutations(Players.First(), new Dictionary<Player, Player>()))
-        {
-            yield return result;
-        }
-    }
-    
-    private IEnumerable<Dictionary<Player, Player>> GetVotingPermutations(Player player, IDictionary<Player, Player> baseDictionary)
-    {
-        IEnumerable<Player> playerChoices = GetPlayerVotingPermutations(player);
-        
-        foreach (var choice in playerChoices)
-        {
-            Dictionary<Player, Player> subset = new(baseDictionary)
-            {
-                [player] = choice
-            };
-
-            Player? nextPlayer = Players.FirstOrDefault(p => !subset.ContainsKey(p));
-            if (nextPlayer == null)
-            {
-                yield return subset;
-            }
-            else
-            {
-                foreach (var result in GetVotingPermutations(nextPlayer, subset))
-                {
-                    yield return result;
-                }
-            }
-        }
-    }    
-
-    private IEnumerable<Player> GetPlayerVotingPermutations(Player player)
-    {
-        foreach (var otherPlayer in Players)
-        {
-            if (otherPlayer != player)
-            {
-                yield return otherPlayer;
-            }
-        }
     }
 
     public List<GameState> GetSetupPermutations() => _phasePermutations["Setup"];

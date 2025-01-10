@@ -1,6 +1,5 @@
 using MattEland.Wherewolf.Events;
 using MattEland.Wherewolf.Phases;
-using MattEland.Wherewolf.Roles;
 
 namespace MattEland.Wherewolf.Probability;
 
@@ -8,7 +7,7 @@ public static class VotingHelper
 {
     public static Dictionary<Player, float> GetVoteVictoryProbabilities(Player player, GameState state)
     {
-        List<Dictionary<Player, Player>> permutations = state.Setup.GetVotingPermutations().ToList();
+        IDictionary<Player, Player>[] permutations = state.Setup.VotingPermutations;
 
         // Build a collection of results based on whom the player voted for - for every world this player thinks might be valid
         Dictionary<Player, List<GameResult>> results = new(state.Players.Count() - 1);
@@ -17,14 +16,15 @@ public static class VotingHelper
             results[otherPlayer] = new();
         }
         IEnumerable<StartRoleClaimedEvent> claims = state.Claims;
+        StartRoleClaimedEvent[] otherClaims = claims.Where(e => e.Player != player).ToArray();
         
         IEnumerable<GameState> possibleStates = GetPossibleGameStatesForPlayer(player, state);
         Dictionary<Player, int> votes = new();
         foreach (var possibleState in possibleStates)
         {
-            int supportingClaims = claims.Count(e => e.Player != player && e.IsClaimValidFor(possibleState));
+            int supportingClaims = otherClaims.Count(e => e.IsClaimValidFor(possibleState));
             
-            foreach (var perm in (IEnumerable<Dictionary<Player, Player>>)permutations)
+            foreach (var perm in (IEnumerable<IDictionary<Player, Player>>)permutations)
             {
                 GetVotingResults(perm, votes);
                 
@@ -71,7 +71,7 @@ public static class VotingHelper
         float winWeight = 0f;
         float totalWeight = 0f;
         Dictionary<Player, int> votes = new();
-        foreach (var perm in state.Setup.GetVotingPermutations())
+        foreach (var perm in state.Setup.VotingPermutations)
         {
             GetVotingResults(perm, votes);
             GameResult gameResult = state.DetermineGameResults(votes, supportingClaims);
@@ -90,47 +90,16 @@ public static class VotingHelper
         }
         
         return winWeight / totalWeight;
-    }    
-    
-    public static float GetRoleClaimWinProbabilityPerception(Player player, GameState state, GameRole role)
-    {
-        // Identify all possible current game states, given what the player knows
-        List<GameEvent> knownEvents = state.Events.Where(e => e.IsObservedBy(player))
-            .ToList();
-        List<GameState> permutations = state.Setup.GetPermutationsAtPhase(state.CurrentPhase)
-            .Where(p => p.IsPossibleGivenEvents(knownEvents))
-            .ToList();
-        
-        // Given this permutation mix, figure out how often this role claim results in victory
-        int totalWeight = 0;
-        float winPercent = 0;
-        foreach (var perm in permutations)
-        {
-            GameState possibleWorld = new GameState(perm, perm.Support);
-            possibleWorld.AddEvent(new StartRoleClaimedEvent(player, role), broadcastToController: false);
-            
-            int permWeight = 1 + possibleWorld.ObservedSupport(player);
-            winPercent += CalculatePlayerWinPercentWithBestVotingOption(player, possibleWorld) * permWeight;
-            totalWeight += permWeight;
-        }
-        
-        // Sanity check for divide by zero scenarios (no permutations found for player)
-        if (totalWeight <= 0)
-            throw new InvalidOperationException("No possible game states found for player " + player.Name);
-        
-        // Return the average win probability for the player, taking probability of scenarios given claims into account
-        return winPercent / totalWeight;
-    }    
-    
-    
+    }
+
+
     public static float GetStateVictoryPercent(Player player, GameState state)
     {
         // Identify all possible current game states, given what the player knows
-        List<GameEvent> knownEvents = state.Events.Where(e => e.IsObservedBy(player))
-            .ToList();
-        List<GameState> permutations = state.Setup.GetPermutationsAtPhase(state.CurrentPhase)
-            .Where(p => p.IsPossibleGivenEvents(knownEvents))
-            .ToList();
+        GameEvent[] knownEvents = state.Events.Where(e => e.IsObservedBy(player))
+            .ToArray();
+        var permutations = state.Setup.GetPermutationsAtPhase(state.CurrentPhase)
+            .Where(p => p.IsPossibleGivenEvents(knownEvents));
         
         // Given this permutation mix, figure out how often this path results in victory for the player
         int totalWeight = 0;
@@ -152,40 +121,34 @@ public static class VotingHelper
 
     public static IEnumerable<GameState> GetPossibleGameStatesForPlayer(Player player, GameState state)
     {
-        IEnumerable<GameEvent> observedEvents = state.Events.Where(e => e.IsObservedBy(player));
+        GameEvent[] observedEvents = state.Events.Where(e => e.IsObservedBy(player)).ToArray();
         GamePhase? currentPhase = state.CurrentPhase;
-        IEnumerable<GameState> phasePermutations = state.Setup.GetPermutationsAtPhase(currentPhase);
-        if (!phasePermutations.Any())
-            throw new InvalidOperationException("No phase permutations found for phase " + (currentPhase?.Name ?? "Voting") + " for player " + player.Name);
-
-        IEnumerable<GameState> validPermutations = phasePermutations.Where(p => p.IsPossibleGivenEvents(observedEvents));
-        if (!validPermutations.Any())
-            throw new InvalidOperationException("No valid permutations found for phase " + (currentPhase?.Name ?? "Voting") + " for player " + player.Name);
         
-        return validPermutations;
+        return state.Setup.GetPermutationsAtPhase(currentPhase)
+            .Where(p => p.IsPossibleGivenEvents(observedEvents));
     }
 
-    public static Dictionary<Player, int> GetVotingResults(Dictionary<Player, Player> votes)
+    public static IDictionary<Player, int> GetVotingResults(IDictionary<Player, Player> votes)
     {
         Dictionary<Player, int> voteTotals = new();
 
         return GetVotingResults(votes, voteTotals);
     }
 
-    private static Dictionary<Player, int> GetVotingResults(Dictionary<Player, Player> votes, Dictionary<Player, int> voteTotals)
+    private static IDictionary<Player, int> GetVotingResults(IDictionary<Player, Player> votes, IDictionary<Player, int> voteTotals)
     {
         // TODO: This will probably need to be revisited to support the Hunter / Bodyguard
 
         // Initialize everyone at 0 votes. This ensures they're in the dictionary
-        foreach (var player in votes.Keys)
+        for (int i = 0; i < votes.Count; i++)
         {
-            voteTotals[player] = 0;
+            voteTotals[votes.Keys.ElementAt(i)] = 0;
         }
 
         // Tabulate votes
-        foreach (var target in votes.Values)
+        for (int i = 0; i < votes.Count; i++)
         {
-            voteTotals[target]++;
+            voteTotals[votes.Values.ElementAt(i)]++;
         }
         
         return voteTotals;

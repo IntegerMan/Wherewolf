@@ -20,7 +20,7 @@ public class VoteTabulationTests
         };
 
         // Act
-        Dictionary<Player, int> results = VotingHelper.GetVotingResults(votes);
+        IDictionary<Player, int> results = VotingHelper.GetVotingResults(votes);
         
         // Assert
         results.ShouldNotBeNull();

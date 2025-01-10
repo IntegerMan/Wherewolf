@@ -1,4 +1,3 @@
-using System.Collections.Immutable;
 using MattEland.Wherewolf.Roles;
 
 namespace MattEland.Wherewolf;

@@ -1,7 +1,6 @@
 using MattEland.Wherewolf.Events;
 using MattEland.Wherewolf.Probability;
 using MattEland.Wherewolf.Roles;
-using MoreLinq;
 
 namespace MattEland.Wherewolf.Controllers;
 

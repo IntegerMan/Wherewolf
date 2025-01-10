@@ -26,7 +26,7 @@ public class VotingPhase : GamePhase
             newState.AddEvent(vote);
         }
         
-        Dictionary<Player,int> votingResults = VotingHelper.GetVotingResults(votes);
+        IDictionary<Player,int> votingResults = VotingHelper.GetVotingResults(votes);
         GameResult result = newState.DetermineGameResults(votingResults);
         newState.GameResult = result;
         

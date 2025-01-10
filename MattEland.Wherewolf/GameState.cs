@@ -1,3 +1,4 @@
+using System.Text;
 using MattEland.Wherewolf.Events;
 using MattEland.Wherewolf.Phases;
 using MattEland.Wherewolf.Probability;
@@ -294,8 +295,17 @@ public class GameState
     public GameSlot this[string slotName] 
         => GetSlot(slotName);
     
-    public override string ToString() 
-        => $"{string.Join(",", PlayerSlots.Select(p => p.Role))}[{string.Join(",", CenterSlots.Select(p => p.Role))}]";
+    public override string ToString()
+    {
+        StringBuilder sb = new( $"{string.Join(",", PlayerSlots.Select(p => p.Role))}[{string.Join(",", CenterSlots.Select(p => p.Role))}] {CurrentPhase?.Name}" );
+        
+        foreach (var e in _events)
+        {
+            sb.AppendLine(e.ToString());
+        }
+        
+        return sb.ToString();
+    }
 
     internal void SendRolesToControllers()
     {
@@ -306,8 +316,18 @@ public class GameState
         }
     }
     
-    public bool IsPossibleGivenEvents(IEnumerable<GameEvent> events) 
-        => events.All(e => e.IsPossibleInGameState(this));
+    public bool IsPossibleGivenEvents(GameEvent[] events)
+    {
+        for (var i = 0; i < events.Length; i++)
+        {
+            if (!events[i].IsPossibleInGameState(this))
+            {
+                return false;
+            }
+        }
+
+        return true;
+    }
 
     public GameRole GetStartRole(GameSlot gameSlot)
         => GetStartRole(gameSlot.Name);
