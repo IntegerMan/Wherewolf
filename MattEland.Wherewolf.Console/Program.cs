@@ -66,6 +66,17 @@ try
 
     // Post-Game Information  
     DisplayHelpers.DisplaySummaryTable(gameState);
+
+    foreach (var e in gameState.Events)
+    {
+        AnsiConsole.MarkupLine(DisplayHelpers.StylizeEventMessage(e.Description, gameState.AllSlots, gameState.Roles));
+    }
+    
+    foreach (var claim in gameState.Claims)
+    {
+        AnsiConsole.MarkupLine(DisplayHelpers.StylizeEventMessage(claim.Description, gameState.AllSlots, gameState.Roles));
+    }
+    
     AnsiConsole.WriteLine();
     return 0;
 }

@@ -176,9 +176,9 @@ public static class VotingHelper
             : atMax[rand.Next(atMax.Count)].Key;
     }
     
-    public static IDictionary<string, VoteStatistics> BuildOtherPlayerVoteVictoryStatistics(Player player, GameState gameState)
+    public static IDictionary<string, VoteVictoryStatistics> BuildOtherPlayerVoteVictoryStatistics(Player player, GameState gameState)
     {
-        IDictionary<string, VoteStatistics> stats = new Dictionary<string, VoteStatistics>(); 
+        IDictionary<string, VoteVictoryStatistics> stats = new Dictionary<string, VoteVictoryStatistics>(); 
         IDictionary<Player, Player>[] votePermutations = gameState.Setup.VotingPermutations;
         GameEvent[] observedEvents = gameState.Events.Where(e => e.IsObservedBy(player)).ToArray();
 
@@ -207,7 +207,7 @@ public static class VotingHelper
                     string key = $"{votingPlayer}_{votedPlayer}";
                     if (!stats.TryGetValue(key, out var stat))
                     {
-                        stats[key] = new VoteStatistics
+                        stats[key] = new VoteVictoryStatistics
                         {
                             Support = 1,
                             Wins = isWinning ? 1 : 0

@@ -1,6 +1,6 @@
 namespace MattEland.Wherewolf.Probability;
 
-public record VoteStatistics
+public record VoteVictoryStatistics
 {
     public int Support { get; set; }
     public int Wins { get; set; }
