@@ -175,4 +175,56 @@ public static class VotingHelper
             ? atMax.First().Key 
             : atMax[rand.Next(atMax.Count)].Key;
     }
+    
+    public static IDictionary<string, VoteStatistics> BuildOtherPlayerVoteVictoryStatistics(Player player, GameState gameState)
+    {
+        IDictionary<string, VoteStatistics> stats = new Dictionary<string, VoteStatistics>(); 
+        IDictionary<Player, Player>[] votePermutations = gameState.Setup.VotingPermutations;
+        GameEvent[] observedEvents = gameState.Events.Where(e => e.IsObservedBy(player)).ToArray();
+
+        IEnumerable<GameState> statePermutations = gameState.Setup.GetPermutationsAtPhase(gameState.CurrentPhase);
+        IEnumerable<GameState> possiblePermutations = statePermutations.Where(p => p.IsPossibleGivenEvents(observedEvents));
+        
+        foreach (var state in possiblePermutations)
+        {
+            foreach (var perm in votePermutations)
+            {
+                IDictionary<Player, int> votes = GetVotingResults(perm);
+                GameResult result = state.DetermineGameResults(votes);
+                
+                bool isWinning = result.WinningPlayers.Contains(player);
+                
+                foreach (var kvp in perm)
+                {
+                    Player votingPlayer = kvp.Key;
+                    Player votedPlayer = kvp.Value;
+                    
+                    if (votingPlayer == player)
+                    {
+                        continue;
+                    }
+
+                    string key = $"{votingPlayer}_{votedPlayer}";
+                    if (!stats.TryGetValue(key, out var stat))
+                    {
+                        stats[key] = new VoteStatistics
+                        {
+                            Support = 1,
+                            Wins = isWinning ? 1 : 0
+                        };
+                    }
+                    else
+                    {
+                        stat.Support++;
+                        if (isWinning)
+                        {
+                            stat.Wins++;
+                        }
+                    }
+                }
+            }
+        }
+
+        return stats;
+    }
 }
