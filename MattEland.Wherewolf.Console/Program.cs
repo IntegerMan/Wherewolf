@@ -44,6 +44,8 @@ try
             AnsiConsole.WriteLine();
         }
     }
+    
+    // TODO: Now we need to trigger claims
 
     // This will cause the voting to actually occur
     gameState = gameState.RunToEnd();
