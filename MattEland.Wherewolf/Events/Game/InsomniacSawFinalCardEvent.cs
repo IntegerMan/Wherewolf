@@ -1,6 +1,6 @@
 using MattEland.Wherewolf.Roles;
 
-namespace MattEland.Wherewolf.Events;
+namespace MattEland.Wherewolf.Events.Game;
 
 public class InsomniacSawFinalCardEvent : GameEvent
 {

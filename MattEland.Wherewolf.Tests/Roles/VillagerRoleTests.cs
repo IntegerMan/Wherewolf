@@ -1,4 +1,4 @@
-using MattEland.Wherewolf.Events;
+using MattEland.Wherewolf.Events.Game;
 using MattEland.Wherewolf.Roles;
 using MattEland.Wherewolf.Setup;
 using MattEland.Wherewolf.Tests.Helpers;

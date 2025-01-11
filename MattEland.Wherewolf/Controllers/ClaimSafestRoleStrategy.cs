@@ -1,4 +1,4 @@
-using MattEland.Wherewolf.Events;
+using MattEland.Wherewolf.Events.Social;
 using MattEland.Wherewolf.Probability;
 using MattEland.Wherewolf.Roles;
 
@@ -23,7 +23,7 @@ public class ClaimSafestRoleStrategy : IRoleClaimStrategy
             if (winPercent > best)
             {
                 best = winPercent;
-                StartRoleClaimedEvent claimEvent = possibleNextState.Claims.First(e => e.Player == player);
+                StartRoleClaimedEvent claimEvent = possibleNextState.Claims.OfType<StartRoleClaimedEvent>().First(e => e.Player == player);
 
                 role = claimEvent.ClaimedRole;
             }

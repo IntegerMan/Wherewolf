@@ -1,6 +1,6 @@
 using MattEland.Wherewolf.Roles;
 
-namespace MattEland.Wherewolf.Events;
+namespace MattEland.Wherewolf.Events.Game;
 
 /// <summary>
 /// This is a specialized event that occurs when a player is a lone wolf. I'm choosing to make this event specialized

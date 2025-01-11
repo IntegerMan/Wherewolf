@@ -1,6 +1,6 @@
 using MattEland.Wherewolf.Roles;
 
-namespace MattEland.Wherewolf.Events;
+namespace MattEland.Wherewolf.Events.Game;
 
 /// <summary>
 /// An event that occurs when a werewolf player wakes during the night phase and discovers they

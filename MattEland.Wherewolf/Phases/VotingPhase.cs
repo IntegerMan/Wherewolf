@@ -1,4 +1,4 @@
-using MattEland.Wherewolf.Events;
+using MattEland.Wherewolf.Events.Game;
 using MattEland.Wherewolf.Probability;
 
 namespace MattEland.Wherewolf.Phases;

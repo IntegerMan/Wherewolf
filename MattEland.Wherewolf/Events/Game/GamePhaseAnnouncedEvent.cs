@@ -1,4 +1,4 @@
-namespace MattEland.Wherewolf.Events;
+namespace MattEland.Wherewolf.Events.Game;
 
 public class GamePhaseAnnouncedEvent(string message) : GameEvent
 {

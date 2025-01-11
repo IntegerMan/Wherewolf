@@ -1,4 +1,5 @@
-using MattEland.Wherewolf.Events;
+using MattEland.Wherewolf.Events.Game;
+using MattEland.Wherewolf.Events.Social;
 using MattEland.Wherewolf.Phases;
 
 namespace MattEland.Wherewolf.Probability;
@@ -15,7 +16,7 @@ public static class VotingHelper
         {
             results[otherPlayer] = new();
         }
-        IEnumerable<StartRoleClaimedEvent> claims = state.Claims;
+        IEnumerable<StartRoleClaimedEvent> claims = state.Claims.OfType<StartRoleClaimedEvent>();
         StartRoleClaimedEvent[] otherClaims = claims.Where(e => e.Player != player).ToArray();
         
         IEnumerable<GameState> possibleStates = GetPossibleGameStatesForPlayer(player, state);
@@ -24,7 +25,7 @@ public static class VotingHelper
         {
             int supportingClaims = otherClaims.Count(e => e.IsClaimValidFor(possibleState));
             
-            foreach (var perm in (IEnumerable<IDictionary<Player, Player>>)permutations)
+            foreach (var perm in permutations)
             {
                 GetVotingResults(perm, votes);
                 
@@ -58,14 +59,10 @@ public static class VotingHelper
 
     private static float CalculatePlayerWinPercentWithBestVotingOption(Player player, GameState state)
     {
-        // Build a set of probabilities for each player voting for each other player
-        Dictionary<Player, Dictionary<Player, float>> playerVoteProbabilities = new();
-        foreach (var votingPlayer in state.Players)
-        {
-            playerVoteProbabilities[votingPlayer] = GetVoteVictoryProbabilities(votingPlayer, state);
-        }
-        
-        int supportingClaims = state.Claims.Count(e => e.Player != player && e.IsClaimValidFor(state));
+        IDictionary<Player, IDictionary<Player, float>> playerVoteProbabilities = BuildPlayerWeightedVoteProbabilities(state);
+
+        int supportingClaims = state.Claims.OfType<StartRoleClaimedEvent>()
+            .Count(e => e.Player != player && e.IsClaimValidFor(state));
         
         // Loop through each combination of votes and calculate the win probability for the player
         float winWeight = 0f;
@@ -90,6 +87,18 @@ public static class VotingHelper
         }
         
         return winWeight / totalWeight;
+    }
+
+    private static IDictionary<Player, IDictionary<Player, float>> BuildPlayerWeightedVoteProbabilities(GameState state)
+    {
+        // Build a set of probabilities for each player voting for each other player
+        Dictionary<Player, IDictionary<Player, float>> playerVoteProbabilities = new();
+        foreach (var votingPlayer in state.Players)
+        {
+            playerVoteProbabilities[votingPlayer] = GetVoteVictoryProbabilities(votingPlayer, state);
+        }
+
+        return playerVoteProbabilities;
     }
 
 

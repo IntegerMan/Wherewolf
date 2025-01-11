@@ -1,5 +1,6 @@
 using System.Text;
-using MattEland.Wherewolf.Events;
+using MattEland.Wherewolf.Events.Game;
+using MattEland.Wherewolf.Events.Social;
 using MattEland.Wherewolf.Phases;
 using MattEland.Wherewolf.Probability;
 using MattEland.Wherewolf.Roles;
@@ -14,8 +15,8 @@ public class GameState
     private readonly GameSlot[] _playerSlots;
     private readonly Queue<GamePhase> _remainingPhases;
     private readonly List<GameEvent> _events = new();
+    private readonly List<SocialEvent> _claims = new();
     private readonly Dictionary<string, GameSlot> _slots = new();
-    private readonly List<StartRoleClaimedEvent> _claims;
     public double Support { get; }
     
     internal GameState(GameSetup setup, IReadOnlyList<GameRole> shuffledRoles, double support)
@@ -36,7 +37,7 @@ public class GameState
             AddEvent(new DealtCardEvent(slot.Role, slot), false);
         }
 
-        _claims = new List<StartRoleClaimedEvent>(_playerSlots.Length);
+        _claims = new List<SocialEvent>(_playerSlots.Length);
         _remainingPhases = new Queue<GamePhase>(setup.Phases);
         Root = this;
         Support = support;
@@ -47,7 +48,7 @@ public class GameState
         _remainingPhases = new Queue<GamePhase>(parentState._remainingPhases.Skip(1));
         _gameSetup = parentState._gameSetup;
         _events.AddRange(parentState.Events);
-        _claims = _events.OfType<StartRoleClaimedEvent>().ToList();
+        _claims.AddRange(parentState.Claims);
         _centerSlots = parentState.CenterSlots.Select(c => new GameSlot(c)).ToArray();
         _playerSlots = parentState.PlayerSlots.Select(c => new GameSlot(c)).ToArray();
         foreach(var slot in AllSlots)
@@ -67,7 +68,7 @@ public class GameState
         _remainingPhases = new Queue<GamePhase>(parentState._remainingPhases);
         _gameSetup = parentState._gameSetup;
         _events.AddRange(parentState.Events);
-        _claims = _events.OfType<StartRoleClaimedEvent>().ToList();
+        _claims.AddRange(parentState.Claims);
         _centerSlots = centerSlots.ToArray();
         _playerSlots = playerSlots.ToArray();
         
@@ -92,7 +93,6 @@ public class GameState
         _gameSetup = setup;
         _remainingPhases = new Queue<GamePhase>(remainingPhases);
         _events.AddRange(priorEvents);
-        _claims = _events.OfType<StartRoleClaimedEvent>().ToList();
         _playerSlots = BuildPlayerSlots(setup.Players, setup.Roles.ToList());
         _centerSlots = BuildCenterSlots(setup.Players, setup.Roles.ToList());
         foreach(var slot in AllSlots)
@@ -105,7 +105,7 @@ public class GameState
         Support = 1;
     }
 
-    public IEnumerable<StartRoleClaimedEvent> Claims => _claims;
+    public IEnumerable<SocialEvent> Claims => _claims;
     
     private static void AssignOrderIndexToEachPlayer(IEnumerable<Player> players)
     {
@@ -166,7 +166,7 @@ public class GameState
 
         double startPopulation = validPermutations.Sum(p => p.Support);
         
-        IEnumerable<StartRoleClaimedEvent> claimedEvents = Events.OfType<StartRoleClaimedEvent>();
+        IEnumerable<StartRoleClaimedEvent> claimedEvents = Claims.OfType<StartRoleClaimedEvent>();
 
         // Calculate starting role probabilities
         foreach (var slot in AllSlots)
@@ -189,7 +189,7 @@ public class GameState
                 IEnumerable<GameState> endGameStates = validPermutations.Where(p => p[slot.Name].Role == role);
                 double currentRoleSupport = endGameStates.Sum(p => p.Support);
                 
-                probabilities.RegisterCurrentRoleProbabilities(slot, role, currentRoleSupport, startPopulation, Enumerable.Empty<Player>());
+                probabilities.RegisterCurrentRoleProbabilities(slot, role, currentRoleSupport, startPopulation, []);
             }
         }
         
@@ -269,11 +269,6 @@ public class GameState
     {
         _events.Add(newEvent);
 
-        if (newEvent is StartRoleClaimedEvent claim)
-        {
-            _claims.Add(claim);
-        }
-
         if (broadcastToController)
         {
             foreach (var player in Players)
@@ -284,6 +279,11 @@ public class GameState
                 }
             }
         }
+    }
+    
+    public void AddEvent(SocialEvent newEvent)
+    {
+        _claims.Add(newEvent);
     }
 
     public GameSlot GetSlot(Player player)
@@ -393,7 +393,7 @@ public class GameState
 
     public int ObservedSupport(Player player)
     {
-        IEnumerable<StartRoleClaimedEvent> claims = Events.OfType<StartRoleClaimedEvent>();
+        IEnumerable<StartRoleClaimedEvent> claims = Claims.OfType<StartRoleClaimedEvent>();
         
         return claims.Count(c => c.Player != player && c.IsClaimValidFor(this));
     }

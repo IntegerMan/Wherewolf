@@ -1,4 +1,4 @@
-using MattEland.Wherewolf.Events;
+using MattEland.Wherewolf.Events.Game;
 using MattEland.Wherewolf.Probability;
 using MattEland.Wherewolf.Roles;
 using MattEland.Wherewolf.Setup;

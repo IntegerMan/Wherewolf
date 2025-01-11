@@ -1,6 +1,6 @@
 using MattEland.Wherewolf.Roles;
 
-namespace MattEland.Wherewolf.Events;
+namespace MattEland.Wherewolf.Events.Game;
 
 /// <summary>
 /// This event occurs during the night Werewolf phase when 2 or more players started as a werewolf

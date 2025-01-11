@@ -1,6 +1,6 @@
 using MattEland.Wherewolf.Roles;
 
-namespace MattEland.Wherewolf.Events;
+namespace MattEland.Wherewolf.Events.Game;
 
 /// <summary>
 /// This event occurs when the Robber robs a target. In that scenario they beg the target's role and get to see it while

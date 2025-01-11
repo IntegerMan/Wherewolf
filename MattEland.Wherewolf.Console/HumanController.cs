@@ -1,5 +1,6 @@
 using MattEland.Wherewolf.Controllers;
-using MattEland.Wherewolf.Events;
+using MattEland.Wherewolf.Events.Game;
+using MattEland.Wherewolf.Events.Social;
 using MattEland.Wherewolf.Phases;
 using MattEland.Wherewolf.Probability;
 using MattEland.Wherewolf.Roles;
@@ -85,7 +86,7 @@ public class HumanController : PlayerController
         prompt.AddChoices(state.Players.Where(p => p != votingPlayer));
         prompt.Converter = p =>
         {
-            string claim = state.Claims.First(c => c.Player == p).ClaimedRole
+            string claim = state.Claims.OfType<StartRoleClaimedEvent>().First(c => c.Player == p).ClaimedRole
                 .AsMarkdown();
             
             /*
