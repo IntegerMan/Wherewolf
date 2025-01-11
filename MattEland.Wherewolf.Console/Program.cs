@@ -45,9 +45,7 @@ try
         }
     }
     
-    // TODO: Now we need to trigger claims
-
-    // This will cause the voting to actually occur
+    // This will cause the voting and claims to actually occur
     gameState = gameState.RunToEnd();
 
     // Display the game results

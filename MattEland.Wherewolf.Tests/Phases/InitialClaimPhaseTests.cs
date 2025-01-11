@@ -1,4 +1,4 @@
-using MattEland.Wherewolf.Events;
+using MattEland.Wherewolf.Events.Social;
 using MattEland.Wherewolf.Phases;
 using MattEland.Wherewolf.Setup;
 
@@ -18,7 +18,7 @@ public class InitialRoleClaimPhaseTests : GameTestsBase
         GameState endState = gameSetup.StartGame().RunToEnd();
 
         // Assert
-        endState.Events.OfType<StartRoleClaimedEvent>().Count().ShouldBe(gameSetup.Players.Count());
+        endState.Claims.OfType<StartRoleClaimedEvent>().Count().ShouldBe(gameSetup.Players.Count());
         endState.Claims.Count().ShouldBe(gameSetup.Players.Count());
     }    
     

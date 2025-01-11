@@ -2,16 +2,10 @@ using MattEland.Wherewolf.Roles;
 
 namespace MattEland.Wherewolf.Events.Social;
 
-public class StartRoleClaimedEvent : SocialEvent
+public class StartRoleClaimedEvent(Player player, GameRole role) : SocialEvent
 {
-    public StartRoleClaimedEvent(Player player, GameRole role)
-    {
-        this.Player = player;
-        this.ClaimedRole = role;
-    }
-
-    public Player Player { get; }
-    public GameRole ClaimedRole { get;  }
+    public Player Player { get; } = player;
+    public GameRole ClaimedRole { get;  } = role;
 
     public override string Description => $"{Player.Name} claimed their starting role was {ClaimedRole}";
     public override bool IsPossibleInGameState(GameState state) =>
