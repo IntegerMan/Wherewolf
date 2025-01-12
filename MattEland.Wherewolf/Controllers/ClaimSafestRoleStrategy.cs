@@ -8,17 +8,6 @@ public class ClaimSafestRoleStrategy(Random rand) : IRoleClaimStrategy
     public GameRole GetRoleClaim(Player player, GameState gameState)
     {
         GameRole startRole = gameState.GetStartRole(player);
-        /*
-        // Early hack: If we're a villager, claim villager
-        if (startRole.GetTeam() == Team.Villager)
-        {
-            return startRole;
-        }
-        */
-        
-        // We need to look at how we want other people to vote, based on the worlds we believe could be possible.
-        // Based on these worlds, we want a win % based on who every other player votes for.
-        //IDictionary<string, VoteVictoryStatistics> stats = VotingHelper.BuildOtherPlayerVoteVictoryStatistics(player, gameState);
 
         // Now, let's take roles into account and see what victory % each other player gets voting for us based on who they think we are
         Dictionary<GameRole, Dictionary<Player, VoteWinProbabilityStatistics>> roleStats = GetOtherPlayerVotingForPlayerRoleClaimVictoryStats(player, gameState);

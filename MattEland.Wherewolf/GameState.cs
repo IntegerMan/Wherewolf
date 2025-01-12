@@ -14,12 +14,12 @@ public class GameState
     private readonly GameSlot[] _centerSlots;
     private readonly GameSlot[] _playerSlots;
     private readonly Queue<GamePhase> _remainingPhases;
-    private readonly List<GameEvent> _events = new();
-    private readonly List<SocialEvent> _claims = new();
+    private readonly List<GameEvent> _events = [];
+    private readonly List<SocialEvent> _claims = [];
     private readonly Dictionary<string, GameSlot> _slots = new();
     public double Support { get; }
     
-    internal GameState(GameSetup setup, IReadOnlyList<GameRole> shuffledRoles, double support)
+    public GameState(GameSetup setup, IReadOnlyList<GameRole> shuffledRoles, double support)
     {
         setup.Validate();
         _gameSetup = setup;
@@ -37,7 +37,6 @@ public class GameState
             AddEvent(new DealtCardEvent(slot.Role, slot), false);
         }
 
-        _claims = new List<SocialEvent>(_playerSlots.Length);
         _remainingPhases = new Queue<GamePhase>(setup.Phases);
         Root = this;
         Support = support;
@@ -47,8 +46,6 @@ public class GameState
     {
         _remainingPhases = new Queue<GamePhase>(parentState._remainingPhases.Skip(1));
         _gameSetup = parentState._gameSetup;
-        _events.AddRange(parentState.Events);
-        _claims.AddRange(parentState.Claims);
         _centerSlots = parentState.CenterSlots.Select(c => new GameSlot(c)).ToArray();
         _playerSlots = parentState.PlayerSlots.Select(c => new GameSlot(c)).ToArray();
         foreach(var slot in AllSlots)
@@ -63,12 +60,10 @@ public class GameState
     /// <summary>
     /// Create a gamestate variant with a fixed set of slots. This method is used for swapping cards only.
     /// </summary>
-    internal GameState(GameState parentState, IEnumerable<GameSlot> playerSlots, IEnumerable<GameSlot> centerSlots)
+    private GameState(GameState parentState, IEnumerable<GameSlot> playerSlots, IEnumerable<GameSlot> centerSlots)
     {
         _remainingPhases = new Queue<GamePhase>(parentState._remainingPhases);
         _gameSetup = parentState._gameSetup;
-        _events.AddRange(parentState.Events);
-        _claims.AddRange(parentState.Claims);
         _centerSlots = centerSlots.ToArray();
         _playerSlots = playerSlots.ToArray();
         
@@ -80,32 +75,6 @@ public class GameState
         Root = parentState.Root;
         Support = parentState.Support;
     }
-    
-    /// <summary>
-    /// This constructor is intended only for unit tests
-    /// </summary>
-    public GameState(IEnumerable<Player> players, IEnumerable<GameRole> roles, IEnumerable<GamePhase> remainingPhases, IEnumerable<GameEvent> priorEvents)
-    {
-        GameSetup setup = new();
-        setup.AddPlayers(players.ToArray());
-        setup.AddRoles(roles.ToArray());
-        
-        _gameSetup = setup;
-        _remainingPhases = new Queue<GamePhase>(remainingPhases);
-        _events.AddRange(priorEvents);
-        _playerSlots = BuildPlayerSlots(setup.Players, setup.Roles.ToList());
-        _centerSlots = BuildCenterSlots(setup.Players, setup.Roles.ToList());
-        foreach(var slot in AllSlots)
-        {
-            _slots[slot.Name] = slot;
-        }
-        
-        Parent = null;
-        Root = this;
-        Support = 1;
-    }
-
-    public IEnumerable<SocialEvent> Claims => _claims;
     
     private static void AssignOrderIndexToEachPlayer(IEnumerable<Player> players)
     {
@@ -155,18 +124,55 @@ public class GameState
 
     public IEnumerable<Player> Players => _gameSetup.Players;
     public IEnumerable<GameRole> Roles => _gameSetup.Roles;
-    public IEnumerable<GameEvent> Events => _events.AsReadOnly();
+    public IEnumerable<GameEvent> Events
+    {
+        get
+        {
+            if (Parent is not null)
+            {
+                foreach (var e in Parent.Events)
+                {
+                    yield return e;
+                }
+            }
+            
+            foreach (var e in _events)
+            {
+                yield return e;
+            }
+        }
+    }
+    
+    
+    public IEnumerable<SocialEvent> Claims
+    {
+        get
+        {
+            if (Parent is not null)
+            {
+                foreach (var c in Parent.Claims)
+                {
+                    yield return c;
+                }
+            }
+            
+            foreach (var c in _claims)
+            {
+                yield return c;
+            }
+        }
+    }
 
     public PlayerProbabilities CalculateProbabilities(Player player)
     {
         PlayerProbabilities probabilities = new();
 
         // Start with all permutations
-        IEnumerable<GameState> validPermutations = VotingHelper.GetPossibleGameStatesForPlayer(player, this);
+        GameState[] validPermutations = VotingHelper.GetPossibleGameStatesForPlayer(player, this).ToArray();
 
         double startPopulation = validPermutations.Sum(p => p.Support);
         
-        IEnumerable<StartRoleClaimedEvent> claimedEvents = Claims.OfType<StartRoleClaimedEvent>();
+        StartRoleClaimedEvent[] claimedEvents = Claims.OfType<StartRoleClaimedEvent>().ToArray();
 
         // Calculate starting role probabilities
         foreach (var slot in AllSlots)
@@ -195,7 +201,6 @@ public class GameState
         
         return probabilities;
     }
-
 
     public GameState RunToEnd()
     {
