@@ -3,7 +3,7 @@ namespace MattEland.Wherewolf.Probability;
 public record VoteWinProbabilityStatistics
 {
     public int Support { get; set; }
-    public float TotalWinProbability { get; set; }
+    public double TotalWinProbability { get; set; }
 
     public override string ToString()
     {

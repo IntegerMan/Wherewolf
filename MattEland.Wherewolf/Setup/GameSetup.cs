@@ -1,6 +1,5 @@
 ﻿using MattEland.Wherewolf.Phases;
 using MattEland.Wherewolf.Roles;
-using MoreLinq;
 
 namespace MattEland.Wherewolf.Setup;
 
@@ -63,6 +62,8 @@ public class GameSetup
 
     public GameState StartGame(ISlotShuffler? slotShuffler = null)
     {
+        Validate();
+        
         slotShuffler ??= new RandomShuffler();
 
         // Pre-calculate all phases
@@ -112,7 +113,7 @@ public class GameSetup
         }
     }
 
-    internal void Validate()
+    private void Validate()
     {
         if (_players.Count + 3 != _roles.Count)
         {
@@ -150,7 +151,7 @@ public class GameSetup
         List<GameState> currentBand = [_root!];
         List<GameState> nextBand = [];
         
-        while (currentBand.Any())
+        while (currentBand.Count > 0)
         {
             foreach (var state in currentBand)
             {

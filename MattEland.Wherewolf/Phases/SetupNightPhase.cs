@@ -11,6 +11,7 @@ public class SetupNightPhase : GamePhase
     
     public override GameState Run(GameState newState)
     {
+        // TODO: newState.SendRolesToControllers();
         newState.AddEvent(new GamePhaseAnnouncedEvent("Everyone, go to sleep."));
 
         return newState;

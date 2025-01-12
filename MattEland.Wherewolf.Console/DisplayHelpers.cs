@@ -133,31 +133,6 @@ public static class DisplayHelpers
             1 => "[White]100.0%[/]",
             _ => $"[Grey62]{value:P1}[/]"
         };
-
-    public static void RenderVoteWinPercents(Player player1, GameState gameState1)
-    {
-        Table voteTable = new();
-        voteTable.Title($"{player1.GetPlayerMarkup()} Perceived Vote Win %'s");
-        voteTable.AddColumns(gameState1.Players.Where(p => p != player1).Select(p => p.GetPlayerMarkup()).ToArray());
-        var probabilities = VotingHelper.GetVoteVictoryProbabilities(player1, gameState1);
-        voteTable.AddRow(gameState1.Players.Where(p => p != player1).Select(p => GetFormattedPercent(probabilities[p])).ToArray());
-        AnsiConsole.Write(voteTable);
-    }
-
-    public static void RenderObservedEvents(Player player, GameState state)
-    {
-        Tree playerTree = new($"[Yellow]Observed Events for {player.GetPlayerMarkup()}[/]");
-
-        foreach (var gameEvent in state.Events.Where(e => e.IsObservedBy(player)))
-        {
-            AddGameEventNodeToTree(gameEvent, playerTree, state.AllSlots, state.Roles, state.Players,
-                includeObservedBy: false);
-        }
-
-        AnsiConsole.Write(playerTree);
-        AnsiConsole.WriteLine();
-
-    }
     
     private static void AddGameEventNodeToTree(GameEvent evt, Tree tree, IEnumerable<GameSlot> slots, IEnumerable<GameRole> roles, IEnumerable<Player> players, bool includeObservedBy = true)
     {

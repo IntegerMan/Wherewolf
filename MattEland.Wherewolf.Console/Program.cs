@@ -69,12 +69,12 @@ try
 
     foreach (var e in gameState.Events)
     {
-        AnsiConsole.MarkupLine(DisplayHelpers.StylizeEventMessage(e.Description, gameState.AllSlots, gameState.Roles));
+        AnsiConsole.MarkupLine(DisplayHelpers.StylizeEventMessage(e.Description, gameState.AllSlots, gameSetup.Roles));
     }
     
     foreach (var claim in gameState.Claims)
     {
-        AnsiConsole.MarkupLine(DisplayHelpers.StylizeEventMessage(claim.Description, gameState.AllSlots, gameState.Roles));
+        AnsiConsole.MarkupLine(DisplayHelpers.StylizeEventMessage(claim.Description, gameState.AllSlots, gameSetup.Roles));
     }
     
     AnsiConsole.WriteLine();

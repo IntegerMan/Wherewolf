@@ -8,21 +8,24 @@ public class ClaimSafestRoleStrategy(Random rand) : IRoleClaimStrategy
     public GameRole GetRoleClaim(Player player, GameState gameState)
     {
         GameRole startRole = gameState.GetStartRole(player);
+        GameState[] possibleEndStates = gameState.Setup.GetPermutationsAtPhase(null).ToArray();
+        Player[] otherPlayers = gameState.Players.Where(p => p != player).ToArray();
 
         // Now, let's take roles into account and see what victory % each other player gets voting for us based on who they think we are
-        Dictionary<GameRole, Dictionary<Player, VoteWinProbabilityStatistics>> roleStats = GetOtherPlayerVotingForPlayerRoleClaimVictoryStats(player, gameState);
+        Dictionary<GameRole, Dictionary<Player, VoteVictoryStatistics>> roleStats 
+            = GetOtherPlayerWinStatsGivenMyRoleClaim(player, gameState, possibleEndStates, otherPlayers);
 
         // We then tabulate the % of times we get voted for based on the role we're considering claiming
-        Dictionary<GameRole, float> roleVotedPercent = new();
+        Dictionary<GameRole, double> roleVotedPercent = new();
         foreach (var kvp in roleStats)
         {
-            float totalSupport = kvp.Value.Values.Sum(v => v.Support);
-            float totalWinProbability = kvp.Value.Values.Sum(v => v.TotalWinProbability);
+            double totalSupport = kvp.Value.Values.Sum(v => v.Support);
+            double totalWinProbability = kvp.Value.Values.Sum(v => v.WinPercent);
             roleVotedPercent[kvp.Key] = totalWinProbability / totalSupport;
         }
         
         // Now let's consider the top role based on the highest win % for us
-        float best = roleVotedPercent.Values.Max();
+        double best = roleVotedPercent.Values.Max();
         GameRole[] bestRoles = roleVotedPercent
             .Where(kvp => kvp.Value >= best)
             .Select(kvp => kvp.Key)
@@ -44,40 +47,34 @@ public class ClaimSafestRoleStrategy(Random rand) : IRoleClaimStrategy
         return bestRoles[rand.Next(bestRoles.Length)];
     }
 
-    private static Dictionary<GameRole, Dictionary<Player, VoteWinProbabilityStatistics>> GetOtherPlayerVotingForPlayerRoleClaimVictoryStats(Player player, GameState gameState)
+    private static Dictionary<GameRole, Dictionary<Player, VoteVictoryStatistics>> GetOtherPlayerWinStatsGivenMyRoleClaim(Player player, GameState gameState, GameState[] possibleEndStates, Player[] otherPlayers)
     {
-        Player[] otherPlayers = gameState.Players.Where(p => p != player).ToArray();
-        GameState[] possibleStates = gameState.Setup.GetPermutationsAtPhase(gameState.CurrentPhase).ToArray();
-        Dictionary<GameRole, Dictionary<Player, VoteWinProbabilityStatistics>> roleStats = new();
+        Dictionary<GameRole, Dictionary<Player, VoteVictoryStatistics>> roleStats = new();
         
         foreach (var possibleRole in gameState.Setup.Roles) // NOTE: No Distinct. We want this weighted for double inclusion where appropriate
         {
-            // Filter to roles we started as the role we're considering claiming
-            GameState[] roleStates = possibleStates.Where(s => s.GetStartRole(player) == possibleRole).ToArray();
+            roleStats[possibleRole] = new();
             
-            foreach (var otherPlayer in otherPlayers)
-            {
-                foreach (var possibleState in roleStates)
-                {
-                    // TODO: This method is too intelligent and deceptively named. I just want a brute force approach to get the win % for each player voting for us
-                    Dictionary<Player, float> observedVictoryPercent = VotingHelper.GetVoteVictoryProbabilities(otherPlayer, possibleState);
-                    
-                    if (!roleStats.ContainsKey(possibleRole))
-                    {
-                        roleStats[possibleRole] = new();
-                    }
+            // Filter to roles we started as the role we're considering claiming
+            GameState[] roleStates = possibleEndStates.Where(s => s.GetStartRole(player) == possibleRole).ToArray();
 
-                    if (roleStats[possibleRole].TryGetValue(otherPlayer, out VoteWinProbabilityStatistics? value))
+            foreach (var possibleState in roleStates)
+            {
+                foreach (var otherPlayer in otherPlayers)
+                {
+                    bool isWin = possibleState.GameResult!.DidPlayerWin(otherPlayer);
+
+                    if (roleStats[possibleRole].TryGetValue(otherPlayer, out VoteVictoryStatistics? value))
                     {
                         value.Support++;
-                        value.TotalWinProbability += observedVictoryPercent[player];
+                        value.Wins += isWin ? 1 : 0;
                     }
                     else
                     {
                         roleStats[possibleRole][otherPlayer] = new()
                         {
                             Support = 1,
-                            TotalWinProbability = observedVictoryPercent[player]
+                            Wins = isWin ? 1 : 0
                         };
                     }
                 }

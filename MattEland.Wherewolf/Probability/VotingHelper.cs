@@ -1,59 +1,41 @@
 using MattEland.Wherewolf.Events.Game;
-using MattEland.Wherewolf.Events.Social;
 using MattEland.Wherewolf.Phases;
 
 namespace MattEland.Wherewolf.Probability;
 
 public static class VotingHelper
 {
-    public static Dictionary<Player, float> GetVoteVictoryProbabilities(Player player, GameState state)
+    public static Dictionary<Player, double> GetVoteVictoryProbabilities(Player player, GameState state)
     {
-        IDictionary<Player, Player>[] permutations = state.Setup.VotingPermutations;
-
-        // Build a collection of results based on whom the player voted for - for every world this player thinks might be valid
-        Dictionary<Player, List<GameResult>> results = new(state.Players.Count() - 1);
+        GamePhase? votingPhase = null;
+        IEnumerable<GameState> permutations = state.Setup.GetPermutationsAtPhase(votingPhase);
+        
+        // Set up our results
+        Dictionary<Player, VoteVictoryStatistics> results = new(state.Players.Count() - 1);
         foreach (var otherPlayer in state.Players.Where(p => p != player))
         {
             results[otherPlayer] = new();
         }
-        IEnumerable<StartRoleClaimedEvent> claims = state.Claims.OfType<StartRoleClaimedEvent>();
-        StartRoleClaimedEvent[] otherClaims = claims.Where(e => e.Player != player).ToArray();
         
-        IEnumerable<GameState> possibleStates = GetPossibleGameStatesForPlayer(player, state);
-        Dictionary<Player, int> votes = new();
-        foreach (var possibleState in possibleStates)
+        // Tabulate results based on who the player voted for that permutation
+        foreach (var perm in permutations)
         {
-            int supportingClaims = otherClaims.Count(e => e.IsClaimValidFor(possibleState));
-            
-            foreach (var perm in permutations)
-            {
-                GetVotingResults(perm, votes);
-                
-                GameResult gameResult = possibleState.DetermineGameResults(votes, supportingClaims);
+            VotedEvent vote = perm.Events.OfType<VotedEvent>().First(v => v.VotingPlayer == player);
 
-                results[perm[player]].Add(gameResult);
+            results[vote.TargetPlayer].Support++;
+            if (perm.GameResult!.DidPlayerWin(player))
+            {
+                results[vote.TargetPlayer].Wins++;
             }
         }
-
-        // Calculate win % for each
-        Dictionary<Player, float> winProbability = new();
+        
+        // Translate results into probabilities
+        Dictionary<Player, double> winProbability = new(results.Count);
         foreach (var kvp in results)
         {
-            IEnumerable<GameResult> resultsForPlayer = kvp.Value;
-            
-            float totalWeight = 0;
-            float cumulatedValue = 0;
-            
-            foreach (var result in resultsForPlayer)
-            {
-                int weight = 1 + result.SupportingClaims;
-                totalWeight += weight;
-                cumulatedValue += result.WinningPlayers.Contains(player) ? weight : 0;
-            }
-            
-            winProbability[kvp.Key] = cumulatedValue / totalWeight;
+            winProbability[kvp.Key] = kvp.Value.WinPercent;
         }
-
+        
         return winProbability;
     }
 
@@ -94,11 +76,11 @@ public static class VotingHelper
 
     public static Player GetMostLikelyWinningVote(GameState world, Player votingPlayer, Random rand)
     {
-        Dictionary<Player, float> probabilities = GetVoteVictoryProbabilities(votingPlayer, world);
+        Dictionary<Player, double> probabilities = GetVoteVictoryProbabilities(votingPlayer, world);
 
-        float maxProb = probabilities.Max(kvp => kvp.Value);
+        double maxProb = probabilities.Max(kvp => kvp.Value);
 
-        List<KeyValuePair<Player, float>> atMax = probabilities.Where(kvp => kvp.Value >= maxProb).ToList();
+        List<KeyValuePair<Player, double>> atMax = probabilities.Where(kvp => kvp.Value >= maxProb).ToList();
 
         return atMax.Count == 1 
             ? atMax.First().Key 

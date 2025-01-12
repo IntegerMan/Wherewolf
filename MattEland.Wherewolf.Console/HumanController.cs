@@ -10,11 +10,6 @@ namespace MattEland.Wherewolf.Console;
 
 public class HumanController : PlayerController
 {
-    public override void RanPhase(GamePhase phase, GameState gameState)
-    {
-        base.RanPhase(phase, gameState);
-    }
-
     public override string SelectLoneWolfCenterCard(string[] centerSlotNames)
     {
         return AnsiConsole.Prompt(new SelectionPrompt<string>()
@@ -79,7 +74,7 @@ public class HumanController : PlayerController
     public override Player GetPlayerVote(Player votingPlayer, GameState state)
     {
         PlayerProbabilities playerProbs = state.CalculateProbabilities(votingPlayer);
-        Dictionary<Player, float> victoryProbs = VotingHelper.GetVoteVictoryProbabilities(votingPlayer, state);
+        Dictionary<Player, double> victoryProbs = VotingHelper.GetVoteVictoryProbabilities(votingPlayer, state);
         
         SelectionPrompt<Player> prompt = new();
         prompt.Title("Who are you voting for?");

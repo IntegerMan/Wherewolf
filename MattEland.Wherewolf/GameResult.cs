@@ -60,4 +60,7 @@ public class GameResult
     public IEnumerable<Player> LosingPlayers => _state.Players.Except(_winningPlayers);
 
     public IDictionary<Player, int> Votes { get; }
+
+    public bool DidPlayerWin(Player player) 
+        => _winningPlayers.Contains(player);
 }

@@ -10,7 +10,6 @@ namespace MattEland.Wherewolf;
 
 public class GameState
 {
-    private readonly GameSetup _gameSetup;
     private readonly GameSlot[] _centerSlots;
     private readonly GameSlot[] _playerSlots;
     private readonly Queue<GamePhase> _remainingPhases;
@@ -18,12 +17,11 @@ public class GameState
     private readonly List<SocialEvent> _claims = [];
     private readonly Dictionary<string, GameSlot> _slots = new();
     public double Support { get; }
+    public GameSetup Setup { get; }
     
     public GameState(GameSetup setup, IReadOnlyList<GameRole> shuffledRoles, double support)
     {
-        setup.Validate();
-        _gameSetup = setup;
-
+        Setup = setup;
         _playerSlots = BuildPlayerSlots(setup.Players, shuffledRoles);
         _centerSlots = BuildCenterSlots(setup.Players, shuffledRoles);
         foreach(var slot in AllSlots)
@@ -43,8 +41,8 @@ public class GameState
 
     internal GameState(GameState parentState, double support)
     {
+        Setup = parentState.Setup;
         _remainingPhases = new Queue<GamePhase>(parentState._remainingPhases.Skip(1));
-        _gameSetup = parentState._gameSetup;
         _centerSlots = parentState.CenterSlots.Select(c => new GameSlot(c)).ToArray();
         _playerSlots = parentState.PlayerSlots.Select(c => new GameSlot(c)).ToArray();
         foreach(var slot in AllSlots)
@@ -61,8 +59,8 @@ public class GameState
     /// </summary>
     private GameState(GameState parentState, IEnumerable<GameSlot> playerSlots, IEnumerable<GameSlot> centerSlots)
     {
+        Setup = parentState.Setup;
         _remainingPhases = new Queue<GamePhase>(parentState._remainingPhases);
-        _gameSetup = parentState._gameSetup;
         _centerSlots = centerSlots.ToArray();
         _playerSlots = playerSlots.ToArray();
         
@@ -112,8 +110,8 @@ public class GameState
         }
     }
 
-    public IEnumerable<Player> Players => _gameSetup.Players;
-    public IEnumerable<GameRole> Roles => _gameSetup.Roles;
+    public IEnumerable<Player> Players => Setup.Players;
+    public IEnumerable<GameRole> Roles => Setup.Roles;
     public IEnumerable<GameEvent> Events
     {
         get
@@ -258,7 +256,6 @@ public class GameState
     public GameState? Parent { get; }
     public GameState Root { get; }
     public GameResult? GameResult { get; internal set; }
-    public GameSetup Setup => _gameSetup;
 
     public void AddEvent(GameEvent newEvent, bool broadcastToController = true)
     {
