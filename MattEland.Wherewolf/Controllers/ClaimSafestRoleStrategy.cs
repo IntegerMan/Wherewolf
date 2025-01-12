@@ -1,3 +1,4 @@
+using MattEland.Wherewolf.Events.Game;
 using MattEland.Wherewolf.Probability;
 using MattEland.Wherewolf.Roles;
 
@@ -8,7 +9,11 @@ public class ClaimSafestRoleStrategy(Random rand) : IRoleClaimStrategy
     public GameRole GetRoleClaim(Player player, GameState gameState)
     {
         GameRole startRole = gameState.GetStartRole(player);
-        GameState[] possibleEndStates = gameState.Setup.GetPermutationsAtPhase(null).ToArray();
+        GameEvent[] observedEvents = gameState.Events.Where(e => e.IsObservedBy(player)).ToArray();
+        
+        GameState[] possibleStartStates = gameState.Setup.PossibleRoots.Where(s => s.IsPossibleGivenEvents(observedEvents)).ToArray();
+        GameState[] possibleEndStates = GetPossibleEndStatesGivenStartStates(possibleStartStates);
+
         Player[] otherPlayers = gameState.Players.Where(p => p != player).ToArray();
 
         // Now, let's take roles into account and see what victory % each other player gets voting for us based on who they think we are
@@ -47,12 +52,44 @@ public class ClaimSafestRoleStrategy(Random rand) : IRoleClaimStrategy
         return bestRoles[rand.Next(bestRoles.Length)];
     }
 
-    private static Dictionary<GameRole, Dictionary<Player, VoteVictoryStatistics>> GetOtherPlayerWinStatsGivenMyRoleClaim(Player player, GameState gameState, GameState[] possibleEndStates, Player[] otherPlayers)
+    private static GameState[] GetPossibleEndStatesGivenStartStates(GameState[] possibleStartStates)
+    {
+        List<GameState> possibleEndStates = new();
+        List<GameState> currentBandStates = new(possibleStartStates);
+        List<GameState> nextBandStates = new();
+        while (currentBandStates.Count > 0)
+        {
+            foreach (var state in currentBandStates)
+            {
+                if (state.GameResult != null)
+                {
+                    possibleEndStates.Add(state);
+                }
+                else
+                {
+                    nextBandStates.AddRange(state.PossibleNextStates);
+                }
+            }
+
+            currentBandStates = nextBandStates;
+            nextBandStates = new();
+        }
+
+        return possibleEndStates.ToArray();
+    }
+
+    private static Dictionary<GameRole, Dictionary<Player, VoteVictoryStatistics>> GetOtherPlayerWinStatsGivenMyRoleClaim(
+        Player player, 
+        GameState gameState, 
+        GameState[] possibleEndStates, 
+        Player[] otherPlayers)
     {
         Dictionary<GameRole, Dictionary<Player, VoteVictoryStatistics>> roleStats = new();
+
+        // NOTE: No Distinct. We want this weighted for double inclusion where appropriate
+        IEnumerable<GameRole> roles = gameState.Setup.Roles;
         
-        foreach (var possibleRole in gameState.Setup.Roles) // NOTE: No Distinct. We want this weighted for double inclusion where appropriate
-        {
+        foreach (var possibleRole in roles) {
             roleStats[possibleRole] = new();
             
             // Filter to roles we started as the role we're considering claiming

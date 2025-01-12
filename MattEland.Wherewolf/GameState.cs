@@ -16,7 +16,7 @@ public class GameState
     private readonly List<GameEvent> _events = [];
     private readonly List<SocialEvent> _claims = [];
     private readonly Dictionary<string, GameSlot> _slots = new();
-    public double Support { get; }
+    public double Support { get; internal set; }
     public GameSetup Setup { get; }
     
     public GameState(GameSetup setup, IReadOnlyList<GameRole> shuffledRoles, double support)

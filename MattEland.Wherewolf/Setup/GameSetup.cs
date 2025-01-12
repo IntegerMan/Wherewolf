@@ -1,5 +1,6 @@
 ﻿using MattEland.Wherewolf.Phases;
 using MattEland.Wherewolf.Roles;
+using MoreLinq;
 
 namespace MattEland.Wherewolf.Setup;
 
@@ -10,6 +11,7 @@ public class GameSetup
     private readonly List<GameRole> _roles = new();
     private VotePermutationsProvider? _votePermutations;
     private GameState? _root;
+    private GameState[] _possibleRoots = [];
     public IEnumerable<Player> Players => _players.AsReadOnly();
     public IEnumerable<GameRole> Roles => _roles.AsReadOnly();
     public GamePhase[] Phases
@@ -73,7 +75,20 @@ public class GameSetup
         GameRole[] shuffledRoles = slotShuffler.Shuffle(Roles).ToArray();
         
         // Pre-calculate all permutations
-        _root = new GameState(this, shuffledRoles, support: 1);
+        IEnumerable<IList<GameRole>> rolePermutations = shuffledRoles.Permutations();
+        List<GameState> possibleStates = rolePermutations
+            .Select(roles => new GameState(this, roles.ToArray(), support: 1))
+            .ToList();
+        
+        // Find states with identical role allocations
+        IEnumerable<IGrouping<string, GameState>> groupedRoles = possibleStates.GroupBy(s => string.Join(",", s.AllSlots.Select(sl => sl.Role)));
+        _possibleRoots = groupedRoles.Select(g =>
+        {
+            var first = g.First();
+            first.Support = g.Count();
+            return first;
+        }).ToArray();
+        _root = _possibleRoots.First(s => s.AllSlots.Select(sl => sl.Role).SequenceEqual(shuffledRoles));
         
         // TODO: This seems like something that should live in a phase
         _root.SendRolesToControllers();
@@ -148,7 +163,7 @@ public class GameSetup
     public IEnumerable<GameState> GetPermutationsAtPhase(GamePhase? currentPhase)
     {
         // Walk down the tree of permutations to find the current phase
-        List<GameState> currentBand = [_root!];
+        List<GameState> currentBand = _possibleRoots.ToList();
         List<GameState> nextBand = [];
         
         while (currentBand.Count > 0)
@@ -167,4 +182,6 @@ public class GameSetup
             nextBand = [];
         }
     }
+    
+    public IEnumerable<GameState> PossibleRoots => _possibleRoots;
 }

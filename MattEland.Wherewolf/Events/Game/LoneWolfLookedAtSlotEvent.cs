@@ -40,10 +40,16 @@ public class LoneWolfLookedAtSlotEvent : GameEvent
             return false;
         }
 
-        GameState wwPhaseState = state;
-        while (wwPhaseState.CurrentPhase is not { Name: "Werewolves" })
+        GameState? wwPhaseState = state;
+        while (wwPhaseState != null && wwPhaseState.CurrentPhase is not { Name: "Werewolves" })
         {
-            wwPhaseState = wwPhaseState.Parent!;
+            wwPhaseState = wwPhaseState.Parent;
+        }
+        
+        // If we didn't find a werewolf phase, we're looking at a phase before the WW phase, so this should be true
+        if (wwPhaseState == null)
+        {
+            return true;
         }
         
         // In the game state, the current role needs to be the one the event recorded seeing
