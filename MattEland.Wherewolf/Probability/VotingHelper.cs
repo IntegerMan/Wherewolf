@@ -56,7 +56,7 @@ public static class VotingHelper
 
         return winProbability;
     }
-
+    
     private static float CalculatePlayerWinPercentWithBestVotingOption(Player player, GameState state)
     {
         IDictionary<Player, IDictionary<Player, float>> playerVoteProbabilities = BuildPlayerWeightedVoteProbabilities(state);

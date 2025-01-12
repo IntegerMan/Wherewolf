@@ -60,6 +60,7 @@ public class ClaimSafestRoleStrategy(Random rand) : IRoleClaimStrategy
         Player[] otherPlayers = gameState.Players.Where(p => p != player).ToArray();
         GameState[] possibleStates = gameState.Setup.GetPermutationsAtPhase(gameState.CurrentPhase).ToArray();
         Dictionary<GameRole, Dictionary<Player, VoteWinProbabilityStatistics>> roleStats = new();
+        
         foreach (var possibleRole in gameState.Setup.Roles) // NOTE: No Distinct. We want this weighted for double inclusion where appropriate
         {
             // Filter to roles we started as the role we're considering claiming
@@ -69,6 +70,7 @@ public class ClaimSafestRoleStrategy(Random rand) : IRoleClaimStrategy
             {
                 foreach (var possibleState in roleStates)
                 {
+                    // TODO: This method is too intelligent and deceptively named. I just want a brute force approach to get the win % for each player voting for us
                     Dictionary<Player, float> observedVictoryPercent = VotingHelper.GetVoteVictoryProbabilities(otherPlayer, possibleState);
                     
                     if (!roleStats.ContainsKey(possibleRole))
