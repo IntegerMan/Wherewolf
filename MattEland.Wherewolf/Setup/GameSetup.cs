@@ -9,8 +9,8 @@ public class GameSetup
     private readonly List<GamePhase> _phases = new();
     private readonly List<Player> _players = new();
     private readonly List<GameRole> _roles = new();
-    private readonly Dictionary<string, List<GameState>> _phasePermutations = new();
     private VotePermutationsProvider? _votePermutations;
+    private GameState? _root;
     public IEnumerable<Player> Players => _players.AsReadOnly();
     public IEnumerable<GameRole> Roles => _roles.AsReadOnly();
     public GamePhase[] Phases
@@ -68,28 +68,26 @@ public class GameSetup
         // Pre-calculate all phases
         CalculatePhases();
 
-        // Pre-calculate all permutations
-        CalculatePermutations();
-
         // Find a game state from our permutations (we want to avoid instantiating the same state again)
-        List<GameRole> shuffledRoles = slotShuffler.Shuffle(Roles).ToList();
-        string rolesList = shuffledRoles.ToDelimitedString(",");
-        GameState permutation = GetPermutationsAtPhase(_phases.First())
-            .First(p => p.AllSlots.Select(s => s.Role).ToDelimitedString(",") == rolesList);
+        GameRole[] shuffledRoles = slotShuffler.Shuffle(Roles).ToArray();
+        
+        // Pre-calculate all permutations
+        _root = new GameState(this, shuffledRoles, support: 1);
+        
+        // TODO: This seems like something that should live in a phase
+        _root.SendRolesToControllers();
 
-        permutation.SendRolesToControllers();
-
-        return permutation;
+        return _root;
     }
 
     private void CalculatePhases()
     {
-        List<GamePhase> phases = new()
-        {
+        List<GamePhase> phases =
+        [
             new SetupNightPhase(), // This diagnostic phase should always be present
             new WakeUpPhase(),
-            new VotingPhase() // This is what will trigger voting
-        };
+            new VotingPhase()
+        ];
         
         // Each player gets their on role claim phase
         foreach (var player in Players)
@@ -132,59 +130,40 @@ public class GameSetup
         {
             throw new InvalidOperationException("All roles were on the same team");
         }
-    }
-
-    private void CalculatePermutations()
-    {
-        _phasePermutations.Clear();
         
-        BuildSetupPermutations();
-
-        List<GameState> currentPhasePermutations = [.._phasePermutations["Setup"]];
-        string nextPhase = currentPhasePermutations.First().Phases.Skip(1).FirstOrDefault()?.Name ?? "Voting";
-
-        BuildPermutationsForNextPhase(currentPhasePermutations, nextPhase);
+        AssignOrderIndexToEachPlayer(_players);
     }
-
-    private void BuildPermutationsForNextPhase(List<GameState> priorStates, string phaseName)
+    
+        
+    private static void AssignOrderIndexToEachPlayer(IEnumerable<Player> players)
     {
-        List<GameState> possibleStates = priorStates.SelectMany(p => p.PossibleNextStates).ToList();
-        if (!possibleStates.Any())
+        int order = 0;
+        foreach (var player in players)
         {
-            _phasePermutations["Voting"] = priorStates.ToList();
-            return;
-        }
-        
-        string nextPhaseName = possibleStates.First().CurrentPhase?.Name ?? "Voting";
-        _phasePermutations[phaseName] = possibleStates;
-        
-        BuildPermutationsForNextPhase(possibleStates, nextPhaseName);
-    }
-
-    private void BuildSetupPermutations()
-    {
-        // Generate the unique combinations of each role
-        IEnumerable<IList<GameRole>> permutations = _roles.Permutations();
-
-        // Break our permutations into groups based on role combinations. This helps merge duplicate permutations
-        _phasePermutations["Setup"] = new List<GameState>();
-        foreach (var group in permutations.GroupBy(p => string.Join(",", p)))
-        {
-            // Represent multiple similar states merged together using the Support property to indicate merged probabilities
-            GameState state = new(this, group.First().ToList(), group.Count());
-            _phasePermutations["Setup"].Add(state);
+            player.Order = order++;
         }
     }
     
     public IEnumerable<GameState> GetPermutationsAtPhase(GamePhase? currentPhase)
     {
-        if (!_phasePermutations.Any())
+        // Walk down the tree of permutations to find the current phase
+        List<GameState> currentBand = [_root!];
+        List<GameState> nextBand = [];
+        
+        while (currentBand.Any())
         {
-            CalculatePermutations();
+            foreach (var state in currentBand)
+            {
+                if (state.CurrentPhase == currentPhase)
+                {
+                    yield return state;
+                }
+                
+                nextBand.AddRange(state.PossibleNextStates);
+            }
+            
+            currentBand = nextBand;
+            nextBand = [];
         }
-
-        return _phasePermutations[currentPhase?.Name ?? "Voting"];
     }
-
-    public List<GameState> GetSetupPermutations() => _phasePermutations["Setup"];
 }

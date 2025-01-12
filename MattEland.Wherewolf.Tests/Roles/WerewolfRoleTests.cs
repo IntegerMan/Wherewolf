@@ -81,7 +81,7 @@ public class WerewolfRoleTests : RoleTestBase
         
         // Act
         SlotRoleProbabilities slotProbabilities = gameState.CalculateProbabilities(player)
-            .GetCurrentProbabilities(gameState.GetSlot("Center 2"));
+            .GetCurrentProbabilities(gameState["Center 2"]);
 
         // Assert
         List<GameEvent> observedEvents = gameState.Events.Where(e => e.IsObservedBy(player)).ToList();

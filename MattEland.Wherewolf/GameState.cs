@@ -31,7 +31,6 @@ public class GameState
             _slots[slot.Name] = slot;
         }
 
-        AssignOrderIndexToEachPlayer(setup.Players);
         foreach (var slot in AllSlots)
         {
             AddEvent(new DealtCardEvent(slot.Role, slot), false);
@@ -74,15 +73,6 @@ public class GameState
         Parent = parentState.Parent;
         Root = parentState.Root;
         Support = parentState.Support;
-    }
-    
-    private static void AssignOrderIndexToEachPlayer(IEnumerable<Player> players)
-    {
-        int order = 0;
-        foreach (var player in players)
-        {
-            player.Order = order++;
-        }
     }
 
     private static GameSlot[] BuildCenterSlots(IEnumerable<Player> players, IEnumerable<GameRole> shuffledRoles)
@@ -293,12 +283,9 @@ public class GameState
 
     public GameSlot GetSlot(Player player)
         => _slots[player.Name];
-    
-    public GameSlot GetSlot(string slotName)
-        => _slots[slotName];
 
     public GameSlot this[string slotName] 
-        => GetSlot(slotName);
+        => _slots[slotName];
     
     public override string ToString()
     {
