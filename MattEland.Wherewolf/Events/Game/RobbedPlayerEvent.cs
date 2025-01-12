@@ -6,19 +6,12 @@ namespace MattEland.Wherewolf.Events.Game;
 /// This event occurs when the Robber robs a target. In that scenario they beg the target's role and get to see it while
 /// the target has the role the robber player previously had. The target is not notified of the role swap.
 /// </summary>
-public class RobbedPlayerEvent : GameEvent
+public class RobbedPlayerEvent(Player robber, Player target, GameRole newRole) : GameEvent
 {
-    public Player Player { get; }
-    public Player Target { get; }
-    public GameRole NewRole { get; }
-    
-    public RobbedPlayerEvent(Player robber, Player target, GameRole newRole)
-    {
-        Player = robber;
-        Target = target;
-        NewRole = newRole;
-    }
-    
+    public Player Player { get; } = robber;
+    public Player Target { get; } = target;
+    public GameRole NewRole { get; } = newRole;
+
     public override bool IsObservedBy(Player player) 
         => Player == player;
 

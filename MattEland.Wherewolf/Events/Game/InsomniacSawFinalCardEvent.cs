@@ -2,17 +2,11 @@ using MattEland.Wherewolf.Roles;
 
 namespace MattEland.Wherewolf.Events.Game;
 
-public class InsomniacSawFinalCardEvent : GameEvent
+public class InsomniacSawFinalCardEvent(Player player, GameRole role) : GameEvent
 {
-    public Player Player { get; }
-    public GameRole Role { get; }
+    public Player Player { get; } = player;
+    public GameRole Role { get; } = role;
 
-    public InsomniacSawFinalCardEvent(Player player, GameRole role)
-    {
-        this.Player = player;
-        this.Role = role;
-    }
-    
     public override bool IsObservedBy(Player player) 
         => Player == player;
 

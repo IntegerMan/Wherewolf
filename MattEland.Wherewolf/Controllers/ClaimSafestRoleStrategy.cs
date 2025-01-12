@@ -9,31 +9,20 @@ public class ClaimSafestRoleStrategy(Random rand) : IRoleClaimStrategy
     public GameRole GetRoleClaim(Player player, GameState gameState)
     {
         GameRole startRole = gameState.GetStartRole(player);
-        GameEvent[] observedEvents = gameState.Events.Where(e => e.IsObservedBy(player)).ToArray();
-        
-        GameState[] possibleStartStates = gameState.Setup.PossibleRoots.Where(s => s.IsPossibleGivenEvents(observedEvents)).ToArray();
-        GameState[] possibleEndStates = GetPossibleEndStatesGivenStartStates(possibleStartStates);
-
-        Player[] otherPlayers = gameState.Players.Where(p => p != player).ToArray();
+        GameState[] possibleEndStates = gameState.Setup.GetPermutationsAtPhase(null).ToArray();
 
         // Now, let's take roles into account and see what victory % each other player gets voting for us based on who they think we are
-        Dictionary<GameRole, Dictionary<Player, VoteVictoryStatistics>> roleStats 
-            = GetOtherPlayerWinStatsGivenMyRoleClaim(player, gameState, possibleEndStates, otherPlayers);
+        Dictionary<GameRole, VoteStatistics> roleStats 
+            = GetOtherPlayersWinRatesGivenMyRoleClaim(player, gameState, possibleEndStates);
 
-        // We then tabulate the % of times we get voted for based on the role we're considering claiming
-        Dictionary<GameRole, double> roleVotedPercent = new();
-        foreach (var kvp in roleStats)
-        {
-            double totalSupport = kvp.Value.Values.Sum(v => v.Support);
-            double totalWinProbability = kvp.Value.Values.Sum(v => v.WinPercent);
-            roleVotedPercent[kvp.Key] = totalWinProbability / totalSupport;
-        }
-        
-        // Now let's consider the top role based on the highest win % for us
-        double best = roleVotedPercent.Values.Max();
-        GameRole[] bestRoles = roleVotedPercent
-            .Where(kvp => kvp.Value >= best)
-            .Select(kvp => kvp.Key)
+        // Now let's consider the top role based on the lowest win % for our opponents voting for who they think we are
+        // This will encourage us to claim the role that is least likely to get us killed
+        double best = roleStats.Values.Min(rs => rs.VotesPerGame);
+        GameRole[] bestRoles = roleStats
+            .Where(rs => rs.Value.VotesPerGame <= best)
+            .OrderByDescending(rs => rs.Value.Support)
+            .ThenBy(_ => rand.Next())
+            .Select(rs => rs.Key)
             .ToArray();
         
         // If there's only one role, we're done
@@ -42,49 +31,21 @@ public class ClaimSafestRoleStrategy(Random rand) : IRoleClaimStrategy
             return bestRoles[0];
         }
         
-        // If we have a tie, we want to go with the role we actually started as if it's in the tie
+        // If we have a tie, we want to go with the role we actually started as
         if (bestRoles.Contains(startRole))
         {
             return startRole;
         }
-        
-        // If we don't have a tie, we want to go with a random role in the list
-        return bestRoles[rand.Next(bestRoles.Length)];
+
+        return bestRoles.First();
     }
 
-    private static GameState[] GetPossibleEndStatesGivenStartStates(GameState[] possibleStartStates)
-    {
-        List<GameState> possibleEndStates = new();
-        List<GameState> currentBandStates = new(possibleStartStates);
-        List<GameState> nextBandStates = new();
-        while (currentBandStates.Count > 0)
-        {
-            foreach (var state in currentBandStates)
-            {
-                if (state.GameResult != null)
-                {
-                    possibleEndStates.Add(state);
-                }
-                else
-                {
-                    nextBandStates.AddRange(state.PossibleNextStates);
-                }
-            }
-
-            currentBandStates = nextBandStates;
-            nextBandStates = new();
-        }
-
-        return possibleEndStates.ToArray();
-    }
-
-    private static Dictionary<GameRole, Dictionary<Player, VoteVictoryStatistics>> GetOtherPlayerWinStatsGivenMyRoleClaim(
+    private static Dictionary<GameRole, VoteStatistics> GetOtherPlayersWinRatesGivenMyRoleClaim(
         Player player, 
         GameState gameState, 
-        GameState[] possibleEndStates, 
-        Player[] otherPlayers)
+        GameState[] possibleEndStates)
     {
-        Dictionary<GameRole, Dictionary<Player, VoteVictoryStatistics>> roleStats = new();
+        Dictionary<GameRole, VoteStatistics> roleStats = new();
 
         // NOTE: No Distinct. We want this weighted for double inclusion where appropriate
         IEnumerable<GameRole> roles = gameState.Setup.Roles;
@@ -97,24 +58,9 @@ public class ClaimSafestRoleStrategy(Random rand) : IRoleClaimStrategy
 
             foreach (var possibleState in roleStates)
             {
-                foreach (var otherPlayer in otherPlayers)
-                {
-                    bool isWin = possibleState.GameResult!.DidPlayerWin(otherPlayer);
-
-                    if (roleStats[possibleRole].TryGetValue(otherPlayer, out VoteVictoryStatistics? value))
-                    {
-                        value.Support++;
-                        value.Wins += isWin ? 1 : 0;
-                    }
-                    else
-                    {
-                        roleStats[possibleRole][otherPlayer] = new()
-                        {
-                            Support = 1,
-                            Wins = isWin ? 1 : 0
-                        };
-                    }
-                }
+                roleStats[possibleRole].Support += possibleState.Support;
+                // TODO: When we look at roles who want to be voted, this will need to be revisited
+                roleStats[possibleRole].VotesReceived += possibleState.Events.OfType<VotedEvent>().Count(ve => ve.TargetPlayer == player);
             }
         }
 

@@ -7,7 +7,7 @@ public record VoteVictoryStatistics
 
     public override string ToString()
     {
-        return $"Wins: {Wins} / Support: {Support}, Win %: {WinPercent:P2}";
+        return $"Wins: {Wins} / Support: {Support}";
     }
 
     public double WinPercent => (double) Wins / Support;

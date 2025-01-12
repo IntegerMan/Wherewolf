@@ -7,18 +7,11 @@ namespace MattEland.Wherewolf.Events.Game;
 /// for the lone wolf to help eliminate possible worlds at the deduction layer later. It may make more sense long-term
 /// to merge all card looking abilities into a single event type.
 /// </summary>
-public class LoneWolfLookedAtSlotEvent : GameEvent
+public class LoneWolfLookedAtSlotEvent(Player player, GameSlot slot) : GameEvent
 {
-    public Player Player { get; }
-    public GameSlot Slot { get; }
-    public GameRole ObservedRole { get; }
-
-    public LoneWolfLookedAtSlotEvent(Player player, GameSlot slot)
-    {
-        this.Player = player;
-        this.Slot = slot;
-        this.ObservedRole = slot.Role;
-    }
+    public Player Player { get; } = player;
+    public GameSlot Slot { get; } = slot;
+    public GameRole ObservedRole { get; } = slot.Role;
 
     public override bool IsObservedBy(Player player) 
         => Player == player;
