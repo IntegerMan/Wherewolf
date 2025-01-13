@@ -12,6 +12,7 @@ public class CalculatePermutationsTests
     {
         // Arrange
         GameSetup setup = CreateGameSetup();
+        setup.StartGame();
         List<GamePhase?> phases = setup.Phases.ToList()!;
         phases.Add(null); // Voting Phase
 
@@ -31,6 +32,7 @@ public class CalculatePermutationsTests
     {
         // Arrange
         GameSetup setup = CreateGameSetup();
+        setup.StartGame();
 
         // Act
         IEnumerable<GameState> permutations = setup.GetPermutationsAtPhase(null); // voting

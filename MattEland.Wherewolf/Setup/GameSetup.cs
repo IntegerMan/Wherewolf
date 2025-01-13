@@ -162,6 +162,8 @@ public class GameSetup
     
     public IEnumerable<GameState> GetPermutationsAtPhase(GamePhase? currentPhase)
     {
+        if (!_possibleRoots.Any()) throw new InvalidOperationException("Game has not been started yet");
+
         // Walk down the tree of permutations to find the current phase
         List<GameState> currentBand = _possibleRoots.ToList();
         List<GameState> nextBand = [];
