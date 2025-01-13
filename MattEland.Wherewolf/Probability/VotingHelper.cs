@@ -8,7 +8,9 @@ public static class VotingHelper
     public static Dictionary<Player, double> GetVoteVictoryProbabilities(Player player, GameState state)
     {
         GamePhase? votingPhase = null;
-        IEnumerable<GameState> permutations = state.Setup.GetPermutationsAtPhase(votingPhase);
+        GameEvent[] observedEvents = state.Events.Where(e => e.IsObservedBy(player)).ToArray();
+        IEnumerable<GameState> permutations = state.Setup.GetPermutationsAtPhase(votingPhase)
+            .Where(p => p.IsPossibleGivenEvents(observedEvents));
         
         // Set up our results
         Dictionary<Player, VoteVictoryStatistics> results = new(state.Players.Count() - 1);
