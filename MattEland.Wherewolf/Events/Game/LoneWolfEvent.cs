@@ -1,20 +1,15 @@
 using MattEland.Wherewolf.Roles;
 
-namespace MattEland.Wherewolf.Events;
+namespace MattEland.Wherewolf.Events.Game;
 
 /// <summary>
 /// An event that occurs when a werewolf player wakes during the night phase and discovers they
 /// are the only werewolf player.
 /// </summary>
-public class LoneWolfEvent : GameEvent
+public class LoneWolfEvent(Player player) : GameEvent
 {
-    public Player Player { get; }
+    public Player Player { get; } = player;
 
-    public LoneWolfEvent(Player player)
-    {
-        this.Player = player;
-    }
-    
     public override bool IsObservedBy(Player player) 
         => Player == player;
 

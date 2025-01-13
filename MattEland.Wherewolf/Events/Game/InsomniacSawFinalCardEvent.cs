@@ -1,18 +1,12 @@
 using MattEland.Wherewolf.Roles;
 
-namespace MattEland.Wherewolf.Events;
+namespace MattEland.Wherewolf.Events.Game;
 
-public class InsomniacSawFinalCardEvent : GameEvent
+public class InsomniacSawFinalCardEvent(Player player, GameRole role) : GameEvent
 {
-    public Player Player { get; }
-    public GameRole Role { get; }
+    public Player Player { get; } = player;
+    public GameRole Role { get; } = role;
 
-    public InsomniacSawFinalCardEvent(Player player, GameRole role)
-    {
-        this.Player = player;
-        this.Role = role;
-    }
-    
     public override bool IsObservedBy(Player player) 
         => Player == player;
 
@@ -22,7 +16,7 @@ public class InsomniacSawFinalCardEvent : GameEvent
     
     public override bool IsPossibleInGameState(GameState state)
     {
-        GameSlot playerSlot = state.GetPlayerSlot(Player);
+        GameSlot playerSlot = state.GetSlot(Player);
         GameRole startRole = state.Root[Player.Name].Role;
         
         return startRole == GameRole.Insomniac && playerSlot.Role == this.Role;

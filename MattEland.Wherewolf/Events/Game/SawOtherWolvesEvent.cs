@@ -1,19 +1,14 @@
 using MattEland.Wherewolf.Roles;
 
-namespace MattEland.Wherewolf.Events;
+namespace MattEland.Wherewolf.Events.Game;
 
 /// <summary>
 /// This event occurs during the night Werewolf phase when 2 or more players started as a werewolf
 /// </summary>
-public class SawOtherWolvesEvent : GameEvent
+public class SawOtherWolvesEvent(IEnumerable<Player> wolves) : GameEvent
 {
-    public IEnumerable<Player> Players { get; }
+    public IEnumerable<Player> Players { get; } = wolves;
 
-    public SawOtherWolvesEvent(IEnumerable<Player> wolves)
-    {
-        this.Players = wolves;
-    }
-    
     public override bool IsObservedBy(Player player)
     {
         return Players.Contains(player);

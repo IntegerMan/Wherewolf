@@ -1,24 +1,17 @@
 using MattEland.Wherewolf.Roles;
 
-namespace MattEland.Wherewolf.Events;
+namespace MattEland.Wherewolf.Events.Game;
 
 /// <summary>
 /// This is a specialized event that occurs when a player is a lone wolf. I'm choosing to make this event specialized
 /// for the lone wolf to help eliminate possible worlds at the deduction layer later. It may make more sense long-term
 /// to merge all card looking abilities into a single event type.
 /// </summary>
-public class LoneWolfLookedAtSlotEvent : GameEvent
+public class LoneWolfLookedAtSlotEvent(Player player, GameSlot slot) : GameEvent
 {
-    public Player Player { get; }
-    public GameSlot Slot { get; }
-    public GameRole ObservedRole { get; }
-
-    public LoneWolfLookedAtSlotEvent(Player player, GameSlot slot)
-    {
-        this.Player = player;
-        this.Slot = slot;
-        this.ObservedRole = slot.Role;
-    }
+    public Player Player { get; } = player;
+    public GameSlot Slot { get; } = slot;
+    public GameRole ObservedRole { get; } = slot.Role;
 
     public override bool IsObservedBy(Player player) 
         => Player == player;
@@ -40,10 +33,16 @@ public class LoneWolfLookedAtSlotEvent : GameEvent
             return false;
         }
 
-        GameState wwPhaseState = state;
-        while (wwPhaseState.CurrentPhase is not { Name: "Werewolves" })
+        GameState? wwPhaseState = state;
+        while (wwPhaseState != null && wwPhaseState.CurrentPhase is not { Name: "Werewolves" })
         {
-            wwPhaseState = wwPhaseState.Parent!;
+            wwPhaseState = wwPhaseState.Parent;
+        }
+        
+        // If we didn't find a werewolf phase, we're looking at a phase before the WW phase, so this should be true
+        if (wwPhaseState == null)
+        {
+            return true;
         }
         
         // In the game state, the current role needs to be the one the event recorded seeing

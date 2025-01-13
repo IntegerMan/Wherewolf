@@ -19,7 +19,7 @@ try
     gameSetup.AddPlayers(
         new Player("Rufus", new RandomOptimalVoteController(roleClaimStrategy)),
         new Player("Jimothy", new RandomOptimalVoteController(roleClaimStrategy)),
-        new Player("Matt", new HumanController())
+        new Player("Matt", new RandomOptimalVoteController(roleClaimStrategy))
     );
     gameSetup.AddRoles(
         GameRole.Villager,
@@ -44,8 +44,8 @@ try
             AnsiConsole.WriteLine();
         }
     }
-
-    // This will cause the voting to actually occur
+    
+    // This will cause the voting and claims to actually occur
     gameState = gameState.RunToEnd();
 
     // Display the game results
@@ -56,16 +56,27 @@ try
         .ThenBy(kvp => kvp.Key.ToString())
         .Select(kvp => $"{kvp.Key.GetPlayerMarkup()}: {kvp.Value}")));
     AnsiConsole.MarkupLine("Dead Players: " + string.Join(", ", result.DeadPlayers.Select(p =>
-        $"{p.GetPlayerMarkup()} ({gameState.GetPlayerSlot(p).Role.AsMarkdown()})")));
+        $"{p.GetPlayerMarkup()} ({gameState.GetSlot(p).Role.AsMarkdown()})")));
     AnsiConsole.MarkupLine($"Winning Team: {result.WinningTeam.AsMarkdown()}");
     AnsiConsole.MarkupLine(
-        $"Winning Players: {string.Join(", ", result.WinningPlayers.Select(p => $"{p.GetPlayerMarkup()} ({gameState.GetPlayerSlot(p).Role.AsMarkdown()})"))
+        $"Winning Players: {string.Join(", ", result.WinningPlayers.Select(p => $"{p.GetPlayerMarkup()} ({gameState.GetSlot(p).Role.AsMarkdown()})"))
         }");
 
     AnsiConsole.WriteLine();
 
     // Post-Game Information  
     DisplayHelpers.DisplaySummaryTable(gameState);
+
+    foreach (var e in gameState.Events)
+    {
+        AnsiConsole.MarkupLine(DisplayHelpers.StylizeEventMessage(e.Description, gameState.AllSlots, gameSetup.Roles));
+    }
+    
+    foreach (var claim in gameState.Claims)
+    {
+        AnsiConsole.MarkupLine(DisplayHelpers.StylizeEventMessage(claim.Description, gameState.AllSlots, gameSetup.Roles));
+    }
+    
     AnsiConsole.WriteLine();
     return 0;
 }

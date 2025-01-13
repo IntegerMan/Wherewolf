@@ -1,4 +1,4 @@
-using MattEland.Wherewolf.Events;
+using MattEland.Wherewolf.Events.Game;
 using MattEland.Wherewolf.Phases;
 using MattEland.Wherewolf.Roles;
 

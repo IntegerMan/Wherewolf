@@ -1,11 +1,11 @@
-namespace MattEland.Wherewolf.Events;
+namespace MattEland.Wherewolf.Events.Social;
 
-public abstract class GameEvent
+public abstract class SocialEvent
 {
-    public abstract bool IsObservedBy(Player player);
     public abstract string Description { get; }
 
     public abstract bool IsPossibleInGameState(GameState state);
 
+    public abstract bool IsClaimValidFor(GameState gameState);
     public override string ToString() => Description;
 }

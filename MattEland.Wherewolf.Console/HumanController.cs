@@ -1,6 +1,6 @@
-using System.Text;
 using MattEland.Wherewolf.Controllers;
-using MattEland.Wherewolf.Events;
+using MattEland.Wherewolf.Events.Game;
+using MattEland.Wherewolf.Events.Social;
 using MattEland.Wherewolf.Phases;
 using MattEland.Wherewolf.Probability;
 using MattEland.Wherewolf.Roles;
@@ -10,13 +10,6 @@ namespace MattEland.Wherewolf.Console;
 
 public class HumanController : PlayerController
 {
-    public override void RanPhase(GamePhase phase, GameState gameState)
-    {
-        base.RanPhase(phase, gameState);
-
-        AnsiConsole.WriteLine();
-    }
-
     public override string SelectLoneWolfCenterCard(string[] centerSlotNames)
     {
         return AnsiConsole.Prompt(new SelectionPrompt<string>()
@@ -33,8 +26,7 @@ public class HumanController : PlayerController
         prompt.HighlightStyle(new Style(foreground: Color.White));
         prompt.Converter = p =>
         {
-            // TODO: This should use current probabilities as of before this phase, not the start probabilities
-            IEnumerable<string> playerProbs = probs.GetStartProbabilities(state.GetPlayerSlot(p))
+            IEnumerable<string> playerProbs = probs.GetStartProbabilities(state.GetSlot(p))
                 .Where(r => r.Value.Probability > 0)
                 .OrderByDescending(r => r.Value.Probability)
                 .ThenBy(r => r.Key.ToString())
@@ -63,14 +55,18 @@ public class HumanController : PlayerController
         roles.AddRange(gameState.Roles.Where(r => r != startRole).Distinct());
         prompt.AddChoices(roles);
         
+        IEnumerable<Player> otherPlayers = gameState.Players.Where(p => p != player);
+        
+        /*
         prompt.Converter = r =>
         {
-            float winProb = VotingHelper.GetRoleClaimWinProbabilityPerception(player, gameState, r);
-            return $"{r.AsMarkdown()} (Est. Avg. Probability: {string.Join(", ", 
-                gameState.Players.Where(p => p != player)
+            float winProb = 0; //VotingHelper.GetRoleClaimWinProbabilityPerception(player, gameState, r);
+
+            return $"{r.AsMarkdown()} (Est. Avg. Probability: {string.Join(", ", otherPlayers
                                  .Select(p => $"{p.GetPlayerMarkup()}: {RoleClaimVotingProbabilities.CalculateAverageBeliefProbability(gameState, player, p, r):P0}")
                 )}, {winProb:P0} probable to win)";
         };
+        */
         
         return AnsiConsole.Prompt(prompt);
     }
@@ -78,14 +74,14 @@ public class HumanController : PlayerController
     public override Player GetPlayerVote(Player votingPlayer, GameState state)
     {
         PlayerProbabilities playerProbs = state.CalculateProbabilities(votingPlayer);
-        Dictionary<Player, float> victoryProbs = VotingHelper.GetVoteVictoryProbabilities(votingPlayer, state);
+        Dictionary<Player, double> victoryProbs = VotingHelper.GetVoteVictoryProbabilities(votingPlayer, state);
         
         SelectionPrompt<Player> prompt = new();
         prompt.Title("Who are you voting for?");
         prompt.AddChoices(state.Players.Where(p => p != votingPlayer));
         prompt.Converter = p =>
         {
-            string claim = state.Events.OfType<StartRoleClaimedEvent>().First(c => c.Player == p).ClaimedRole
+            string claim = state.Claims.OfType<StartRoleClaimedEvent>().First(c => c.Player == p).ClaimedRole
                 .AsMarkdown();
             
             /*
@@ -95,7 +91,7 @@ public class HumanController : PlayerController
                 .Select(kvp => $"{kvp.Key.AsMarkdown()}: {kvp.Value.Probability:P0}"));
                 */
             
-            string current = string.Join(", ", playerProbs.GetCurrentProbabilities(state.GetPlayerSlot(p))
+            string current = string.Join(", ", playerProbs.GetCurrentProbabilities(state.GetSlot(p))
                 .Where(kvp => kvp.Value.Probability > 0)
                 .OrderByDescending(kvp => kvp.Value.Probability)
                 .Select(kvp => $"{kvp.Value.Probability:P0} {kvp.Key.AsMarkdown()}"));

@@ -1,4 +1,4 @@
-using MattEland.Wherewolf.Events;
+using MattEland.Wherewolf.Events.Game;
 using MattEland.Wherewolf.Roles;
 
 namespace MattEland.Wherewolf.Phases;
@@ -20,7 +20,7 @@ public class WerewolfNightPhase : GamePhase
             
             // If the lone wolf is the only werewolf, let them pick which center card to look at
             string centerSlotChoice = loneWolfPlayer.Controller.SelectLoneWolfCenterCard(newState.CenterSlots.Select(c => c.Name).ToArray());
-            GameSlot centerSlot = newState.GetSlot(centerSlotChoice);
+            GameSlot centerSlot = newState[centerSlotChoice];
             newState.AddEvent(new LoneWolfLookedAtSlotEvent(loneWolfPlayer, centerSlot));
         } 
         else if (werewolves.Count > 1)

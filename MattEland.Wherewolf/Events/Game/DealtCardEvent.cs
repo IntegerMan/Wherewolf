@@ -1,22 +1,15 @@
 using MattEland.Wherewolf.Roles;
 
-namespace MattEland.Wherewolf.Events;
+namespace MattEland.Wherewolf.Events.Game;
 
 /// <summary>
 /// An event that occurs when a card is dealt to a slot.
 /// </summary>
-public class DealtCardEvent : GameEvent
+public class DealtCardEvent(GameRole role, GameSlot slot) : GameEvent
 {
-    public GameRole Role { get; }
-    public GameSlot Slot { get; }
-    public Player? Player { get; }
-
-    public DealtCardEvent(GameRole role, GameSlot slot)
-    {
-        this.Role = role;
-        this.Slot = slot;
-        this.Player = slot.Player;
-    }
+    public GameRole Role { get; } = role;
+    public GameSlot Slot { get; } = slot;
+    public Player? Player { get; } = slot.Player;
 
     public override bool IsObservedBy(Player player) => Player == player;
     public override string Description => $"{Slot.Name} was dealt {Role}";

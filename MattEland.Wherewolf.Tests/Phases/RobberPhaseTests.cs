@@ -1,8 +1,7 @@
 using MattEland.Wherewolf.Controllers;
-using MattEland.Wherewolf.Events;
 using MattEland.Wherewolf.Phases;
 using MattEland.Wherewolf.Roles;
-using MattEland.Wherewolf.Tests.Helpers;
+using MattEland.Wherewolf.Setup;
 
 namespace MattEland.Wherewolf.Tests.Phases;
 
@@ -19,9 +18,11 @@ public class RobberPhaseTests
             GameRole.Robber, GameRole.Werewolf, GameRole.Villager, GameRole.Villager, GameRole.Villager,
             GameRole.Werewolf
         ];
-        GameEvent[] priorEvents = [];
-        GamePhase[] remainingPhases = [new RobberNightPhase()];
-        GameState state = new(players, roles, remainingPhases, priorEvents);
+        
+        GameSetup setup = new();
+        setup.AddPlayers(players.ToArray());
+        setup.AddRoles(roles.ToArray());
+        GameState state = new GameState(setup, roles, support: 1);
 
         // Act
         List<GameState> possibleStates = phase.BuildPossibleStates(state).ToList();
@@ -46,9 +47,10 @@ public class RobberPhaseTests
             GameRole.Robber, GameRole.Werewolf, GameRole.Villager, GameRole.Villager, GameRole.Villager,
             GameRole.Werewolf
         ];
-        GameEvent[] priorEvents = [];
-        GamePhase[] remainingPhases = [];
-        GameState state = new(players, roles, remainingPhases, priorEvents);
+        GameSetup setup = new();
+        setup.AddPlayers(players.ToArray());
+        setup.AddRoles(roles.ToArray());
+        GameState state = new GameState(setup, roles, support: 1);
 
         // Act
         List<GameState> newStates = phase.BuildPossibleStates(state).ToList();

@@ -1,4 +1,4 @@
-using MattEland.Wherewolf.Events;
+using MattEland.Wherewolf.Events.Game;
 using MattEland.Wherewolf.Probability;
 
 namespace MattEland.Wherewolf.Phases;
@@ -26,7 +26,7 @@ public class VotingPhase : GamePhase
             newState.AddEvent(vote);
         }
         
-        Dictionary<Player,int> votingResults = VotingHelper.GetVotingResults(votes);
+        IDictionary<Player,int> votingResults = VotingHelper.GetVotingResults(votes);
         GameResult result = newState.DetermineGameResults(votingResults);
         newState.GameResult = result;
         
@@ -37,6 +37,30 @@ public class VotingPhase : GamePhase
     public override string Name => "Voting";
     public override IEnumerable<GameState> BuildPossibleStates(GameState priorState)
     {
-        yield break; // TODO: Should this give all permutations?
+        IDictionary<Player, Player>[] allPermutations = priorState.Setup.VotingPermutations;
+        
+        foreach (var perm in allPermutations)
+        {
+            GameState newState = new(priorState, priorState.Support / allPermutations.Length);
+            Dictionary<Player, int> votes = new();
+            foreach (var kvp in perm)
+            {
+                votes[kvp.Key] = 0;
+            }
+
+            newState.AddEvent(new GamePhaseAnnouncedEvent("Everyone, vote for one other player."), broadcastToController: false);
+
+            foreach (var kvp in perm)
+            {
+                Player voter = kvp.Key;
+                Player vote = kvp.Value;
+                votes[vote]++;
+
+                newState.AddEvent(new VotedEvent(voter, vote), broadcastToController: false);
+            }
+
+            newState.GameResult = newState.DetermineGameResults(votes);
+            yield return newState;
+        }
     }
 }

@@ -1,5 +1,4 @@
 using MattEland.Wherewolf.Controllers;
-using MattEland.Wherewolf.Roles;
 using MattEland.Wherewolf.Setup;
 
 namespace MattEland.Wherewolf.Tests.Voting;
@@ -16,10 +15,10 @@ public class VotingOptionDistributionTests
             new Player("C", new RandomController(new ClaimStartingRoleStrategy())));
 
         // Act
-        var permutations = setup.GetVotingPermutations().ToList();
+        var permutations = setup.VotingPermutations;
 
         // Assert
-        permutations.Count.ShouldBe(8);
+        permutations.Length.ShouldBe(8);
     }
     
     [Fact]
@@ -33,10 +32,10 @@ public class VotingOptionDistributionTests
             new Player("D", new RandomController(new ClaimStartingRoleStrategy())));
 
         // Act
-        var permutations = setup.GetVotingPermutations().ToList();
+        var permutations = setup.VotingPermutations;
 
         // Assert
-        permutations.Count.ShouldBe(81);
+        permutations.Length.ShouldBe(81);
     }    
     
     [Fact]
@@ -51,9 +50,9 @@ public class VotingOptionDistributionTests
             new Player("E", new RandomController(new ClaimStartingRoleStrategy())));
 
         // Act
-        var permutations = setup.GetVotingPermutations().ToList();
+        var permutations = setup.VotingPermutations;
 
         // Assert
-        permutations.Count.ShouldBe(1024);
+        permutations.Length.ShouldBe(1024);
     }    
 }

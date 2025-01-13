@@ -1,9 +1,8 @@
 using MattEland.Wherewolf.Controllers;
-using MattEland.Wherewolf.Events;
+using MattEland.Wherewolf.Events.Game;
 using MattEland.Wherewolf.Probability;
 using MattEland.Wherewolf.Roles;
 using MattEland.Wherewolf.Setup;
-using MattEland.Wherewolf.Tests.Helpers;
 
 namespace MattEland.Wherewolf.Tests.Roles;
 
@@ -18,7 +17,7 @@ public class RobberRoleTests : RoleTestBase
 
         // Act
         PlayerProbabilities playerProbs = gameState.Root.CalculateProbabilities(player);
-        SlotRoleProbabilities playerProbabilities = playerProbs.GetCurrentProbabilities(gameState.Root.GetPlayerSlot(player));
+        SlotRoleProbabilities playerProbabilities = playerProbs.GetCurrentProbabilities(gameState.Root.GetSlot(player));
 
         // Assert
         playerProbabilities.Role[GameRole.Robber].Probability.ShouldBe(1);
@@ -33,7 +32,7 @@ public class RobberRoleTests : RoleTestBase
 
         // Act
         PlayerProbabilities playerProbs = gameState.CalculateProbabilities(player);
-        SlotRoleProbabilities playerProbabilities = playerProbs.GetCurrentProbabilities(gameState.GetPlayerSlot(player));
+        SlotRoleProbabilities playerProbabilities = playerProbs.GetCurrentProbabilities(gameState.GetSlot(player));
 
         // Assert
         playerProbabilities[GameRole.Robber].Probability.ShouldBe(0);

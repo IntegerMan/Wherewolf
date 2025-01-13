@@ -23,12 +23,12 @@ public static class RoleClaimVotingProbabilities
         int timesEvaluated = 0;
         double totalProbability = 0;
         
-        List<GameState> permutations = VotingHelper.GetPossibleGameStatesForPlayer(claimer, state);
+        IEnumerable<GameState> permutations = VotingHelper.GetPossibleGameStatesForPlayer(claimer, state);
 
         foreach (var perm in permutations)
         {
             PlayerProbabilities targetProbs = perm.CalculateProbabilities(otherPlayer);
-            SlotRoleProbabilities claimerStartProbs = targetProbs.GetStartProbabilities(perm.GetPlayerSlot(claimer));
+            SlotRoleProbabilities claimerStartProbs = targetProbs.GetStartProbabilities(perm.GetSlot(claimer));
             SlotProbability slotProbs = claimerStartProbs[roleClaim];
             totalProbability += slotProbs.Probability;
             timesEvaluated++;
