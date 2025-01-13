@@ -27,13 +27,14 @@ public class RobberNightPhase : GamePhase
 
     private static GameState PerformRobbery(GameState newState, GameSlot target, GameSlot robber, bool broadcast)
     {
-        // Issue the event
         GameRole stolenRole = target.Role;
-        RobbedPlayerEvent robbedEvent = new(robber.Player!, target.Player!, stolenRole);
-        newState.AddEvent(robbedEvent, broadcastToController: broadcast);
             
         // Swap roles
-        return newState.SwapRoles(target.Name, robber.Name);
+        GameState swappedState = newState.SwapRoles(target.Name, robber.Name);
+        RobbedPlayerEvent robbedEvent = new(robber.Player!, target.Player!, stolenRole);
+        swappedState.AddEvent(robbedEvent, broadcastToController: broadcast);
+        
+        return swappedState;
     }
 
     public override double Order => 6.0;

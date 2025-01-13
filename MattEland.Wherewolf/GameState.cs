@@ -237,7 +237,6 @@ public class GameState
 
     public bool IsGameOver => _remainingPhases.Count == 0;
     public GamePhase? CurrentPhase => IsGameOver ? null : _remainingPhases.Peek();
-    public IEnumerable<GamePhase> Phases => _remainingPhases.ToArray();
     public IEnumerable<GameState> PossibleNextStates 
     {
         get

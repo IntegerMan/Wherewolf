@@ -45,9 +45,9 @@ public static class VotingHelper
     {
         GameEvent[] observedEvents = state.Events.Where(e => e.IsObservedBy(player)).ToArray();
         GamePhase? currentPhase = state.CurrentPhase;
+        IEnumerable<GameState> states = state.Setup.GetPermutationsAtPhase(currentPhase);
         
-        return state.Setup.GetPermutationsAtPhase(currentPhase)
-            .Where(p => p.IsPossibleGivenEvents(observedEvents));
+        return states.Where(p => p.IsPossibleGivenEvents(observedEvents));
     }
 
     public static IDictionary<Player, int> GetVotingResults(IDictionary<Player, Player> votes)

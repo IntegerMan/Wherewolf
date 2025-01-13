@@ -103,7 +103,6 @@ public class StartGameTests : GameTestsBase
         state.PlayerSlots.Length.ShouldBe(3);
         state.Players.Count().ShouldBe(3);
         state.Roles.Count().ShouldBe(6);
-        state.Phases.ShouldNotBeEmpty();
         state.IsGameOver.ShouldBeFalse();
     }
     

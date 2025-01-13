@@ -31,9 +31,9 @@ public class InitialRoleClaimPhaseTests : GameTestsBase
         AddMinimumRequiredRoles(gameSetup);
 
         // Act
-        GameState initialState = gameSetup.StartGame();
+        GamePhase[] phases = gameSetup.Phases;
 
         // Assert
-        initialState.Phases.OfType<InitialRoleClaimPhase>().ShouldNotBeEmpty();
+        phases.OfType<InitialRoleClaimPhase>().ShouldNotBeEmpty();
     }
 }
