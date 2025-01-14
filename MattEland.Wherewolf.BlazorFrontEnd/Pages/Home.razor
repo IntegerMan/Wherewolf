@@ -1,7 +1,25 @@
 ﻿@page "/"
+@inject NavigationManager NavigationManager
 
-<PageTitle>Home</PageTitle>
+<MudText Typo="Typo.h1">Wherewolf?</MudText>
+<MudText Typo="Typo.subtitle2">An AI Simulation by Matt Eland</MudText>
 
-<h1>Hello, world!</h1>
+<MudText Typo="Typo.body2" Class="mt-4">
+    This application is an artificial intelligence experiment aimed at building AI agents to play
+    Bezier Games' "One Night Ultimate Werewolf" game designed by Ted Alspach and Akihisa Okui.
+</MudText>
+<MudText Typo="Typo.body2" Class="mt-4">
+    The goal of this game is to see how frequently an AI agent can fool a human player when
+    playing as a werewolf - or how frequently AI agents can correctly identify the werewolf.
+    The game is intended as an AI experiment and not a replacement for the physical version of
+    One Night Ultimate Werewolf. As a result, the game can involve at most a single human player.
+</MudText>
 
-Welcome to your new app.
+<MudButton Variant="Variant.Filled" Color="Color.Primary" Class="mt-8" 
+           OnClick="() => NavigationManager.NavigateTo(ConfigureUrl)">
+    Play Game
+</MudButton>
+
+@code {
+    private const string ConfigureUrl = "/Configure";
+}
