@@ -1,18 +1,30 @@
+using MattEland.Werewolf.BlazorTests.Models;
 using Microsoft.Playwright;
 
 namespace MattEland.Werewolf.BlazorTests;
 
-public class ConfigurePageTests : AppPageTest
+[TestClass]
+public class ConfigurePageTests : PageTest
 {
+    private ConfigurePage _pageModel = null!;
+
+    [TestInitialize]
+    public async Task TestInitializeAsync()
+    {
+        _pageModel = new ConfigurePage(Page);
+        await _pageModel.LoadAsync();
+    }
+    
     [TestMethod]
     public async Task ConfigurePageHasCorrectContent()
     {
-        await Page.GotoAsync($"{BaseUrl}Configure");
         await Expect(Page).ToHaveTitleAsync(new Regex("Configure Game"));
 
-        await Expect(Page.GetByTestId("PageHeader")).ToBeVisibleAsync();
-        await Expect(Page.GetByRole(AriaRole.Heading)).ToContainTextAsync("Configure Game");
+        await Expect(_pageModel.PageHeader).ToBeVisibleAsync();
+        await Expect(_pageModel.PageSubtitle).ToBeVisibleAsync();
+        await Expect(_pageModel.PlayGameButton).ToBeVisibleAsync();
         
-        await Expect(Page.GetByRole(AriaRole.Button, new() { Name = "Play Game" })).ToBeVisibleAsync();
+        await Expect(_pageModel.PageHeader).ToContainTextAsync("Configure Game");
+        await Expect(_pageModel.PlayGameButton).ToContainTextAsync("Play Game");
     }
 }
