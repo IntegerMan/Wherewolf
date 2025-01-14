@@ -1,6 +1,6 @@
 ﻿using MattEland.Werewolf.BlazorTests.Models;
 
-namespace MattEland.Werewolf.BlazorTests;
+namespace MattEland.Werewolf.BlazorTests.Pages;
 
 [TestClass]
 public class WelcomePageTests : PageTest

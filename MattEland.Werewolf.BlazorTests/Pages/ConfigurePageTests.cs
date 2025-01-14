@@ -1,7 +1,6 @@
 using MattEland.Werewolf.BlazorTests.Models;
-using Microsoft.Playwright;
 
-namespace MattEland.Werewolf.BlazorTests;
+namespace MattEland.Werewolf.BlazorTests.Pages;
 
 [TestClass]
 public class ConfigurePageTests : PageTest
