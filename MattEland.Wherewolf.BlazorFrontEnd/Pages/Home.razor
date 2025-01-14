@@ -3,8 +3,8 @@
 
 <PageTitle>Wherewolf</PageTitle>
 
-<MudText Typo="Typo.h1">Wherewolf?</MudText>
-<MudText Typo="Typo.subtitle2">An AI Simulation by Matt Eland</MudText>
+<MudText Typo="Typo.h1" data-testid="PageHeader">Wherewolf?</MudText>
+<MudText Typo="Typo.subtitle2" data-testid="PageSubtitle">An AI Simulation by Matt Eland</MudText>
 
 <MudText Typo="Typo.body2" Class="mt-4">
     This application is an artificial intelligence experiment aimed at building AI agents to play
@@ -17,7 +17,9 @@
     One Night Ultimate Werewolf. As a result, the game can involve at most a single human player.
 </MudText>
 
-<MudButton Variant="Variant.Filled" Color="Color.Primary" Class="mt-8" 
+<MudButton Variant="Variant.Filled" Color="Color.Primary" 
+           Class="mt-8" 
+           data-testid="PlayGameButton"
            OnClick="() => NavigationManager.NavigateTo(ConfigureUrl)">
     Play Game
 </MudButton>
