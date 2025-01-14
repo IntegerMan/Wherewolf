@@ -1,4 +1,6 @@
 ﻿using System.Diagnostics;
+using Microsoft.Playwright;
+using MudBlazor;
 
 namespace MattEland.Werewolf.BlazorTests;
 
@@ -40,25 +42,25 @@ public class WelcomePageTests : PageTest
     [TestMethod]
     public async Task WelcomePageHasCorrectContent()
     {
-        await Page.GotoAsync("http://localhost:5049");
+        await Page.GotoAsync(BaseUrl);
         await Expect(Page).ToHaveTitleAsync(new Regex("Wherewolf"));
+
+        await Expect(Page.GetByRole(AriaRole.Heading, new() { Name = "Wherewolf?" })).ToBeVisibleAsync();
+        await Expect(Page.GetByRole(AriaRole.Heading)).ToContainTextAsync("Wherewolf?");
     }
 
     [TestMethod]
     public async Task WelcomePageAllowsNavigationToConfigure()
     {
-        await Page.GotoAsync("http://localhost:5049");
+        await Page.GotoAsync(BaseUrl);
+        await Page.GetByRole(AriaRole.Button, new() { Name = "Play Game" }).ClickAsync();
 
-        // create a locator
-        var getStarted = Page.Locator("text=Get Started");
+        await Expect(Page).ToHaveURLAsync($"{BaseUrl}Configure");
+        await Expect(Page.GetByRole(AriaRole.Heading, new() { Name = "Configure Game" })).ToBeVisibleAsync();
+        await Expect(Page.GetByRole(AriaRole.Heading)).ToContainTextAsync("Configure Game");
+        await Expect(Page.GetByRole(AriaRole.Button, new() { Name = "Play Game" })).ToBeVisibleAsync();
 
-        // Expect an attribute "to be strictly equal" to the value.
-        await Expect(getStarted).ToHaveAttributeAsync("href", "/docs/intro");
-
-        // Click the get started link.
-        await getStarted.ClickAsync();
-
-        // Expects the URL to contain intro.
-        await Expect(Page).ToHaveURLAsync(new Regex(".*intro"));
     }
+
+    public string BaseUrl => "http://localhost:5049/";
 }
