@@ -3,18 +3,23 @@
 
 @inject RoleService RoleService
 
-<MudCard Class="@Theme" Style="height: 100%;">
-    <MudCardHeader>
-        <MudText Typo="Typo.h6">
-           @RoleName
-        </MudText>
-    </MudCardHeader>
-    <MudCardContent>
-        <MudText Typo="Typo.body2">
-            @RoleDescription
-        </MudText>
-    </MudCardContent>
-</MudCard>
+<section style="height: 100%;"
+         draggable="true"
+         ondragstart="dragDropInterop.setDragData(event, '@RoleName')"
+         title="Drag this to assign this role to the game">
+    <MudCard class="@Theme" Style="height: 100%;"> 
+        <MudCardHeader>
+            <MudText Typo="Typo.h6">
+                @RoleName
+            </MudText>
+        </MudCardHeader>
+        <MudCardContent>
+            <MudText Typo="Typo.body2">
+                @RoleDescription
+            </MudText>
+        </MudCardContent>
+    </MudCard>
+</section>
 
 @code {
     [Parameter]
@@ -27,5 +32,4 @@
     private string Theme => Team == Team.Villager 
         ? "mud-theme-primary" 
         : "mud-theme-secondary";
-
 }

@@ -1,8 +1,21 @@
 @using MattEland.Wherewolf.Roles
 
+<div @ondragover="SetTarget" @ondragover:preventDefault="true" 
+     ondrop="dragDropInterop.handleDrop(event)">
 @if (Role.HasValue)
 {
-    <RoleInfoCard Role="@Role.Value" />
+    @if (Role.Value.GetTeam() == Team.Villager)
+    {
+        <MudPaper Class="pa-4 mud-theme-primary">
+            <MudText Typo="Typo.input" Style="height: 100%;">@Role.Value.ToString()</MudText>
+        </MudPaper>
+    }
+    else
+    {
+        <MudPaper Class="pa-4 mud-theme-secondary">
+            <MudText Typo="Typo.input" Style="height: 100%;">@Role.Value.ToString()</MudText>
+        </MudPaper>
+    }
 }
 else
 {
@@ -10,8 +23,27 @@ else
         <MudText Typo="Typo.input" Style="height: 100%;">Select a Role</MudText>
     </MudPaper>
 }
+</div>
 
 @code {
+    private static ConfigureRoleSlot Instance { get; set; } = null!;
+
     [Parameter]
     public GameRole? Role { get; set; }
+    
+    private void HandleDroppedInstance(string role)
+    {
+        Role = Enum.Parse<GameRole>(role);
+        
+        StateHasChanged();
+    }
+
+    [JSInvokable]
+    public static void HandleDropped(string role)
+    {
+        Instance.HandleDroppedInstance(role);
+    }
+
+    private void SetTarget() => Instance = this;
+
 }
