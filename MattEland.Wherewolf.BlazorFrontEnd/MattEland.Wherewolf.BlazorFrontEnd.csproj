@@ -13,6 +13,7 @@
     </ItemGroup>
 
     <ItemGroup>
+      <ProjectReference Include="..\MattEland.Wherewolf.Services\MattEland.Wherewolf.Services.csproj" />
       <ProjectReference Include="..\MattEland.Wherewolf\MattEland.Wherewolf.csproj" />
     </ItemGroup>
 

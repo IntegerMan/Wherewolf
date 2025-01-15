@@ -1,0 +1,14 @@
+@using MattEland.Wherewolf.Roles
+
+<MudGrid>
+    @foreach (var role in Roles.OrderBy(r => r.ToString()))
+    {
+        <MudItem xs="12" sm="6" md="4" lg="3" xl="2">
+            <RoleCard Role="role" />
+        </MudItem>
+    }
+</MudGrid>
+
+@code {
+    private IEnumerable<GameRole> Roles => Enum.GetValues<GameRole>();
+}

@@ -1,0 +1,30 @@
+@using MattEland.Wherewolf.Roles
+@using MattEland.Wherewolf.Services
+
+@inject RoleService RoleService
+
+<MudCard Style="@($"background:{BackgroundColor}; height: 100%;")">
+    <MudCardHeader>
+        <strong>
+           @RoleName
+        </strong>
+    </MudCardHeader>
+    <MudCardContent>
+        <MudText Typo="Typo.body2">
+            @RoleDescription
+        </MudText>
+    </MudCardContent>
+</MudCard>
+
+@code {
+    [Parameter]
+    public GameRole Role { get; set; }
+
+    private string RoleName => Role.ToString();
+    private string RoleDescription => RoleService.GetDescription(Role);
+    public Team Team => Role.GetTeam();
+    
+    public string BackgroundColor => Team == Team.Villager 
+        ? Colors.Blue.Lighten3 
+        : Colors.Red.Lighten3;
+}

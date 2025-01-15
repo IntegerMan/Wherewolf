@@ -1,11 +1,17 @@
 @page "/Configure"
+@using MattEland.Wherewolf.BlazorFrontEnd.Components
 
 <PageTitle>Configure Game</PageTitle>
 
 <MudText Typo="Typo.h1" data-testid="PageHeader">Configure Game</MudText>
 <MudText Typo="Typo.subtitle2" data-testid="PageSubtitle">Select the options you want for your game and click Play Game to begin.</MudText>
 
-<MudButton Variant="Variant.Filled" Color="Color.Primary" Class="mt-8" 
+<section class="mt-4">
+    <RolesList />
+</section>
+
+<MudButton Variant="Variant.Filled" Color="Color.Primary" 
+           Class="mt-8" 
            data-testid="PlayGameButton">
     Play Game
 </MudButton>
