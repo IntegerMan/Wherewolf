@@ -3,8 +3,8 @@
 <MudGrid>
     @foreach (var role in Roles.OrderBy(r => r.ToString()))
     {
-        <MudItem xs="12" sm="6" md="4" lg="3" xl="2">
-            <RoleCard Role="role" />
+        <MudItem>
+            <RoleInfoCard Role="@role" />
         </MudItem>
     }
 </MudGrid>

@@ -1,0 +1,17 @@
+@using MattEland.Wherewolf.Roles
+
+@if (Role.HasValue)
+{
+    <RoleInfoCard Role="@Role.Value" />
+}
+else
+{
+    <MudPaper Class="pa-4 mud-theme-dark">
+        <MudText Typo="Typo.input" Style="height: 100%;">Select a Role</MudText>
+    </MudPaper>
+}
+
+@code {
+    [Parameter]
+    public GameRole? Role { get; set; }
+}
