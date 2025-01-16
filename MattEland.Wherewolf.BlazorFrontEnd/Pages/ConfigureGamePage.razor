@@ -5,57 +5,53 @@
 <PageTitle>Configure Game</PageTitle>
 
 <MudText Typo="Typo.h1" data-testid="PageHeader">Configure Game</MudText>
-<MudText Typo="Typo.subtitle2" data-testid="PageSubtitle">Select the options you want for your game and click Play Game to begin.</MudText>
+<MudText Typo="Typo.subtitle2" data-testid="PageSubtitle">Select the options you want for your game and click Play Game
+    to begin.
+</MudText>
 
 <MudGrid>
     <MudItem xs="8">
-        <MudText Typo="Typo.h3" Class="mt-8">Game Setup</MudText>
-        <MudGrid Class="mt-4">
-            @foreach (var role in Roles)
-            {
-                <MudItem>
-                    <ConfigureRoleSlot Role="@role" />
-                </MudItem>
-            }
-        </MudGrid>
+        <section>
+            <MudText Typo="Typo.h3" Class="mt-8">Game Setup</MudText>
+            <MudText Typo="Typo.body2" Class="mb-8">
+                You'll need 3 more roles than you have players and it's sometimes acceptable to have duplicate roles.
+            </MudText>
+            <MudGrid Class="mt-4">
+                @for (int i = 0; i < PlayerCount + 3; i++)
+                {
+                    int index = i;
+                    <MudItem>
+                        <ConfigureRoleSlot Role="@AssignedRoles[index]" Index="@index"/>
+                    </MudItem>
+                }
+            </MudGrid>
+        </section>
+
+        <section class="mt-8">
+            <MudText Typo="Typo.h3">Players</MudText>
+        </section>
+
+        @if (!AllRolesAssigned)
+        {
+            <MudAlert Variant="Variant.Filled" Severity="Severity.Warning" Class="mt-8">
+                You must assign all roles before starting the game.
+            </MudAlert>
+        }
+
+        <MudButton Variant="Variant.Filled" Color="Color.Primary"
+                   Disabled="!IsValid"
+                   Class="mt-8"
+                   data-testid="PlayGameButton">
+            Play Game
+        </MudButton>
     </MudItem>
     <MudItem xs="4">
-        <MudText Typo="Typo.h3">Available Roles</MudText>
-        <MudText Typo="Typo.caption" Class="mb-8">Drag and drop roles to the roles list to assign roles to the game. You'll need 3 more roles than you have players and it's sometimes acceptable to have duplicate roles.</MudText>
-        <RolesList/>
+        <aside>
+            <MudText Typo="Typo.h3">Available Roles</MudText>
+            <MudText Typo="Typo.body2" Class="mb-8">
+                Drag and drop roles to the roles list to assign roles to the game.
+            </MudText>
+            <RolesList/>
+        </aside>
     </MudItem>
 </MudGrid>
-
-<section class="mt-8">
-    <MudText Typo="Typo.h3">Players</MudText>
-</section>
-
-@if (!AllRolesAssigned)
-{
-    <MudAlert Variant="Variant.Filled" Severity="Severity.Warning" Class="mt-8">
-        You must assign all roles before starting the game.
-    </MudAlert>
-}
-
-<MudButton Variant="Variant.Filled" Color="Color.Primary" 
-           Disabled="!IsValid"
-           Class="mt-8" 
-           data-testid="PlayGameButton">
-    Play Game
-</MudButton>
-
-@code {
-    public List<GameRole?> Roles { get; set; } =
-    [
-        null,
-        null,
-        null,
-        null,
-        null,
-        null
-    ];
-
-    public bool AllRolesAssigned => Roles.All(r => r.HasValue);
-    
-    public bool IsValid => AllRolesAssigned;
-}
