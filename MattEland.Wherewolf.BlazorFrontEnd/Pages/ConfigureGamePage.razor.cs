@@ -1,5 +1,6 @@
 using MattEland.Wherewolf.Roles;
 using CommunityToolkit.Mvvm.Messaging;
+using MattEland.Wherewolf.BlazorFrontEnd.Helpers;
 using MattEland.Wherewolf.BlazorFrontEnd.Messages;
 
 namespace MattEland.Wherewolf.BlazorFrontEnd.Pages;
@@ -33,6 +34,12 @@ public partial class ConfigureGamePage : IRecipient<SetupRoleChangedMessage>
 
     public bool IsValid => AllRolesAssigned;
     
+    public int WerewolfTeamCount
+        => AssignedRoles.Count(r => r.HasValue && r.Value.GetTeam() == Team.Werewolf);
+   
+    public int VillagerTeamCount 
+        => AssignedRoles.Count(r => r.HasValue && r.Value.GetTeam() == Team.Villager);
+
     public void Receive(SetupRoleChangedMessage message)
     {
         Console.WriteLine("Received message");

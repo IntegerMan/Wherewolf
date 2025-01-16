@@ -1,3 +1,4 @@
+@using MattEland.Wherewolf.BlazorFrontEnd.Helpers
 @using MattEland.Wherewolf.Roles
 @using MattEland.Wherewolf.Services
 
@@ -7,13 +8,11 @@
          draggable="true"
          ondragstart="dragDropInterop.setDragData(event, '@RoleName')"
          title="Drag this to assign this role to the game">
-    <MudCard class="@Theme" Style="height: 100%;"> 
-        <MudCardHeader>
+    <MudCard class="@Role.GetTeamTheme()" Style="height: 100%;"> 
+        <MudCardContent>
             <MudText Typo="Typo.h6">
                 @RoleName
             </MudText>
-        </MudCardHeader>
-        <MudCardContent>
             <MudText Typo="Typo.body2">
                 @RoleDescription
             </MudText>
@@ -28,8 +27,4 @@
     private string RoleName => Role.ToString();
     private string RoleDescription => RoleService.GetDescription(Role);
     private Team Team => Role.GetTeam();
-    
-    private string Theme => Team == Team.Villager 
-        ? "mud-theme-primary" 
-        : "mud-theme-secondary";
 }

@@ -13,10 +13,10 @@
     <MudItem xs="8">
         <section>
             <MudText Typo="Typo.h3" Class="mt-8">Game Setup</MudText>
-            <MudText Typo="Typo.body2" Class="mb-8">
+            <MudText Typo="Typo.body2">
                 You'll need 3 more roles than you have players and it's sometimes acceptable to have duplicate roles.
             </MudText>
-            <MudGrid Class="mt-4">
+            <MudGrid Class="mt-2">
                 @for (int i = 0; i < PlayerCount + 3; i++)
                 {
                     int index = i;
@@ -25,18 +25,29 @@
                     </MudItem>
                 }
             </MudGrid>
+            @if (!AllRolesAssigned)
+            {
+                <MudAlert Variant="Variant.Outlined" Severity="Severity.Error" Class="mt-8">
+                    You must assign all roles before starting the game.
+                </MudAlert>
+            }
+            @if (AllRolesAssigned && WerewolfTeamCount < 2)
+            {
+                <MudAlert Variant="Variant.Outlined" Severity="Severity.Warning" Class="mt-8">
+                    It is recommended to have two or more werewolf team members in your game.
+                </MudAlert>
+            }
+            @if (AllRolesAssigned && VillagerTeamCount < WerewolfTeamCount)
+            {
+                <MudAlert Variant="Variant.Outlined" Severity="Severity.Warning" Class="mt-8">
+                    It is recommended to have more villagers than werewolf team members in your game.
+                </MudAlert>
+            }
         </section>
 
         <section class="mt-8">
             <MudText Typo="Typo.h3">Players</MudText>
         </section>
-
-        @if (!AllRolesAssigned)
-        {
-            <MudAlert Variant="Variant.Filled" Severity="Severity.Warning" Class="mt-8">
-                You must assign all roles before starting the game.
-            </MudAlert>
-        }
 
         <MudButton Variant="Variant.Filled" Color="Color.Primary"
                    Disabled="!IsValid"

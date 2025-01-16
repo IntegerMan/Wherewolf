@@ -1,26 +1,16 @@
+@using MattEland.Wherewolf.BlazorFrontEnd.Helpers
 @using MattEland.Wherewolf.Roles
 
-<div @ondragover="SetTarget" @ondragover:preventDefault="true" 
+<div @ondragover="SetTarget" @ondragover:preventDefault="true"
      ondrop="dragDropInterop.handleDrop(event)">
-@if (Role.HasValue)
-{
-    @if (Role.Value.GetTeam() == Team.Villager)
-    {
-        <MudPaper Class="pa-4 mud-theme-primary">
+    <MudPaper Class="@($"pa-4 {Role.GetTeamTheme()}")">
+        @if (Role.HasValue)
+        {
             <MudText Typo="Typo.input" Style="height: 100%;">@Role.Value.ToString()</MudText>
-        </MudPaper>
-    }
-    else
-    {
-        <MudPaper Class="pa-4 mud-theme-secondary">
-            <MudText Typo="Typo.input" Style="height: 100%;">@Role.Value.ToString()</MudText>
-        </MudPaper>
-    }
-}
-else
-{
-    <MudPaper Class="pa-4 mud-theme-dark">
-        <MudText Typo="Typo.input" Style="height: 100%;">Empty</MudText>
+        }
+        else
+        {
+            <MudText Typo="Typo.input" Style="height: 100%;">Empty</MudText>
+        }
     </MudPaper>
-}
 </div>
