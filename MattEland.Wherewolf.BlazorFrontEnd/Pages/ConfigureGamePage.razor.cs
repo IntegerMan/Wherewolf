@@ -1,13 +1,12 @@
 using MattEland.Wherewolf.Roles;
 using CommunityToolkit.Mvvm.Messaging;
-using MattEland.Wherewolf.BlazorFrontEnd.Helpers;
 using MattEland.Wherewolf.BlazorFrontEnd.Messages;
 
 namespace MattEland.Wherewolf.BlazorFrontEnd.Pages;
 
 public partial class ConfigureGamePage : IRecipient<SetupRoleChangedMessage>
 {
-    public int PlayerCount { get; set; }
+    public int PlayerCount { get; set; } = 5;
 
     public ConfigureGamePage()
     {
@@ -22,6 +21,9 @@ public partial class ConfigureGamePage : IRecipient<SetupRoleChangedMessage>
     public GameRole?[] AssignedRoles 
         => Roles.Take(PlayerCount + 3).ToArray();
 
+    public string[] TickLabels 
+        => Enumerable.Range(3, 10).Select(i => i.ToString()).ToArray();
+    
     public bool AllRolesAssigned
     {
         get
@@ -45,10 +47,24 @@ public partial class ConfigureGamePage : IRecipient<SetupRoleChangedMessage>
         Console.WriteLine("Received message");
         Roles[message.Index] = message.Role;
         
+        GrowRolesAsNeeded();
+        StateHasChanged();
+    }
+
+    private void GrowRolesAsNeeded()
+    {
         while (PlayerCount + 3 < Roles.Count)
         {
             Roles.Add(null);
         }
+    }
+
+    public bool HumanControlsPlayerOne { get; set; } = true;
+
+    private void SetPlayerCount(int count)
+    {
+        PlayerCount = count;
+        GrowRolesAsNeeded();
         StateHasChanged();
     }
 }

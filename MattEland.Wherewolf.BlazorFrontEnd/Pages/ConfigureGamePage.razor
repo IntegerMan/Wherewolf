@@ -47,6 +47,22 @@
 
         <section class="mt-8">
             <MudText Typo="Typo.h3">Players</MudText>
+            
+            <MudSlider Min="3" Max="10" Step="1" 
+                       Variant="Variant.Filled"
+                       ValueLabel="true"
+                       Color="Color.Primary"
+                       Value="@PlayerCount"
+                       TickMarks="true"
+                       TickMarkLabels="TickLabels"
+                       Class="mt-4"
+                       T="int"
+                       ValueChanged="v => SetPlayerCount(v)"/>
+            
+            <MudCheckBox @bind-Value="HumanControlsPlayerOne"
+                         Label="Control Player 1?" 
+                         Color="Color.Success"
+                         UncheckedColor="Color.Dark" />
         </section>
 
         <MudButton Variant="Variant.Filled" Color="Color.Primary"
