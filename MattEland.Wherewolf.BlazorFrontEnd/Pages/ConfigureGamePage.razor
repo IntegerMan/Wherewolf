@@ -9,7 +9,7 @@
     to begin.
 </MudText>
 
-<MudGrid>
+<MudGrid Spacing="12">
     <MudItem xs="8">
         <section>
             <MudText Typo="Typo.h3" Class="mt-8">Game Setup</MudText>
@@ -17,7 +17,7 @@
                 You'll need 3 more roles than you have players and it's sometimes acceptable to have duplicate roles.
             </MudText>
             <MudGrid Class="mt-2">
-                @for (int i = 0; i < PlayerCount + 3; i++)
+                @for (int i = 0; i < AssignedRoles.Length; i++)
                 {
                     int index = i;
                     <MudItem>
@@ -48,7 +48,8 @@
         <section class="mt-8">
             <MudText Typo="Typo.h3">Players</MudText>
             
-            <MudSlider Min="3" Max="10" Step="1" 
+            <MudText Typo="Typo.h6" Class="mt-4">Player Count</MudText>
+            <MudSlider Min="3" Max="10" Step="1"
                        Variant="Variant.Filled"
                        ValueLabel="true"
                        Color="Color.Primary"
@@ -58,10 +59,12 @@
                        Class="mt-4"
                        T="int"
                        ValueChanged="v => SetPlayerCount(v)"/>
-            
+
             <MudCheckBox @bind-Value="HumanControlsPlayerOne"
-                         Label="Control Player 1?" 
-                         Color="Color.Success"
+                         Label="Control Player 1"
+                         Class="mt-8 ml-n4"
+                         Size="Size.Large"
+                         Color="Color.Primary"
                          UncheckedColor="Color.Dark" />
         </section>
 
@@ -69,7 +72,14 @@
                    Disabled="!IsValid"
                    Class="mt-8"
                    data-testid="PlayGameButton">
-            Play Game
+            @if (HumanControlsPlayerOne)
+            {
+                <span>Play Game</span>
+            }
+            else
+            {
+                <span>Watch Game</span>
+            }
         </MudButton>
     </MudItem>
     <MudItem xs="4">

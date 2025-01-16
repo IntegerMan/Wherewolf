@@ -6,12 +6,13 @@ namespace MattEland.Wherewolf.BlazorFrontEnd.Pages;
 
 public partial class ConfigureGamePage : IRecipient<SetupRoleChangedMessage>
 {
-    public int PlayerCount { get; set; } = 5;
+    public int PlayerCount { get; set; }
 
     public ConfigureGamePage()
     {
-        PlayerCount = 3;
-        Roles = [..Enumerable.Repeat<GameRole?>(null, PlayerCount + 3)];
+        PlayerCount = 5;
+        Roles = [GameRole.Werewolf, GameRole.Werewolf, GameRole.Villager, GameRole.Villager, GameRole.Robber, GameRole.Insomniac];
+        GrowRolesAsNeeded();
         
         WeakReferenceMessenger.Default.RegisterAll(this);
     }
@@ -29,10 +30,15 @@ public partial class ConfigureGamePage : IRecipient<SetupRoleChangedMessage>
         get
         {
             bool allRolesAssigned = AssignedRoles.All(r => r.HasValue);
-            Console.WriteLine($"Checking roles: {allRolesAssigned}: {string.Join(", ", AssignedRoles.Select(r => r.HasValue ? r.Value.ToString() : "Unassigned"))}");
+            Console.WriteLine($"Checking roles: {allRolesAssigned}: {RolesDebugString}");
             return allRolesAssigned;
         }
     }
+
+    public string RolesDebugString 
+        => string.Join(", ", AssignedRoles.Select(r => r.HasValue 
+            ? r.Value.ToString() 
+            : "Unassigned"));
 
     public bool IsValid => AllRolesAssigned;
     
@@ -53,16 +59,18 @@ public partial class ConfigureGamePage : IRecipient<SetupRoleChangedMessage>
 
     private void GrowRolesAsNeeded()
     {
-        while (PlayerCount + 3 < Roles.Count)
+        while (Roles.Count < PlayerCount + 3)
         {
-            Roles.Add(null);
+            Roles.Add(GameRole.Villager); // Good default
         }
+        Console.WriteLine($"Roles at {Roles.Count} for player count of {PlayerCount}: {RolesDebugString}");
     }
 
     public bool HumanControlsPlayerOne { get; set; } = true;
 
     private void SetPlayerCount(int count)
     {
+        Console.WriteLine($"Player count set to {count}");
         PlayerCount = count;
         GrowRolesAsNeeded();
         StateHasChanged();
