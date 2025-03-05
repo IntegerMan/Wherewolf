@@ -1,0 +1,18 @@
+
+<MudCard Elevation="3" Style="width:150px; height: 225px;" Class="@CardClass">
+    <MudCardHeader>
+        <CardHeaderContent>
+            <MudText Typo="Typo.h6">
+                @Slot.Name
+            </MudText>
+        </CardHeaderContent>
+    </MudCardHeader>
+    <MudCardContent>
+        <div style="display: flex; justify-content: center; align-items: center; height: 100%;">
+            <MudIcon Icon="@CardIcon" Size="Size.Large" Style="flex-grow: 1;"/>
+        </div>
+    </MudCardContent>
+    <MudCardActions>
+        <MudText>Unknown role</MudText>
+    </MudCardActions>
+</MudCard>

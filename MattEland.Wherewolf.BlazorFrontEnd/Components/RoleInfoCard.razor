@@ -5,13 +5,17 @@
 @inject RoleService RoleService
 
 <section style="height: 100%;"
-         draggable="true"
+         draggable="@AllowDrag"
          ondragstart="dragDropInterop.setDragData(event, '@RoleName')"
          title="Drag this to assign this role to the game">
     <MudCard class="@Role.GetTeamTheme()" Style="height: 100%;"> 
         <MudCardContent>
             <MudText Typo="Typo.h6">
                 @RoleName
+                @if (Count > 1)
+                {
+                    <span class="ml-2">x @Count</span>
+                }
             </MudText>
             <MudText Typo="Typo.body2">
                 @RoleDescription
@@ -23,6 +27,9 @@
 @code {
     [Parameter]
     public GameRole Role { get; set; }
+
+    [Parameter] public bool AllowDrag { get; set; } = true;
+    [Parameter] public int Count { get; set; } = 1;
 
     private string RoleName => Role.ToString();
     private string RoleDescription => RoleService.GetDescription(Role);

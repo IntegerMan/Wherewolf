@@ -1,0 +1,27 @@
+@using MattEland.Wherewolf.Events.Game
+
+<MudTimeline TimelineOrientation="TimelineOrientation.Vertical"
+             TimelinePosition="TimelinePosition.Left">
+    @foreach (var evt in VisibleEvents)
+    {
+        <MudTimelineItem Color="@CalculateEventColor(evt)"
+                         Size="Size.Small"
+                         TimelineAlign="TimelineAlign.End">
+            <ItemContent>
+                <MudText Typo="Typo.body2" Color="@CalculateEventColor(evt)">
+                    @if (evt is GamePhaseAnnouncedEvent)
+                    {
+                        <em>@evt.Description</em>
+                    }
+                    else
+                    {
+                        @evt.Description
+                    }
+                </MudText>
+            </ItemContent>
+            <ItemOpposite>
+                <MudText Typo="Typo.body2">@evt.GetType().Name</MudText>
+            </ItemOpposite>
+        </MudTimelineItem>
+    }
+</MudTimeline>
