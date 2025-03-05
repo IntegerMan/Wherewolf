@@ -6,8 +6,7 @@ public class WakeUpPhase : GamePhase
 {
     public override GameState Run(GameState newState)
     {
-        newState.AddEvent(new GamePhaseAnnouncedEvent("Everyone, wake up and claim your starting role"));
-
+        newState.AddEvent(new MakeSocialClaimsNowEvent());
         return newState;
     }
 

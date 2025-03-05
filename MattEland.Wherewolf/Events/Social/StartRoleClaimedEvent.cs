@@ -15,4 +15,6 @@ public class StartRoleClaimedEvent(Player player, GameRole role) : SocialEvent
 
     public override bool IsClaimValidFor(GameState gameState) 
         => gameState.GetStartRole(Player) == ClaimedRole;
+
+    public override Team? AssociatedTeam => ClaimedRole.GetTeam();
 }

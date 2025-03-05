@@ -1,7 +1,8 @@
 using MattEland.Wherewolf.BlazorFrontEnd.Helpers;
 using MattEland.Wherewolf.BlazorFrontEnd.Repositories;
+using MattEland.Wherewolf.Events;
 using MattEland.Wherewolf.Events.Game;
-using MattEland.Wherewolf.Roles;
+using MattEland.Wherewolf.Events.Social;
 using Microsoft.AspNetCore.Components;
 using MudBlazor;
 
@@ -25,17 +26,29 @@ public partial class GamePage(IGameStateRepository repo) : ComponentBase
         Game = repo.FindGame(GameId);
     }
     
-    public IEnumerable<GameEvent> VisibleEvents 
+    public IEnumerable<IGameEvent> VisibleEvents 
         => Game switch
         {
             null => [],
-            _ => PerspectivePlayer is null
-                ? Game.Events
-                : Game.Events.Where(e => e.IsObservedBy(PerspectivePlayer))
+            _ => Game.EventsForPlayer(PerspectivePlayer)
         };
 
-    private Color CalculateEventColor(GameEvent evt) 
-        => evt.AssociatedTeam.GetTeamColor();
+    public string NewGameUrl => "/setup";
+    
+    private Color CalculateEventColor(IGameEvent evt)
+    {
+        if (evt is GamePhaseAnnouncedEvent)
+        {
+            return Color.Dark;
+        }
+
+        if (evt is VotedEvent or SocialEvent)
+        {
+            return Color.Primary;
+        }
+        
+        return evt.AssociatedTeam.GetTeamColor();
+    }
 
     private void AdvanceToNextPhase() => Game = Game?.RunNext();
     private void AdvanceToVoting() => Game = Game?.RunToEndOfNight();

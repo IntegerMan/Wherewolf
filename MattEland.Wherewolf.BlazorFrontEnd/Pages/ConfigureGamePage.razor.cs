@@ -99,8 +99,8 @@ public partial class ConfigureGamePage : IRecipient<SetupRoleChangedMessage>
             .Select(n =>
             {
                 PlayerController controller = n == 1 && HumanControlsPlayerOne
-                    ? new RandomController() // TODO: Web-based controller needed
-                    : new RandomController();
+                    ? new RandomOptimalVoteController() // TODO: Web-based controller needed
+                    : new RandomOptimalVoteController();
                 return new Player($"Player {n}", controller);
             })
             .ToArray();

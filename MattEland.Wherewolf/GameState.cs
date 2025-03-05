@@ -1,4 +1,5 @@
 using System.Text;
+using MattEland.Wherewolf.Events;
 using MattEland.Wherewolf.Events.Game;
 using MattEland.Wherewolf.Events.Social;
 using MattEland.Wherewolf.Phases;
@@ -89,6 +90,25 @@ public class GameState
             GameRole role = shuffledRoles[i++];
             return new GameSlot(p.Name, role, p);
         }).ToArray();
+    }
+    
+    public IEnumerable<IGameEvent> EventsForPlayer(Player? player = null)
+    {
+        foreach (var evt in Events)
+        {
+            // If it's a standard event and the player saw it or we're omniscient, show it
+            if (player is null || evt.IsObservedBy(player))
+                yield return evt;
+
+            // At this point we can marry in our social claims observed
+            if (evt is MakeSocialClaimsNowEvent)
+            {
+                foreach (var social in Claims)
+                {
+                    yield return social;
+                }
+            }
+        }
     }
 
     public GameSlot[] PlayerSlots => _playerSlots;

@@ -2,7 +2,7 @@ using MattEland.Wherewolf.Roles;
 
 namespace MattEland.Wherewolf.Events.Game;
 
-public abstract class GameEvent
+public abstract class GameEvent : IGameEvent
 {
     public abstract bool IsObservedBy(Player player);
     public abstract string Description { get; }

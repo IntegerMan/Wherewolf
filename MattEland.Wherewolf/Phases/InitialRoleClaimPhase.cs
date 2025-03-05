@@ -1,3 +1,4 @@
+using MattEland.Wherewolf.Events.Game;
 using MattEland.Wherewolf.Events.Social;
 using MattEland.Wherewolf.Roles;
 
