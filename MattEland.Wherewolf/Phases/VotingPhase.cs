@@ -29,6 +29,16 @@ public class VotingPhase : GamePhase
         IDictionary<Player,int> votingResults = VotingHelper.GetVotingResults(votes);
         GameResult result = newState.DetermineGameResults(votingResults);
         newState.GameResult = result;
+
+        // Ensure we get events for voted out players
+        foreach (var deadPlayer in result.DeadPlayers)
+        {
+            GameSlot playerSlot = newState[deadPlayer.Name];
+            newState.AddEvent(new VotedOutEvent(deadPlayer, playerSlot.Role));
+        }
+        
+        // Get a final event to tell us who won the game
+        newState.AddEvent(new GameOverEvent(result));
         
         return newState;
     }

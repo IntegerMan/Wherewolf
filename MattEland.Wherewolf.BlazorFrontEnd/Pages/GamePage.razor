@@ -51,14 +51,16 @@ else
                      TimelinePosition="TimelinePosition.Left">
             @foreach (var evt in VisibleEvents)
             {
-                <MudTimelineItem Color="@CalculateEventColor(evt)" TimelineAlign="TimelineAlign.End">
+                <MudTimelineItem Color="@CalculateEventColor(evt)" 
+                                 Size="Size.Small"
+                                 TimelineAlign="TimelineAlign.End">
                     <ItemContent>
-                        <MudText Typo="Typo.h6" Color="@CalculateEventColor(evt)">
+                        <MudText Typo="Typo.body2" Color="@CalculateEventColor(evt)">
                             @evt.Description
                         </MudText>
                     </ItemContent>
                     <ItemOpposite>
-                        <MudText Typo="Typo.h6">@evt.GetType().Name</MudText>
+                        <MudText Typo="Typo.body2">@evt.GetType().Name</MudText>
                     </ItemOpposite>
                 </MudTimelineItem>
             }
@@ -67,9 +69,7 @@ else
     
     @if (IsGameOver)
     {
-        <MudAlert Severity="Severity.Info" Variant="Variant.Filled" Class="mt-8">
-            The game has ended.
-        </MudAlert>
+        <MudNavLink Href="/Setup">New Game</MudNavLink>
     }
     else
     {

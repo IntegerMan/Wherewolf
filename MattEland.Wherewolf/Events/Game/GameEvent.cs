@@ -8,7 +8,7 @@ public abstract class GameEvent
     public abstract string Description { get; }
     public virtual Team? AssociatedTeam => null;
 
-    public abstract bool IsPossibleInGameState(GameState state);
+    public virtual bool IsPossibleInGameState(GameState state) => true;
 
     public override string ToString() => Description;
 }
