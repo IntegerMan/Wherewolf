@@ -19,7 +19,7 @@ public partial class ConfigureGamePage : IRecipient<SetupRoleChangedMessage>
     {
         _gameService = gameService;
         _nav = nav;
-        PlayerCount = 5;
+        PlayerCount = 3;
         Roles = [GameRole.Werewolf, GameRole.Werewolf, GameRole.Villager, GameRole.Villager, GameRole.Robber, GameRole.Insomniac];
         GrowRolesAsNeeded();
         
@@ -28,34 +28,27 @@ public partial class ConfigureGamePage : IRecipient<SetupRoleChangedMessage>
 
     public List<GameRole?> Roles { get; }
 
-    public GameRole?[] AssignedRoles 
-        => Roles.Take(PlayerCount + 3).ToArray();
+    public GameRole[] AssignedRoles 
+        => Roles.Take(PlayerCount + 3)
+            .Where(r => r.HasValue)
+            .Select(r => r.Value)
+            .ToArray();
 
     public string[] TickLabels 
         => Enumerable.Range(3, 10).Select(i => i.ToString()).ToArray();
-    
-    public bool AllRolesAssigned
-    {
-        get
-        {
-            bool allRolesAssigned = AssignedRoles.All(r => r.HasValue);
-            Console.WriteLine($"Checking roles: {allRolesAssigned}: {RolesDebugString}");
-            return allRolesAssigned;
-        }
-    }
+
+    public bool AllRolesAssigned => true;
 
     public string RolesDebugString 
-        => string.Join(", ", AssignedRoles.Select(r => r.HasValue 
-            ? r.Value.ToString() 
-            : "Unassigned"));
+        => string.Join(", ", AssignedRoles.Select(r => r.ToString()));
 
     public bool IsValid => AllRolesAssigned;
     
     public int WerewolfTeamCount
-        => AssignedRoles.Count(r => r.HasValue && r.Value.GetTeam() == Team.Werewolf);
+        => AssignedRoles.Count(r => r.GetTeam() == Team.Werewolf);
    
     public int VillagerTeamCount 
-        => AssignedRoles.Count(r => r.HasValue && r.Value.GetTeam() == Team.Villager);
+        => AssignedRoles.Count(r => r.GetTeam() == Team.Villager);
 
     public void Receive(SetupRoleChangedMessage message)
     {
@@ -99,13 +92,7 @@ public partial class ConfigureGamePage : IRecipient<SetupRoleChangedMessage>
     {
         // Create the game
         GameSetup setup = new();
-        
-        // Set roles
-        GameRole[] roles = Roles
-            .Where(r => r.HasValue)
-            .Select(r => r!.Value)
-            .ToArray();
-        setup.AddRoles(roles);
+        setup.AddRoles(AssignedRoles);
         
         // Set players
         Player[] players = Enumerable.Range(1, PlayerCount)
@@ -114,7 +101,7 @@ public partial class ConfigureGamePage : IRecipient<SetupRoleChangedMessage>
                 PlayerController controller = n == 1 && HumanControlsPlayerOne
                     ? new RandomController() // TODO: Web-based controller needed
                     : new RandomController();
-                return new Player("Player " + n, controller);
+                return new Player($"Player {n}", controller);
             })
             .ToArray();
         setup.AddPlayers(players);
