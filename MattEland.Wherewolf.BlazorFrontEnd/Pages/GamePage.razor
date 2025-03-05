@@ -20,7 +20,7 @@
 }
 else
 {
-    <div style="display: grid; grid-template-columns: 3fr 1fr;">
+    <div style="display: grid; grid-template-columns: 1fr 1fr;">
         <MudCard Elevation="3" Class="pa-8 ma-2">
             <MudCardContent Style="flex-grow: 1;">
                 <MudText Typo="Typo.h4" Class="my-4">Center Cards</MudText>
@@ -28,7 +28,11 @@ else
                     @foreach (var slot in Game.CenterSlots)
                     {
                         <MudItem>
-                            <SlotCardDisplay Slot="@slot" IsPlayer="false" PerspectivePlayer="@PerspectivePlayer"/>
+                            <SlotCardDisplay Slot="@slot"
+                                             IsPlayer="false"
+                                             Game="@Game"
+                                             PlayerProbabilities="@PlayerProbabilities"
+                                             PerspectivePlayer="@PerspectivePlayer"/>
                         </MudItem>
                     }
                 </MudGrid>
@@ -40,7 +44,11 @@ else
                     @foreach (var slot in Game.PlayerSlots)
                     {
                         <MudItem>
-                            <SlotCardDisplay Slot="@slot" IsPlayer="true" PerspectivePlayer="@PerspectivePlayer"/>
+                            <SlotCardDisplay Slot="@slot" 
+                                             IsPlayer="true" 
+                                             Game="@Game"
+                                             PlayerProbabilities="@PlayerProbabilities"
+                                             PerspectivePlayer="@PerspectivePlayer"/>
                         </MudItem>
                     }
                 </MudGrid>

@@ -1,5 +1,5 @@
 using MattEland.Wherewolf.BlazorFrontEnd.Repositories;
-using MattEland.Wherewolf.Events;
+using MattEland.Wherewolf.Probability;
 using Microsoft.AspNetCore.Components;
 
 namespace MattEland.Wherewolf.BlazorFrontEnd.Pages;
@@ -21,10 +21,30 @@ public partial class GamePage(IGameStateRepository repo) : ComponentBase
         base.OnParametersSet();
         Game = repo.FindGame(GameId);
         PerspectivePlayer = Game?.Players.First();
+        UpdateProbabilities();
+    }
+
+    private void UpdateProbabilities()
+    {
+        if (Game is not null && PerspectivePlayer is not null)
+        {
+            PlayerProbabilities = Game?.CalculateProbabilities(PerspectivePlayer);
+        }
     }
 
     public string NewGameUrl => "/setup";
 
-    private void AdvanceToNextPhase() => Game = Game?.RunNext();
-    private void AdvanceToEnd() => Game = Game?.RunToEnd();
+    private void AdvanceToNextPhase()
+    {
+        Game = Game?.RunNext();
+        UpdateProbabilities();
+    }
+
+    public PlayerProbabilities? PlayerProbabilities { get; set; }
+
+    private void AdvanceToEnd()
+    {
+        Game = Game?.RunToEnd();
+        UpdateProbabilities();
+    }
 }

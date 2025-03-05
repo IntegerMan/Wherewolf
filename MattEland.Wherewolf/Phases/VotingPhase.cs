@@ -30,17 +30,22 @@ public class VotingPhase : GamePhase
         GameResult result = newState.DetermineGameResults(votingResults);
         newState.GameResult = result;
 
+        AddVoteAftermathEvents(newState, result, broadcast: true);
+
+        return newState;
+    }
+
+    private static void AddVoteAftermathEvents(GameState newState, GameResult result, bool broadcast)
+    {
         // Ensure we get events for voted out players
         foreach (var deadPlayer in result.DeadPlayers)
         {
             GameSlot playerSlot = newState[deadPlayer.Name];
-            newState.AddEvent(new VotedOutEvent(deadPlayer, playerSlot.Role));
+            newState.AddEvent(new VotedOutEvent(deadPlayer, playerSlot.Role), broadcast);
         }
-        
+
         // Get a final event to tell us who won the game
-        newState.AddEvent(new GameOverEvent(result));
-        
-        return newState;
+        newState.AddEvent(new GameOverEvent(result), broadcast);
     }
 
     public override double Order => double.MaxValue;
@@ -69,7 +74,11 @@ public class VotingPhase : GamePhase
                 newState.AddEvent(new VotedEvent(voter, vote), broadcastToController: false);
             }
 
-            newState.GameResult = newState.DetermineGameResults(votes);
+            GameResult result = newState.DetermineGameResults(votes);
+            newState.GameResult = result;
+            
+            AddVoteAftermathEvents(newState, result, broadcast: false);
+            
             yield return newState;
         }
     }
