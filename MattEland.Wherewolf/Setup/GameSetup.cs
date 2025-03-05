@@ -89,9 +89,6 @@ public class GameSetup
             return first;
         }).ToArray();
         _root = _possibleRoots.First(s => s.AllSlots.Select(sl => sl.Role).SequenceEqual(shuffledRoles));
-        
-        // TODO: This seems like something that should live in a phase
-        _root.SendRolesToControllers();
 
         return _root;
     }

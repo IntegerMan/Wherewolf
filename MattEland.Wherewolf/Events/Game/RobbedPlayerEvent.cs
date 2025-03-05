@@ -11,6 +11,8 @@ public class RobbedPlayerEvent(Player robber, Player target, GameRole newRole) :
     public Player Player { get; } = robber;
     public Player Target { get; } = target;
     public GameRole NewRole { get; } = newRole;
+    
+    public override Team? AssociatedTeam => NewRole.GetTeam();
 
     public override bool IsObservedBy(Player player) 
         => Player == player;

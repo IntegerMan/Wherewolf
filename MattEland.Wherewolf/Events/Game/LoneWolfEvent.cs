@@ -10,6 +10,8 @@ public class LoneWolfEvent(Player player) : GameEvent
 {
     public Player Player { get; } = player;
 
+    public override Team? AssociatedTeam => Team.Werewolf;
+
     public override bool IsObservedBy(Player player) 
         => Player == player;
 

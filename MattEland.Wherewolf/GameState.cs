@@ -213,7 +213,7 @@ public class GameState
         return nextState.RunToEndOfNight();
     }    
 
-    private GameState RunNext()
+    public GameState RunNext()
     {
         GamePhase? phase = CurrentPhase;
         if (phase is null)

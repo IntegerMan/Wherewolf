@@ -1,7 +1,6 @@
 using MattEland.Wherewolf.Controllers;
 using MattEland.Wherewolf.Events.Game;
 using MattEland.Wherewolf.Events.Social;
-using MattEland.Wherewolf.Phases;
 using MattEland.Wherewolf.Probability;
 using MattEland.Wherewolf.Roles;
 using Spectre.Console;

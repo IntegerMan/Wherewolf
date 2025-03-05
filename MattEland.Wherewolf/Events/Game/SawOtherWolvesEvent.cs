@@ -13,6 +13,8 @@ public class SawOtherWolvesEvent(IEnumerable<Player> wolves) : GameEvent
     {
         return Players.Contains(player);
     }
+    
+    public override Team? AssociatedTeam => Team.Werewolf;
 
     public override string Description
         => $"{string.Join(" and ", Players.Select(p => p.Name))} saw that each other were on the werewolf team";

@@ -14,6 +14,8 @@ public class InsomniacSawFinalCardEvent(Player player, GameRole role) : GameEven
         ? $"{Player.Name} saw that they were still the {Role}"
         : $"{Player.Name} saw that they were now the {Role}";
     
+    public override Team? AssociatedTeam => Role.GetTeam();
+    
     public override bool IsPossibleInGameState(GameState state)
     {
         GameSlot playerSlot = state.GetSlot(Player);

@@ -15,6 +15,8 @@ public class LoneWolfLookedAtSlotEvent(Player player, GameSlot slot) : GameEvent
 
     public override bool IsObservedBy(Player player) 
         => Player == player;
+    
+    public override Team? AssociatedTeam => Team.Werewolf;
 
     public override string Description
         => $"{Player.Name} looked at {Slot.Name} since they were the only werewolf and saw a {ObservedRole}";
