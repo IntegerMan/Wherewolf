@@ -26,6 +26,5 @@ public partial class GamePage(IGameStateRepository repo) : ComponentBase
     public string NewGameUrl => "/setup";
 
     private void AdvanceToNextPhase() => Game = Game?.RunNext();
-    private void AdvanceToVoting() => Game = Game?.RunToEndOfNight();
     private void AdvanceToEnd() => Game = Game?.RunToEnd();
 }
