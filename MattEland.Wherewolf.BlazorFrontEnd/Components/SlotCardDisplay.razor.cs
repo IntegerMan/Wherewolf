@@ -40,7 +40,35 @@ public partial class SlotCardDisplay : ComponentBase
         }
     }
 
-    public string? CardIcon => Icons.Material.Filled.QuestionMark;
+    public string CardIcon => GetRoleIcon(PresumedGameRole);
+
+    private GameRole? PresumedGameRole
+    {
+        get
+        {
+            var validProbs = Probabilities
+                .Where(p => p.Value.Probability > 0)
+                .ToArray();
+
+            GameRole? role = null;
+            if (validProbs.Length == 1)
+            {
+                role = validProbs.First().Key;
+            }
+
+            return role;
+        }
+    }
+
+    private static string GetRoleIcon(GameRole? role) => role switch
+    {
+        null => Icons.Material.Filled.QuestionMark,
+        GameRole.Villager => Icons.Material.Filled.Person,
+        GameRole.Werewolf => Icons.Material.Filled.Bedtime,
+        GameRole.Robber => Icons.Material.Filled.AttachMoney,
+        GameRole.Insomniac => Icons.Material.Filled.Coffee,
+        _ => Icons.Material.Filled.Error
+    };
 
     protected override void OnParametersSet()
     {
@@ -64,6 +92,12 @@ public partial class SlotCardDisplay : ComponentBase
     {
         get
         {
+            GameRole? role = PresumedGameRole;
+            if (role.HasValue)
+            {
+                return role.Value.ToString();
+            }
+            
             StringBuilder sb = new();
             foreach (var prob in Probabilities
                          .Where(p => p.Value.Probability > 0)
