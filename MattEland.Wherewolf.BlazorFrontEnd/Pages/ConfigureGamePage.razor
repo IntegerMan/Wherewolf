@@ -1,94 +1,111 @@
 @page "/Configure"
 @using MattEland.Wherewolf.BlazorFrontEnd.Components
-@using MattEland.Wherewolf.Roles
 
 <PageTitle>Configure Game</PageTitle>
 
-<MudText Typo="Typo.h1" data-testid="PageHeader">Configure Game</MudText>
-<MudText Typo="Typo.subtitle2" data-testid="PageSubtitle">Select the options you want for your game and click Play Game
-    to begin.
-</MudText>
+@if (IsStartingGame)
+{
+    <MudText Typo="Typo.h1" data-testid="PageHeader">Starting Game</MudText>
+    <MudText Typo="Typo.subtitle2" data-testid="PageSubtitle">
+        Please wait as your game is being prepared...
+    </MudText>
 
-<MudGrid Spacing="12">
-    <MudItem xs="8">
-        <section>
-            <MudText Typo="Typo.h3" Class="mt-8">Game Setup</MudText>
-            <MudText Typo="Typo.body2">
-                You'll need 3 more roles than you have players and it's sometimes acceptable to have duplicate roles.
-            </MudText>
-            <MudGrid Class="mt-2">
-                @for (int i = 0; i < AssignedRoles.Length; i++)
-                {
-                    int index = i;
-                    <MudItem>
-                        <ConfigureRoleSlot Role="@AssignedRoles[index]" Index="@index"/>
-                    </MudItem>
-                }
-            </MudGrid>
-            @if (!AllRolesAssigned)
-            {
-                <MudAlert Variant="Variant.Outlined" Severity="Severity.Error" Class="mt-8">
-                    You must assign all roles before starting the game.
-                </MudAlert>
-            }
-            @if (AllRolesAssigned && WerewolfTeamCount < 2)
-            {
-                <MudAlert Variant="Variant.Outlined" Severity="Severity.Warning" Class="mt-8">
-                    It is recommended to have two or more werewolf team members in your game.
-                </MudAlert>
-            }
-            @if (AllRolesAssigned && VillagerTeamCount < WerewolfTeamCount)
-            {
-                <MudAlert Variant="Variant.Outlined" Severity="Severity.Warning" Class="mt-8">
-                    It is recommended to have more villagers than werewolf team members in your game.
-                </MudAlert>
-            }
-        </section>
-
-        <section class="mt-8">
-            <MudText Typo="Typo.h3">Players</MudText>
-            
-            <MudText Typo="Typo.h6" Class="mt-4">Player Count</MudText>
-            <MudSlider Min="3" Max="10" Step="1"
-                       Variant="Variant.Filled"
-                       ValueLabel="true"
+    <MudProgressLinear Indeterminate="true"
                        Color="Color.Primary"
-                       Value="@PlayerCount"
-                       TickMarks="true"
-                       TickMarkLabels="TickLabels"
-                       Class="mt-4"
-                       T="int"
-                       ValueChanged="v => SetPlayerCount(v)"/>
+                       Class="my-7"
+                       Size="Size.Large"/>
+}
+else
+{
+    <MudText Typo="Typo.h1" data-testid="PageHeader">Configure Game</MudText>
+    <MudText Typo="Typo.subtitle2" data-testid="PageSubtitle">Select the options you want for your game and click Play
+        Game
+        to begin.
+    </MudText>
 
-            <MudCheckBox @bind-Value="HumanControlsPlayerOne"
-                         Label="Control Player 1"
-                         Class="mt-8 ml-n4"
-                         Size="Size.Large"
-                         Color="Color.Primary"
-                         UncheckedColor="Color.Dark" />
-        </section>
+    <MudGrid Spacing="12">
+        <MudItem xs="8">
+            <section>
+                <MudText Typo="Typo.h3" Class="mt-8">Game Setup</MudText>
+                <MudText Typo="Typo.body2">
+                    You'll need 3 more roles than you have players and it's sometimes acceptable to have duplicate
+                    roles.
+                </MudText>
+                <MudGrid Class="mt-2">
+                    @for (int i = 0; i < AssignedRoles.Length; i++)
+                    {
+                        int index = i;
+                        <MudItem>
+                            <ConfigureRoleSlot Role="@AssignedRoles[index]" Index="@index"/>
+                        </MudItem>
+                    }
+                </MudGrid>
+                @if (!AllRolesAssigned)
+                {
+                    <MudAlert Variant="Variant.Outlined" Severity="Severity.Error" Class="mt-8">
+                        You must assign all roles before starting the game.
+                    </MudAlert>
+                }
+                @if (AllRolesAssigned && WerewolfTeamCount < 2)
+                {
+                    <MudAlert Variant="Variant.Outlined" Severity="Severity.Warning" Class="mt-8">
+                        It is recommended to have two or more werewolf team members in your game.
+                    </MudAlert>
+                }
+                @if (AllRolesAssigned && VillagerTeamCount < WerewolfTeamCount)
+                {
+                    <MudAlert Variant="Variant.Outlined" Severity="Severity.Warning" Class="mt-8">
+                        It is recommended to have more villagers than werewolf team members in your game.
+                    </MudAlert>
+                }
+            </section>
 
-        <MudButton Variant="Variant.Filled" Color="Color.Primary"
-                   Disabled="!IsValid"
-                   Class="mt-8"
-                   data-testid="PlayGameButton">
-            @if (HumanControlsPlayerOne)
-            {
-                <span>Play Game</span>
-            }
-            else
-            {
-                <span>Watch Game</span>
-            }
-        </MudButton>
-    </MudItem>
-    <MudItem xs="4">
-        <aside>
-            <MudText Typo="Typo.h3">Available Roles</MudText>
-            <MudText Typo="Typo.body2" Class="mb-8">
-                Drag and drop roles to the roles list to assign roles to the game.
-            </MudText>
-            <RolesList/>
-        </aside>
-    </MudItem>
-</MudGrid>
+            <section class="mt-8">
+                <MudText Typo="Typo.h3">Players</MudText>
+
+                <MudText Typo="Typo.h6" Class="mt-4">Player Count</MudText>
+                <MudSlider Min="3" Max="10" Step="1"
+                           Variant="Variant.Filled"
+                           ValueLabel="true"
+                           Color="Color.Primary"
+                           Value="@PlayerCount"
+                           TickMarks="true"
+                           TickMarkLabels="TickLabels"
+                           Class="mt-4"
+                           T="int"
+                           ValueChanged="v => SetPlayerCount(v)"/>
+
+                <MudCheckBox @bind-Value="HumanControlsPlayerOne"
+                             Label="Control Player 1"
+                             Class="mt-8 ml-n4"
+                             Size="Size.Large"
+                             Color="Color.Primary"
+                             UncheckedColor="Color.Dark"/>
+            </section>
+
+            <MudButton Variant="Variant.Filled" Color="Color.Primary"
+                       Disabled="!IsValid"
+                       OnClick="StartGameClicked"
+                       Class="mt-8"
+                       data-testid="PlayGameButton">
+                @if (HumanControlsPlayerOne)
+                {
+                    <span>Play Game</span>
+                }
+                else
+                {
+                    <span>Watch Game</span>
+                }
+            </MudButton>
+        </MudItem>
+        <MudItem xs="4">
+            <aside>
+                <MudText Typo="Typo.h3">Available Roles</MudText>
+                <MudText Typo="Typo.body2" Class="mb-8">
+                    Drag and drop roles to the roles list to assign roles to the game.
+                </MudText>
+                <RolesList/>
+            </aside>
+        </MudItem>
+    </MudGrid>
+}
