@@ -26,7 +26,7 @@ public class RoleSwapProbabilityTests
         GameState gameState = gameSetup.StartGame(new NonShuffler());
         
         // Act
-        gameState = gameState.RunToEndOfNight();
+        gameState.RunToEndOfNight(s => gameState = s);
         
         // Assert
         Player matt = gameState.Players.Single(p => p.Name == "Matt");
@@ -58,7 +58,7 @@ public class RoleSwapProbabilityTests
         GameState gameState = gameSetup.StartGame(new NonShuffler());
         
         // Act
-        gameState = gameState.RunToEndOfNight();
+        gameState.RunToEndOfNight(s => gameState = s);
         
         // Assert
         Player matt = gameState.Players.Single(p => p.Name == "Matt");

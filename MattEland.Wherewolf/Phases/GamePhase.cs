@@ -2,7 +2,7 @@ namespace MattEland.Wherewolf.Phases;
 
 public abstract class GamePhase
 {
-    public abstract GameState Run(GameState newState);
+    public abstract void Run(GameState newState, Action<GameState> callback);
     
     public abstract double Order { get; }
     public abstract string Name { get; }

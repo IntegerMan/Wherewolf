@@ -13,24 +13,30 @@ public class FixedSelectionController : PlayerController
         _selection = new Queue<string>(selection);
     }
     
-    public override string SelectLoneWolfCenterCard(string[] centerSlotNames)
+    public override void SelectLoneWolfCenterCard(string[] centerSlotNames, Action<string> callback)
     {
         string next = _selection.Dequeue();
-        return centerSlotNames.Single(s => s == next);
+        string choice = centerSlotNames.Single(s => s == next);
+        callback(choice);
     }
 
-    public override Player SelectRobberTarget(Player[] otherPlayers, GameState state, Player robber)
+    public override void SelectRobberTarget(Player[] otherPlayers, GameState state, Player robber, Action<Player> callback)
     {
         string next = _selection.Dequeue();
-        return otherPlayers.Single(s => s.Name == next);
+        Player player = otherPlayers.Single(s => s.Name == next);
+        callback(player);
     }
 
-    public override Player GetPlayerVote(Player votingPlayer, GameState state)
+    public override void GetPlayerVote(Player votingPlayer, GameState state, Action<Player> callback)
     {
         string next = _selection.Dequeue();
-        return state.Players.Single(p => p.Name == next);
+        Player choice = state.Players.Single(p => p.Name == next);
+        callback(choice);
     }
 
-    public override GameRole GetInitialRoleClaim(Player player, GameState gameState) => 
-        _roleClaimStrategy.GetRoleClaim(player, gameState);
+    public override void GetInitialRoleClaim(Player player, GameState gameState, Action<GameRole> callback)
+    {
+        GameRole choice = _roleClaimStrategy.GetRoleClaim(player, gameState);
+        callback(choice);
+    }
 }

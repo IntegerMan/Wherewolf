@@ -9,12 +9,12 @@ public class SetupNightPhase : GamePhase
 {
     public override string Name => "Setup";
     
-    public override GameState Run(GameState newState)
+    public override void Run(GameState newState, Action<GameState> callback)
     {
         newState.SendRolesToControllers();
         newState.AddEvent(new GamePhaseAnnouncedEvent("Everyone, go to sleep."));
 
-        return newState;
+        callback(newState);
     }
 
     public override double Order => double.MinValue;

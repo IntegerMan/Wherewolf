@@ -21,7 +21,7 @@ public class WerewolfRoleTests : RoleTestBase
             GameRole.Werewolf,
             GameRole.Villager
         );
-        gameState = gameState.RunToEnd();
+        gameState.RunToEnd(s => gameState = s);
         Player player = gameState.Players.First();
 
         // Act
@@ -45,7 +45,7 @@ public class WerewolfRoleTests : RoleTestBase
             GameRole.Werewolf,
             GameRole.Villager
         );
-        gameState = gameState.RunToEnd();
+        gameState.RunToEnd(s => gameState = s);
         Player player = gameState.Players.First();
 
         // Act
@@ -76,8 +76,9 @@ public class WerewolfRoleTests : RoleTestBase
             new Player("B", new RandomController()),
             new Player("C", new RandomController())
         );
-        GameState gameState = setup.StartGame(new NonShuffler()).RunToEnd();
-        Player player = gameState.Players.Single(p => p.Name == "A");
+        GameState? gameState = null;
+        setup.StartGame(new NonShuffler()).RunToEnd(s => gameState = s);
+        Player player = gameState!.Players.Single(p => p.Name == "A");
         
         // Act
         SlotRoleProbabilities slotProbabilities = gameState.CalculateProbabilities(player)
@@ -103,7 +104,7 @@ public class WerewolfRoleTests : RoleTestBase
             GameRole.Villager,
             GameRole.Villager
         );
-        gameState = gameState.RunToEnd();
+        gameState.RunToEnd(s => gameState = s);
         Player player1 = gameState.Players.First();
         Player player2 = gameState.Players.Skip(1).First();
 

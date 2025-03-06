@@ -15,7 +15,8 @@ public class RunGameTests : GameTestsBase
         int originalEventCount = startState.Events.Count();
 
         // Act
-        GameState finalState = startState.RunToEnd();
+        GameState? finalState = null;
+        startState.RunToEnd(s => finalState = s);
         
         // Assert
         finalState.ShouldNotBeNull();

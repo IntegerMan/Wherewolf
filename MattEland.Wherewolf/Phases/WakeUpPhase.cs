@@ -4,10 +4,10 @@ namespace MattEland.Wherewolf.Phases;
 
 public class WakeUpPhase : GamePhase
 {
-    public override GameState Run(GameState newState)
+    public override void Run(GameState newState, Action<GameState> callback)
     {
         newState.AddEvent(new MakeSocialClaimsNowEvent());
-        return newState;
+        callback(newState);
     }
 
     public override double Order => 900;

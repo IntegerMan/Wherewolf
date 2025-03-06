@@ -13,7 +13,7 @@ public class MostLikelyWinningVoteCalculationTests : GameTestsBase
         AddMinimumRequiredPlayers(setup);
         AddMinimumRequiredRoles(setup); // WW, WW, Villager
         GameState gameState = setup.StartGame(new NonShuffler());
-        gameState = gameState.RunToEndOfNight();
+        gameState.RunToEndOfNight(s => gameState = s);
         Random rand = new();
         
         // Act
