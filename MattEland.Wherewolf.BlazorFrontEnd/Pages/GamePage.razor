@@ -83,7 +83,7 @@ else
                             <RoleClaimSelection Game="@Game" />
                             break;
                         case ClientMode.Vote:
-                            <MudAlert Severity="Severity.Warning" Variant="Variant.Filled">Voting Control Not Implemented</MudAlert>
+                            <VoteSelection Game="@Game" PerspectivePlayer="@PerspectivePlayer" />
                             break;
                         case ClientMode.SelectRobberVictim:
                             <MudAlert Severity="Severity.Warning" Variant="Variant.Filled">Robber Control Not Implemented</MudAlert>

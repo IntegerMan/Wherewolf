@@ -1,0 +1,18 @@
+<section>
+    <MudText Typo="Typo.h4">Vote</MudText>
+    <MudText Typo="Typo.body2">
+        Select a player to vote for. If there are no werewolves in play or a werewolf has more than one vote and is one of the players with the most votes against them, the villager team wins. Otherwise, werewolves win.
+    </MudText>
+    <MudGrid Class="mt-1">
+        @foreach (var player in Game.Players.Where(p => p != PerspectivePlayer)) {
+            <MudItem>
+                <MudButton Variant="Variant.Filled"
+                           Color="Color.Primary"
+                           Size="Size.Large"
+                           OnClick="() => PlayerSelected(player)">
+                    @player.Name
+                </MudButton>
+            </MudItem>
+        }
+    </MudGrid>
+</section>

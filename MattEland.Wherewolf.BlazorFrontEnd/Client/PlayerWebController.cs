@@ -5,7 +5,7 @@ using MattEland.Wherewolf.Roles;
 
 namespace MattEland.Wherewolf.BlazorFrontEnd.Client;
 
-public class PlayerWebController : PlayerController, IRecipient<RoleClaimedMessage>
+public class PlayerWebController : PlayerController, IRecipient<RoleClaimedMessage>, IRecipient<VotedMessage>
 {
     private Action<GameRole>? _roleClaimCallback;
     private Action<Player>? _voteCallback;
@@ -43,11 +43,23 @@ public class PlayerWebController : PlayerController, IRecipient<RoleClaimedMessa
 
     public void Receive(RoleClaimedMessage message)
     {
-        if (_roleClaimCallback is null) return;
+        Action<GameRole>? callback = _roleClaimCallback;
+        if (callback is null) return;
         
-        _roleClaimCallback(message.Role);
-            
-        WeakReferenceMessenger.Default.Send(new ChangeClientModeMessage(ClientMode.Normal));
         _roleClaimCallback = null;
+        
+        WeakReferenceMessenger.Default.Send(new ChangeClientModeMessage(ClientMode.Normal));    
+        callback(message.Role);
+    }
+
+    public void Receive(VotedMessage message)
+    {
+        Action<Player>? callback = _voteCallback;
+        if (callback is null) return;
+        
+        _voteCallback = null;
+        
+        WeakReferenceMessenger.Default.Send(new ChangeClientModeMessage(ClientMode.Normal));
+        callback(message.Target);
     }
 }
