@@ -1,5 +1,6 @@
 using MattEland.Wherewolf.Roles;
 using CommunityToolkit.Mvvm.Messaging;
+using MattEland.Wherewolf.BlazorFrontEnd.Client;
 using MattEland.Wherewolf.BlazorFrontEnd.Messages;
 using MattEland.Wherewolf.BlazorFrontEnd.Services;
 using MattEland.Wherewolf.Controllers;
@@ -12,13 +13,15 @@ public partial class ConfigureGamePage : IRecipient<SetupRoleChangedMessage>
 {
     private readonly GameService _gameService;
     private readonly NavigationManager _nav;
+    private readonly PlayerWebController _playerController;
 
     public int PlayerCount { get; set; }
 
-    public ConfigureGamePage(GameService gameService, NavigationManager nav)
+    public ConfigureGamePage(GameService gameService, NavigationManager nav, PlayerWebController playerController)
     {
         _gameService = gameService;
         _nav = nav;
+        _playerController = playerController;
         PlayerCount = 3;
         Roles = [GameRole.Werewolf, GameRole.Werewolf, GameRole.Villager, GameRole.Villager, GameRole.Robber, GameRole.Insomniac];
         GrowRolesAsNeeded();
@@ -31,7 +34,7 @@ public partial class ConfigureGamePage : IRecipient<SetupRoleChangedMessage>
     public GameRole[] AssignedRoles 
         => Roles.Take(PlayerCount + 3)
             .Where(r => r.HasValue)
-            .Select(r => r.Value)
+            .Select(r => r!.Value)
             .ToArray();
 
     public string[] TickLabels 
@@ -99,7 +102,7 @@ public partial class ConfigureGamePage : IRecipient<SetupRoleChangedMessage>
             .Select(n =>
             {
                 PlayerController controller = n == 1 && HumanControlsPlayerOne
-                    ? new RandomOptimalVoteController() // TODO: Web-based controller needed
+                    ? _playerController
                     : new RandomOptimalVoteController();
                 return new Player($"Player {n}", controller);
             })

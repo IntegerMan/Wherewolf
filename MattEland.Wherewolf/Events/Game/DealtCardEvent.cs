@@ -18,7 +18,7 @@ public class DealtCardEvent(GameRole role, GameSlot slot) : GameEvent
     {
         GameSlot stateSlot = state.Root[Slot.Name];
         
-        return stateSlot.Role == this.Role;
+        return stateSlot.Role == Role;
     }
 
     public override Team? AssociatedTeam => Role.GetTeam();

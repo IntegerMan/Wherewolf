@@ -2,6 +2,7 @@ using ApexCharts;
 using Microsoft.AspNetCore.Components.Web;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
 using MattEland.Wherewolf.BlazorFrontEnd;
+using MattEland.Wherewolf.BlazorFrontEnd.Client;
 using MattEland.Wherewolf.BlazorFrontEnd.Repositories;
 using MattEland.Wherewolf.BlazorFrontEnd.Services;
 using MattEland.Wherewolf.Services;
@@ -16,6 +17,7 @@ builder.Services.AddScoped(_ => new HttpClient { BaseAddress = new Uri(builder.H
 builder.Services.AddMudServices();
 builder.Services.AddScoped<RoleService>();
 builder.Services.AddScoped<GameService>();
+builder.Services.AddScoped<PlayerWebController>();
 builder.Services.AddSingleton<IGameStateRepository, InMemoryGameStateRepository>();
 
 await builder.Build().RunAsync();

@@ -1,13 +1,26 @@
+using CommunityToolkit.Mvvm.Messaging;
+using MattEland.Wherewolf.BlazorFrontEnd.Client;
+using MattEland.Wherewolf.BlazorFrontEnd.Messages;
 using MattEland.Wherewolf.BlazorFrontEnd.Repositories;
 using MattEland.Wherewolf.Probability;
 using Microsoft.AspNetCore.Components;
 
 namespace MattEland.Wherewolf.BlazorFrontEnd.Pages;
 
-public partial class GamePage(IGameStateRepository repo) : ComponentBase
+public partial class GamePage : ComponentBase, IRecipient<ChangeClientModeMessage>
 {
+    private readonly IGameStateRepository _repo;
+
+    public GamePage(IGameStateRepository repo)
+    {
+        _repo = repo;
+        WeakReferenceMessenger.Default.RegisterAll(this);
+    }
+
     [Parameter]
     public Guid GameId { get; set; }
+    
+    public ClientMode Mode { get; set; } = ClientMode.Normal;
     
     public GameState? Game { get; set; }
     
@@ -19,7 +32,7 @@ public partial class GamePage(IGameStateRepository repo) : ComponentBase
     protected override void OnParametersSet()
     {
         base.OnParametersSet();
-        Game = repo.FindGame(GameId);
+        Game = _repo.FindGame(GameId);
         PerspectivePlayer = Game?.Players.First();
         UpdateProbabilities();
     }
@@ -52,5 +65,11 @@ public partial class GamePage(IGameStateRepository repo) : ComponentBase
             UpdateProbabilities();
             StateHasChanged();
         }));
+    }
+
+    public void Receive(ChangeClientModeMessage message)
+    {
+        Mode = message.Mode;
+        StateHasChanged();
     }
 }

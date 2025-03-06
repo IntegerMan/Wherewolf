@@ -21,6 +21,6 @@ public class InsomniacSawFinalCardEvent(Player player, GameRole role) : GameEven
         GameSlot playerSlot = state.GetSlot(Player);
         GameRole startRole = state.Root[Player.Name].Role;
         
-        return startRole == GameRole.Insomniac && playerSlot.Role == this.Role;
+        return startRole == GameRole.Insomniac && playerSlot.Role == Role;
     }
 }

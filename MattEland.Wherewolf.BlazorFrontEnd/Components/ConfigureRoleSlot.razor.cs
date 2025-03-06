@@ -10,7 +10,7 @@ public partial class ConfigureRoleSlot
 {
     private static ConfigureRoleSlot Instance { get; set; } = null!;
 
-    [Parameter] public GameRole? Role { get; set; }
+    [Parameter] public GameRole Role { get; set; }
     [Parameter] public int Index { get; set; }
 
     private void HandleDroppedInstance(string role)

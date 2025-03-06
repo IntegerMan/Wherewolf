@@ -23,7 +23,7 @@ public partial class SlotCardDisplay : ComponentBase
     public required GameState Game { get; set; }
     
     [Parameter]
-    public PlayerProbabilities PlayerProbabilities { get; set; }
+    public required PlayerProbabilities PlayerProbabilities { get; set; }
 
     public string CardClass
     {
@@ -41,7 +41,7 @@ public partial class SlotCardDisplay : ComponentBase
         }
     }
 
-    public string CardIcon => GetRoleIcon(PresumedGameRole);
+    public string CardIcon => PresumedGameRole.GetRoleIcon();
 
     private GameRole? PresumedGameRole
     {
@@ -60,16 +60,6 @@ public partial class SlotCardDisplay : ComponentBase
             return role;
         }
     }
-
-    private static string GetRoleIcon(GameRole? role) => role switch
-    {
-        null => Icons.Material.Filled.QuestionMark,
-        GameRole.Villager => Icons.Material.Filled.Person,
-        GameRole.Werewolf => Icons.Material.Filled.Bedtime,
-        GameRole.Robber => Icons.Material.Filled.AttachMoney,
-        GameRole.Insomniac => Icons.Material.Filled.Coffee,
-        _ => Icons.Material.Filled.Error
-    };
 
     public ApexChartOptions<ChartDataItem> ChartOptions { get; set; } = new()
     {

@@ -137,7 +137,7 @@ public static class DisplayHelpers
     private static void AddGameEventNodeToTree(GameEvent evt, Tree tree, IEnumerable<GameSlot> slots, IEnumerable<GameRole> roles, IEnumerable<Player> players, bool includeObservedBy = true)
     {
         // Make descriptions referencing slots or roles stand out more
-        string description = DisplayHelpers.StylizeEventMessage(evt.Description, slots, roles);
+        string description = StylizeEventMessage(evt.Description, slots, roles);
     
         // Add the event node
         TreeNode eventNode = tree.AddNode($"[Cyan]{evt.GetType().Name}[/]: {description}");

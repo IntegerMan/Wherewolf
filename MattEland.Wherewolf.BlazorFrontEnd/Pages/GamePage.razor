@@ -1,4 +1,5 @@
 @page "/games/{GameId:guid}"
+@using MattEland.Wherewolf.BlazorFrontEnd.Client
 @using MattEland.Wherewolf.BlazorFrontEnd.Components
 @inject NavigationManager NavigationManager;
 
@@ -64,16 +65,36 @@ else
                 }
                 else
                 {
-                    <MudButtonGroup Color="Color.Primary" Size="Size.Large" Variant="Variant.Filled">
-                        <MudButton OnClick="AdvanceToNextPhase"
-                                   Disabled="!CanAdvance">
-                            Next
-                        </MudButton>
-                        <MudButton OnClick="AdvanceToEnd"
-                                   Disabled="!CanAdvance">
-                            Run to End
-                        </MudButton>
-                    </MudButtonGroup>
+                    @switch (Mode)
+                    {
+                        case ClientMode.Normal:
+                            <MudButtonGroup Color="Color.Primary" Size="Size.Large" Variant="Variant.Filled">
+                                <MudButton OnClick="AdvanceToNextPhase"
+                                           Disabled="!CanAdvance">
+                                    Next
+                                </MudButton>
+                                <MudButton OnClick="AdvanceToEnd"
+                                           Disabled="!CanAdvance">
+                                    Run to End
+                                </MudButton>
+                            </MudButtonGroup>
+                            break;
+                        case ClientMode.RoleClaim:
+                            <RoleClaimSelection Game="@Game" />
+                            break;
+                        case ClientMode.Vote:
+                            <MudAlert Severity="Severity.Warning" Variant="Variant.Filled">Voting Control Not Implemented</MudAlert>
+                            break;
+                        case ClientMode.SelectRobberVictim:
+                            <MudAlert Severity="Severity.Warning" Variant="Variant.Filled">Robber Control Not Implemented</MudAlert>
+                            break;
+                        case ClientMode.SelectLoneWolfPeekCard:
+                            <MudAlert Severity="Severity.Warning" Variant="Variant.Filled">Lone Wolf Control Not Implemented</MudAlert>
+                            break;
+                        default:
+                            <MudAlert Severity="Severity.Error" Variant="Variant.Filled">Unexpected Mode: @Mode</MudAlert>
+                            break;
+                    }
                 }
             </MudCardActions>
         </MudCard>

@@ -2,14 +2,8 @@
 
 <div @ondragover="SetTarget" @ondragover:preventDefault="true"
      ondrop="dragDropInterop.handleDrop(event)">
-    <MudPaper Class="@($"pa-4 {Role.GetTeamTheme()}")">
-        @if (Role.HasValue)
-        {
-            <MudText Typo="Typo.input" Style="height: 100%;">@Role.Value.ToString()</MudText>
-        }
-        else
-        {
-            <MudText Typo="Typo.input" Style="height: 100%;">Empty</MudText>
-        }
+    <MudPaper Class="@($"pa-4 {Role.GetTeamTheme()}")" Style="display: flex; flex-direction: row; align-items: center;">
+        <MudIcon Icon="@Role.GetRoleIcon()" Size="Size.Medium" />
+        <MudText Typo="Typo.input" Class="ml-1">@Role.ToString()</MudText>
     </MudPaper>
 </div>

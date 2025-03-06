@@ -38,4 +38,19 @@ public static class ThemeHelper
             _ => "mud-theme-warning"
         };
     }
+    
+    public static string GetRoleIcon(this GameRole? role) => role switch
+    {
+        null => Icons.Material.Filled.QuestionMark,
+        _ => GetRoleIcon(role.Value)
+    };    
+    
+    public static string GetRoleIcon(this GameRole role) => role switch
+    {
+        GameRole.Villager => Icons.Material.Filled.Person,
+        GameRole.Werewolf => Icons.Material.Filled.Bedtime,
+        GameRole.Robber => Icons.Material.Filled.AttachMoney,
+        GameRole.Insomniac => Icons.Material.Filled.Coffee,
+        _ => Icons.Material.Filled.Error
+    };
 }

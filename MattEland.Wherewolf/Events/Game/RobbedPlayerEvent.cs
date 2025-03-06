@@ -42,9 +42,9 @@ public class RobbedPlayerEvent(Player robber, Player target, GameRole newRole) :
         GameRole robbersOldRole = beforeRobState[Player.Name].Role;
         
         // Any setup that didn't start with the target having the robbed card cannot be considered
-        if (beforeRobState[Target.Name].Role != this.NewRole) return false;
+        if (beforeRobState[Target.Name].Role != NewRole) return false;
         if (beforeRobState[Player.Name].Role != robbersOldRole) return false;
-        if (afterRobState[Player.Name].Role != this.NewRole) return false;
+        if (afterRobState[Player.Name].Role != NewRole) return false;
         if (afterRobState[Target.Name].Role != robbersOldRole) return false;
 
         return true;

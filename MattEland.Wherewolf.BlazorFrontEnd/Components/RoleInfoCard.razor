@@ -10,13 +10,16 @@
          title="Drag this to assign this role to the game">
     <MudCard class="@Role.GetTeamTheme()" Style="height: 100%;"> 
         <MudCardContent>
-            <MudText Typo="Typo.h6">
-                @RoleName
-                @if (Count > 1)
-                {
-                    <span class="ml-2">x @Count</span>
-                }
-            </MudText>
+            <div style="display: flex; align-items: center; flex-direction: row;">
+                <MudIcon Icon="@Role.GetRoleIcon()" Size="Size.Medium"/>
+                <MudText Typo="Typo.h6" Class="ml-1">
+                    @RoleName
+                    @if (Count > 1)
+                    {
+                        <span class="ml-2">x @Count</span>
+                    }
+                </MudText>
+            </div>
             <MudText Typo="Typo.body2">
                 @RoleDescription
             </MudText>
