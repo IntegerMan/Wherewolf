@@ -7,16 +7,18 @@ using Spectre.Console;
 
 namespace MattEland.Wherewolf.Console;
 
-public class HumanController : PlayerController
+public class HumanConsoleController : PlayerController
 {
-    public override string SelectLoneWolfCenterCard(string[] centerSlotNames)
+    public override void SelectLoneWolfCenterCard(string[] centerSlotNames, Action<string> callback)
     {
-        return AnsiConsole.Prompt(new SelectionPrompt<string>()
+        string choice = AnsiConsole.Prompt(new SelectionPrompt<string>()
             .Title("Select a card to look at from the center as the lone wolf")
             .AddChoices(centerSlotNames));
+        
+        callback(choice);
     }
 
-    public override Player SelectRobberTarget(Player[] otherPlayers, GameState state, Player robber)
+    public override void SelectRobberTarget(Player[] otherPlayers, GameState state, Player robber, Action<Player> callback)
     {
         PlayerProbabilities probs = state.CalculateProbabilities(robber);
         SelectionPrompt<Player> prompt = new();
@@ -34,7 +36,8 @@ public class HumanController : PlayerController
             return $"{p.GetPlayerMarkup()} ({string.Join(", ", playerProbs)})";
         };
 
-        return AnsiConsole.Prompt(prompt);
+        Player choice = AnsiConsole.Prompt(prompt);
+        callback(choice);
     }
 
     public override void ObservedEvent(GameEvent gameEvent, GameState state)
@@ -43,7 +46,7 @@ public class HumanController : PlayerController
         AnsiConsole.MarkupLine(message);
     }
 
-    public override GameRole GetInitialRoleClaim(Player player, GameState gameState)
+    public override void GetInitialRoleClaim(Player player, GameState gameState, Action<GameRole> callback)
     {
         SelectionPrompt<GameRole> prompt = new();
         GameRole startRole = gameState.GetStartRole(player);
@@ -67,10 +70,11 @@ public class HumanController : PlayerController
         };
         */
         
-        return AnsiConsole.Prompt(prompt);
+        GameRole choice = AnsiConsole.Prompt(prompt);
+        callback(choice);
     }
     
-    public override Player GetPlayerVote(Player votingPlayer, GameState state)
+    public override void GetPlayerVote(Player votingPlayer, GameState state, Action<Player> callback)
     {
         PlayerProbabilities playerProbs = state.CalculateProbabilities(votingPlayer);
         Dictionary<Player, double> victoryProbs = VotingHelper.GetVoteVictoryProbabilities(votingPlayer, state);
@@ -98,6 +102,7 @@ public class HumanController : PlayerController
             return $"{p.GetPlayerMarkup()} (Claims {claim}, ({current}), {victoryProbs[p]:P0} win chance)";
         };
 
-        return AnsiConsole.Prompt(prompt);
+        Player choice = AnsiConsole.Prompt(prompt);
+        callback(choice);
     }
 }

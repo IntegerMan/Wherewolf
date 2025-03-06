@@ -240,17 +240,7 @@ public class GameState
             throw new InvalidOperationException("Cannot run the next phase; no current phase");
 
         GameState nextState = new(this, Support);
-
-        foreach (var player in Players) 
-        {
-            player.Controller.RunningPhase(phase, this);
-        }
         GameState next = phase.Run(nextState);
-
-        foreach (var player in Players) 
-        {
-            player.Controller.RanPhase(phase, this);
-        }
         
         return next;
     }
@@ -397,12 +387,5 @@ public class GameState
             .Select(kvp => kvp.Key);
 
         return new GameResult(dead, this, votes, supportingClaims);
-    }
-
-    public int ObservedSupport(Player player)
-    {
-        IEnumerable<StartRoleClaimedEvent> claims = Claims.OfType<StartRoleClaimedEvent>();
-        
-        return claims.Count(c => c.Player != player && c.IsClaimValidFor(this));
     }
 }

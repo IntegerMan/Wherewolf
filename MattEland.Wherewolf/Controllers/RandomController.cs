@@ -15,15 +15,28 @@ public class RandomController : PlayerController
         _rand = rand ?? new Random();
     }
 
-    public override string SelectLoneWolfCenterCard(string[] centerSlotNames) 
-        => centerSlotNames.ElementAt(_rand.Next(centerSlotNames.Length));
+    public override void SelectLoneWolfCenterCard(string[] centerSlotNames, Action<string> callback)
+    {
+        string choice = centerSlotNames.ElementAt(_rand.Next(centerSlotNames.Length));
+        callback(choice);
+    }
 
-    public override Player SelectRobberTarget(Player[] otherPlayers, GameState state, Player robber)
-        => otherPlayers.ElementAt(_rand.Next(otherPlayers.Length));
+    public override void SelectRobberTarget(Player[] otherPlayers, GameState state, Player robber, Action<Player> callback)
+    {
+        Player choice = otherPlayers.ElementAt(_rand.Next(otherPlayers.Length));
+        callback(choice);
+    }
 
-    public override Player GetPlayerVote(Player votingPlayer, GameState state)
-        => state.Players.Where(p => p != votingPlayer).ElementAt(_rand.Next(state.Players.Count() - 1));
+    public override void GetPlayerVote(Player votingPlayer, GameState state, Action<Player> callback)
+    {
+        Player choice = state.Players.Where(p => p != votingPlayer)
+            .ElementAt(_rand.Next(state.Players.Count() - 1));
+        callback(choice);
+    }
 
-    public override GameRole GetInitialRoleClaim(Player player, GameState gameState)
-        => _roleClaimStrategy.GetRoleClaim(player, gameState);
+    public override void GetInitialRoleClaim(Player player, GameState gameState, Action<GameRole> callback)
+    {
+        GameRole choice = _roleClaimStrategy.GetRoleClaim(player, gameState);
+        callback(choice);
+    }
 }

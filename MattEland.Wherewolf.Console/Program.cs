@@ -36,7 +36,7 @@ try
     // Display Player States
     foreach (var player in gameSetup.Players)
     {
-        if (player.Controller is HumanController)
+        if (player.Controller is HumanConsoleController)
         {
             // Player divider
             Rule rule = new(player.GetPlayerMarkup());
