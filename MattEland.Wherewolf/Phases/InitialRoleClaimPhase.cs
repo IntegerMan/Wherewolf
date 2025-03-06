@@ -1,17 +1,16 @@
-using MattEland.Wherewolf.Events.Game;
 using MattEland.Wherewolf.Events.Social;
-using MattEland.Wherewolf.Roles;
 
 namespace MattEland.Wherewolf.Phases;
 
 public class InitialRoleClaimPhase(Player player) : GamePhase
 {
-    public override GameState Run(GameState newState)
+    public override void Run(GameState newState, Action<GameState> callback)
     {
-        GameRole role = player.Controller.GetInitialRoleClaim(player, newState.Parent!);
-        newState.AddEvent(new StartRoleClaimedEvent(player, role));
-
-        return newState;
+        player.Controller.GetInitialRoleClaim(player, newState.Parent!, role =>
+        {
+            newState.AddEvent(new StartRoleClaimedEvent(player, role));
+            callback(newState);
+        });
     }
 
     public override double Order => 10000;

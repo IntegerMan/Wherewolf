@@ -7,7 +7,7 @@ public class WerewolfNightPhase : GamePhase
 {
     public override string Name => "Werewolves";
     
-    public override GameState Run(GameState newState)
+    public override void Run(GameState newState, Action<GameState> callback)
     {
         newState.AddEvent(new GamePhaseAnnouncedEvent("Werewolves, wake up and look for each other. If there is only one werewolf, you may look a card in the center."));
         
@@ -19,16 +19,19 @@ public class WerewolfNightPhase : GamePhase
             newState.AddEvent(new LoneWolfEvent(loneWolfPlayer));
             
             // If the lone wolf is the only werewolf, let them pick which center card to look at
-            string centerSlotChoice = loneWolfPlayer.Controller.SelectLoneWolfCenterCard(newState.CenterSlots.Select(c => c.Name).ToArray());
-            GameSlot centerSlot = newState[centerSlotChoice];
-            newState.AddEvent(new LoneWolfLookedAtSlotEvent(loneWolfPlayer, centerSlot));
+            string[] slots = newState.CenterSlots.Select(c => c.Name).ToArray();
+            loneWolfPlayer.Controller.SelectLoneWolfCenterCard(slots, choice =>
+            {
+                GameSlot centerSlot = newState[choice];
+                newState.AddEvent(new LoneWolfLookedAtSlotEvent(loneWolfPlayer, centerSlot));
+            });
         } 
         else if (werewolves.Count > 1)
         {
             newState.AddEvent(new SawOtherWolvesEvent(werewolves.Select(w => w.Player!)));
         }
-
-        return newState;
+        
+        callback(newState);
     }
 
     public override double Order => 2.0;

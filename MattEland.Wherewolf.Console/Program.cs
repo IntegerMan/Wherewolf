@@ -31,53 +31,8 @@ try
     );
 
     GameState gameState = gameSetup.StartGame(new NonShuffler());
-    gameState = gameState.RunToEndOfNight();
-
-    // Display Player States
-    foreach (var player in gameSetup.Players)
-    {
-        if (player.Controller is HumanConsoleController)
-        {
-            // Player divider
-            Rule rule = new(player.GetPlayerMarkup());
-            AnsiConsole.Write(rule);
-            AnsiConsole.WriteLine();
-        }
-    }
+    gameState.RunToEndOfNight(GameVoteManager.OnEndOfNight);
     
-    // This will cause the voting and claims to actually occur
-    gameState = gameState.RunToEnd();
-
-    // Display the game results
-    GameResult result = gameState.GameResult!;
-    AnsiConsole.WriteLine();
-    AnsiConsole.MarkupLine("[Bold]Game Results[/]");
-    AnsiConsole.MarkupLine("Votes: " + string.Join(", ", result.Votes.OrderByDescending(kvp => kvp.Value)
-        .ThenBy(kvp => kvp.Key.ToString())
-        .Select(kvp => $"{kvp.Key.GetPlayerMarkup()}: {kvp.Value}")));
-    AnsiConsole.MarkupLine("Dead Players: " + string.Join(", ", result.DeadPlayers.Select(p =>
-        $"{p.GetPlayerMarkup()} ({gameState.GetSlot(p).Role.AsMarkdown()})")));
-    AnsiConsole.MarkupLine($"Winning Team: {result.WinningTeam.AsMarkdown()}");
-    AnsiConsole.MarkupLine(
-        $"Winning Players: {string.Join(", ", result.WinningPlayers.Select(p => $"{p.GetPlayerMarkup()} ({gameState.GetSlot(p).Role.AsMarkdown()})"))
-        }");
-
-    AnsiConsole.WriteLine();
-
-    // Post-Game Information  
-    DisplayHelpers.DisplaySummaryTable(gameState);
-
-    foreach (var e in gameState.Events)
-    {
-        AnsiConsole.MarkupLine(DisplayHelpers.StylizeEventMessage(e.Description, gameState.AllSlots, gameSetup.Roles));
-    }
-    
-    foreach (var claim in gameState.Claims)
-    {
-        AnsiConsole.MarkupLine(DisplayHelpers.StylizeEventMessage(claim.Description, gameState.AllSlots, gameSetup.Roles));
-    }
-    
-    AnsiConsole.WriteLine();
     return 0;
 }
 catch (Exception ex)

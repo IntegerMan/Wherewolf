@@ -5,7 +5,7 @@ namespace MattEland.Wherewolf.Phases;
 
 public class VotingPhase : GamePhase
 {
-    public override GameState Run(GameState newState)
+    public override void Run(GameState newState, Action<GameState> callback)
     {
         newState.AddEvent(new GamePhaseAnnouncedEvent("Everyone, vote for one other player."));
 
@@ -13,10 +13,11 @@ public class VotingPhase : GamePhase
         Dictionary<Player, Player> votes = new();
         foreach (var p in newState.Players)
         {
-            Player vote = p.Controller.GetPlayerVote(p, newState);
-            
-            voteEvents.Add(new VotedEvent(p, vote));
-            votes[p] = vote;
+            p.Controller.GetPlayerVote(p, newState, vote =>
+            {
+                voteEvents.Add(new VotedEvent(p, vote));
+                votes[p] = vote; 
+            });
         }
 
         // Add all the vote events.
@@ -32,7 +33,7 @@ public class VotingPhase : GamePhase
 
         AddVoteAftermathEvents(newState, result, broadcast: true);
 
-        return newState;
+        callback(newState);
     }
 
     private static void AddVoteAftermathEvents(GameState newState, GameResult result, bool broadcast)

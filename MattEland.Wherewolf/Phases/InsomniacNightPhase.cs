@@ -5,7 +5,7 @@ namespace MattEland.Wherewolf.Phases;
 
 public class InsomniacNightPhase : GamePhase
 {
-    public override GameState Run(GameState newState)
+    public override void Run(GameState newState, Action<GameState> callback)
     {
         newState.AddEvent(new GamePhaseAnnouncedEvent("Insomniac, wake up and look at your card."));
         
@@ -14,8 +14,8 @@ public class InsomniacNightPhase : GamePhase
         {
             newState.AddEvent(insomniacEvent);
         }
-
-        return newState;
+        
+        callback(newState);
     }
 
     private static InsomniacSawFinalCardEvent? BuildInsomniacEventIfRelevant(GameState newState)

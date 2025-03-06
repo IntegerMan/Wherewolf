@@ -210,39 +210,38 @@ public class GameState
         return probabilities;
     }
 
-    public GameState RunToEnd()
+    public void RunToEnd(Action<GameState> callback)
     {
         if (IsGameOver)
         {
-            return this;
+            callback(this);
         }
-
-        GameState nextState = RunNext();
-        return nextState.RunToEnd();
+        else
+        {
+            RunNext(state => state.RunToEnd(callback));
+        }
     }
     
 
-    public GameState RunToEndOfNight()
+    public void RunToEndOfNight(Action<GameState> callback)
     {
         if (CurrentPhase is WakeUpPhase)
         {
-            return this;
+            callback(this);
         }
-
-        GameState nextState = RunNext();
-        return nextState.RunToEndOfNight();
+        else
+        {
+            RunNext(state => state.RunToEndOfNight(callback));
+        }
     }    
 
-    public GameState RunNext()
+    public void RunNext(Action<GameState> callback)
     {
         GamePhase? phase = CurrentPhase;
-        if (phase is null)
-            throw new InvalidOperationException("Cannot run the next phase; no current phase");
+        if (phase is null) throw new InvalidOperationException("Cannot run the next phase; no current phase");
 
         GameState nextState = new(this, Support);
-        GameState next = phase.Run(nextState);
-        
-        return next;
+        phase.Run(nextState, callback);
     }
 
     public bool IsGameOver => _remainingPhases.Count == 0;

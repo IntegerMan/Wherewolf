@@ -36,15 +36,21 @@ public partial class GamePage(IGameStateRepository repo) : ComponentBase
 
     private void AdvanceToNextPhase()
     {
-        Game = Game?.RunNext();
-        UpdateProbabilities();
+        Game?.RunNext(game => InvokeAsync(() => { 
+            Game = game;
+            UpdateProbabilities();
+            StateHasChanged();
+        }));
     }
 
     public PlayerProbabilities? PlayerProbabilities { get; set; }
 
     private void AdvanceToEnd()
     {
-        Game = Game?.RunToEnd();
-        UpdateProbabilities();
+        Game?.RunToEnd(game => InvokeAsync(() => { 
+            Game = game;
+            UpdateProbabilities();
+            StateHasChanged();
+        }));
     }
 }
