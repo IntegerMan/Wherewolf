@@ -1,5 +1,4 @@
 @using ApexCharts
-@using ChartType = MudBlazor.ChartType
 @using Size = MudBlazor.Size
 
 <MudCard Elevation="3" Style="width:150px; height: 225px;" Class="@CardClass">
@@ -30,33 +29,9 @@
                                      YValue="@(e => e.Value)"/>
                 </ApexChart>
             </div>
-            /*
-<MudChart ChartType="ChartType.Donut"
-          InputLabels="@Probabilities.Where(p => p.Value.Probability > 0).Select(p => p.Key.ToString()).ToArray()"
-          InputData="@Probabilities.Where(p => p.Value.Probability > 0).Select(p => p.Value.Probability).ToArray()" />
-
-<MudSimpleTable>
-    <thead>
-    <tr>
-        <th>Role</th>
-        <th>Probability</th>
-    </tr>
-    </thead>
-    <tbody>
-    @foreach (var probability in Probabilities.Where(p => p.Value.Probability > 0)
-                  .OrderByDescending(p => p.Value.Probability))
-    {
-        <tr>
-            <td>@probability.Key</td>
-            <td>@probability.Value.Probability.ToString("P0")</td>
-        </tr>
-    }
-    </tbody>
-</MudSimpleTable>
-*/
         }
     </MudCardContent>
-    @if (PresumedGameRole is not null)
+    @if (!string.IsNullOrWhiteSpace(Text))
     {
         <MudCardActions>
             <MudText>@Text</MudText>

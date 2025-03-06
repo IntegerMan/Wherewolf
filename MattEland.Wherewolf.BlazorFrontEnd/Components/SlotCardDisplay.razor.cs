@@ -115,14 +115,12 @@ public partial class SlotCardDisplay : ComponentBase
                 return role.Value.ToString();
             }
             
-            StringBuilder sb = new();
-            foreach (var prob in Probabilities
-                         .Where(p => p.Value.Probability > 0)
-                         .OrderByDescending(p => p.Value.Probability))
-            {
-                sb.Append($"{prob.Key} ({prob.Value.Probability:P0}) ");
-            }
-            return sb.ToString().TrimEnd();
+            KeyValuePair<GameRole, SlotProbability> probs = Probabilities
+                .Where(p => p.Value.Probability > 0)
+                .OrderByDescending(p => p.Value.Probability)
+                .First();
+            
+            return $"{probs.Key}?";
         }
     }
 }
