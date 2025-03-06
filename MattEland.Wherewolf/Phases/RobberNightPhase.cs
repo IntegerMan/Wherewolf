@@ -19,7 +19,7 @@ public class RobberNightPhase : GamePhase
                                                .ToArray();
             robber.Player!.Controller.SelectRobberTarget(targets, newState, robber.Player, target =>
             {
-                PerformRobbery(newState, newState.GetSlot(target), robber, broadcast: true);
+                newState = PerformRobbery(newState, newState.GetSlot(target), robber, broadcast: true);
             });
         }
         
