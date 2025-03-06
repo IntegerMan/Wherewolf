@@ -14,10 +14,11 @@ public class BasicProbabilityTests : GameTestsBase
         AddMinimumRequiredPlayers(gameSetup);
         AddMinimumRequiredRoles(gameSetup);
         Player player = gameSetup.Players.First();
-        GameState state = gameSetup.StartGame(new NonShuffler()).RunToEnd();
+        GameState? state = null;
+        gameSetup.StartGame().RunToEnd(s => state = s);
 
         // Act
-        PlayerProbabilities probabilities = state.CalculateProbabilities(player);
+        PlayerProbabilities probabilities = state!.CalculateProbabilities(player);
         SlotRoleProbabilities slotProbabilities = probabilities.GetCurrentProbabilities(state[player.Name]);
         
         // Assert
@@ -34,10 +35,11 @@ public class BasicProbabilityTests : GameTestsBase
         AddMinimumRequiredRoles(gameSetup);
         Player villager = gameSetup.Players.ToList()[2]; // This is a villager
         Player werewolf = gameSetup.Players.ToList()[0];
-        GameState state = gameSetup.StartGame(new NonShuffler()).RunToEnd();
-
+        GameState? state = null;
+        gameSetup.StartGame(new NonShuffler()).RunToEnd(s => state = s);
+        
         // Act
-        PlayerProbabilities probabilities = state.CalculateProbabilities(villager);
+        PlayerProbabilities probabilities = state!.CalculateProbabilities(villager);
         SlotRoleProbabilities slotProbabilities = probabilities.GetCurrentProbabilities(state[werewolf.Name]);
 
         // Assert
@@ -55,10 +57,11 @@ public class BasicProbabilityTests : GameTestsBase
         AddMinimumRequiredRoles(gameSetup);
         Player villager = gameSetup.Players.ToList()[2]; // This is a villager
         Player werewolf = gameSetup.Players.ToList()[0];
-        GameState state = gameSetup.StartGame(new NonShuffler()).RunToEnd();
+        GameState? state = null;
+        gameSetup.StartGame(new NonShuffler()).RunToEnd(s => state = s);
 
         // Act
-        PlayerProbabilities probabilities = state.CalculateProbabilities(werewolf);
+        PlayerProbabilities probabilities = state!.CalculateProbabilities(werewolf);
         SlotRoleProbabilities slotProbabilities = probabilities.GetCurrentProbabilities(state[villager.Name]);
 
         // Assert
@@ -75,10 +78,11 @@ public class BasicProbabilityTests : GameTestsBase
         AddMinimumRequiredRoles(gameSetup);
         Player ww1 = gameSetup.Players.ToList()[0];
         Player ww2 = gameSetup.Players.ToList()[1];
-        GameState state = gameSetup.StartGame(new NonShuffler()).RunToEnd();
+        GameState? state = null;
+        gameSetup.StartGame(new NonShuffler()).RunToEnd(s => state = s);
 
         // Act
-        PlayerProbabilities probabilities = state.CalculateProbabilities(ww1);
+        PlayerProbabilities probabilities = state!.CalculateProbabilities(ww1);
         SlotRoleProbabilities slotProbabilities = probabilities.GetCurrentProbabilities(state[ww2.Name]);
 
         // Assert
@@ -94,10 +98,11 @@ public class BasicProbabilityTests : GameTestsBase
         AddMinimumRequiredPlayers(gameSetup);
         AddMinimumRequiredRoles(gameSetup);
         Player player = gameSetup.Players.First();
-        GameState state = gameSetup.StartGame(new NonShuffler()).RunToEnd();
+        GameState? state = null;
+        gameSetup.StartGame(new NonShuffler()).RunToEnd(s => state = s);
 
         // Act
-        PlayerProbabilities probabilities = state.CalculateProbabilities(player);
+        PlayerProbabilities probabilities = state!.CalculateProbabilities(player);
         SlotRoleProbabilities slotProbabilities = probabilities.GetCurrentProbabilities(state[player.Name]);
         
         // Assert

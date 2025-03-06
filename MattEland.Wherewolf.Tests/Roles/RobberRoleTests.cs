@@ -83,6 +83,9 @@ public class RobberRoleTests : RoleTestBase
             GameRole.Villager,
             GameRole.Werewolf
         );
-        return setup.StartGame(new NonShuffler()).RunToEnd();
+        GameState? finalState = null;
+        setup.StartGame(new NonShuffler()).RunToEnd(s => finalState = s);
+
+        return finalState!;
     }
 }

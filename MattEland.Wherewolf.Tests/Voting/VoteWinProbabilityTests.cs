@@ -21,10 +21,11 @@ public class VoteWinProbabilityTests
         setup.AddRole(GameRole.Werewolf, 2);
         setup.AddRole(GameRole.Villager, 2);
 
-        GameState state = setup.StartGame(new NonShuffler()).RunToEnd();
+        GameState? state = null; 
+        setup.StartGame(new NonShuffler()).RunToEnd(s => state = s);
         
         // Act
-        var probabilities = VotingHelper.GetVoteVictoryProbabilities(a, state);
+        var probabilities = VotingHelper.GetVoteVictoryProbabilities(a, state!);
         
         // Assert
         probabilities.Keys.Count.ShouldBe(2);
@@ -43,11 +44,12 @@ public class VoteWinProbabilityTests
         setup.AddPlayers(a, b, c);
         setup.AddRole(GameRole.Werewolf, 2);
         setup.AddRole(GameRole.Villager, 4);
-
-        GameState state = setup.StartGame(new NonShuffler()).RunToEnd();
+        
+        GameState? state = null; 
+        setup.StartGame(new NonShuffler()).RunToEnd(s => state = s);
         
         // Act
-        var probabilities = VotingHelper.GetVoteVictoryProbabilities(a, state);
+        var probabilities = VotingHelper.GetVoteVictoryProbabilities(a, state!);
         
         // Assert
         probabilities.Keys.Count.ShouldBe(2);

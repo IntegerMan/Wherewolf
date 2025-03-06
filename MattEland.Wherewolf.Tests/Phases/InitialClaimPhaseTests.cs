@@ -15,9 +15,11 @@ public class InitialRoleClaimPhaseTests : GameTestsBase
         AddMinimumRequiredRoles(gameSetup);
 
         // Act
-        GameState endState = gameSetup.StartGame().RunToEnd();
+        GameState? endState = null;
+        gameSetup.StartGame().RunToEnd(state => endState = state);
 
         // Assert
+        endState.ShouldNotBeNull();
         endState.Claims.OfType<StartRoleClaimedEvent>().Count().ShouldBe(gameSetup.Players.Count());
         endState.Claims.Count().ShouldBe(gameSetup.Players.Count());
     }    
