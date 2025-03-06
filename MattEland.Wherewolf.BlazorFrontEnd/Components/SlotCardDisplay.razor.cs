@@ -1,4 +1,5 @@
 using System.Text;
+using ApexCharts;
 using MattEland.Wherewolf.BlazorFrontEnd.Helpers;
 using MattEland.Wherewolf.Probability;
 using MattEland.Wherewolf.Roles;
@@ -10,7 +11,7 @@ namespace MattEland.Wherewolf.BlazorFrontEnd.Components;
 public partial class SlotCardDisplay : ComponentBase
 {
     [Parameter]
-    public GameSlot Slot { get; set; }
+    public required GameSlot Slot { get; set; }
     
     [Parameter]
     public bool IsPlayer { get; set; }
@@ -19,7 +20,7 @@ public partial class SlotCardDisplay : ComponentBase
     public Player? PerspectivePlayer { get; set; }
     
     [Parameter]
-    public GameState Game { get; set; }
+    public required GameState Game { get; set; }
     
     [Parameter]
     public PlayerProbabilities PlayerProbabilities { get; set; }
@@ -70,6 +71,22 @@ public partial class SlotCardDisplay : ComponentBase
         _ => Icons.Material.Filled.Error
     };
 
+    public ApexChartOptions<ChartDataItem> ChartOptions { get; set; } = new()
+    {
+        //Title = new Title() {Text ="Role Probabilities"},
+        Legend = new Legend()
+        {
+            Show = false,
+        }
+    };
+
+    public IEnumerable<ChartDataItem> ChartDataItems => Probabilities
+        .OrderBy(p => p.Key.ToString()).Select(p => new ChartDataItem()
+        {
+            Name = p.Key.ToString(),
+            Value = (decimal)p.Value.Probability * 100.0m
+        });
+    
     protected override void OnParametersSet()
     {
         base.OnParametersSet();
@@ -108,4 +125,10 @@ public partial class SlotCardDisplay : ComponentBase
             return sb.ToString().TrimEnd();
         }
     }
+}
+
+public class ChartDataItem
+{
+    public required string Name { get; init; }
+    public decimal Value { get; init; }
 }

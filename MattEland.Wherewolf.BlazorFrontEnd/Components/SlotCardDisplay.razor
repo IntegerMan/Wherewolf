@@ -1,3 +1,6 @@
+@using ApexCharts
+@using ChartType = MudBlazor.ChartType
+@using Size = MudBlazor.Size
 
 <MudCard Elevation="3" Style="width:150px; height: 225px;" Class="@CardClass">
     <MudCardHeader>
@@ -8,11 +11,55 @@
         </CardHeaderContent>
     </MudCardHeader>
     <MudCardContent>
-        <div style="display: flex; justify-content: center; align-items: center; height: 100%;">
-            <MudIcon Icon="@CardIcon" Size="Size.Large" Style="flex-grow: 1;"/>
-        </div>
+
+        @if (PresumedGameRole is not null)
+        {
+            <div style="display: flex; justify-content: center; align-items: center; height: 100%;">
+                <MudIcon Icon="@CardIcon" Size="Size.Large" Style="flex-grow: 1;"/>
+            </div>
+        }
+        else
+        {
+            <div style="max-width: 150px; max-height: 150px;">
+                <ApexChart TItem="ChartDataItem" Options="ChartOptions">
+                    <ApexPointSeries TItem="@ChartDataItem"
+                                     Name="Role"
+                                     SeriesType="@SeriesType.Pie"
+                                     Items="@ChartDataItems"
+                                     XValue="@(e => e.Name)"
+                                     YValue="@(e => e.Value)"/>
+                </ApexChart>
+            </div>
+            /*
+<MudChart ChartType="ChartType.Donut"
+          InputLabels="@Probabilities.Where(p => p.Value.Probability > 0).Select(p => p.Key.ToString()).ToArray()"
+          InputData="@Probabilities.Where(p => p.Value.Probability > 0).Select(p => p.Value.Probability).ToArray()" />
+
+<MudSimpleTable>
+    <thead>
+    <tr>
+        <th>Role</th>
+        <th>Probability</th>
+    </tr>
+    </thead>
+    <tbody>
+    @foreach (var probability in Probabilities.Where(p => p.Value.Probability > 0)
+                  .OrderByDescending(p => p.Value.Probability))
+    {
+        <tr>
+            <td>@probability.Key</td>
+            <td>@probability.Value.Probability.ToString("P0")</td>
+        </tr>
+    }
+    </tbody>
+</MudSimpleTable>
+*/
+        }
     </MudCardContent>
-    <MudCardActions>
-        <MudText>@Text</MudText>
-    </MudCardActions>
+    @if (PresumedGameRole is not null)
+    {
+        <MudCardActions>
+            <MudText>@Text</MudText>
+        </MudCardActions>
+    }
 </MudCard>
