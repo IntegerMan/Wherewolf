@@ -64,6 +64,7 @@ public class GameState
         _remainingPhases = new Queue<GamePhase>(parentState._remainingPhases);
         _centerSlots = centerSlots.ToArray();
         _playerSlots = playerSlots.ToArray();
+        _events = parentState._events.ToList();
         
         foreach(var slot in AllSlots)
         {

@@ -5,6 +5,8 @@ namespace MattEland.Wherewolf.Phases;
 
 public class VotingPhase : GamePhase
 {
+    private readonly Lock _lock = new();
+    
     public override void Run(GameState newState, Action<GameState> callback)
     {
         newState.AddEvent(new GamePhaseAnnouncedEvent("Everyone, vote for one other player."));
@@ -13,13 +15,29 @@ public class VotingPhase : GamePhase
         Dictionary<Player, Player> votes = new();
         foreach (var p in newState.Players)
         {
-            p.Controller.GetPlayerVote(p, newState, vote =>
-            {
-                voteEvents.Add(new VotedEvent(p, vote));
-                votes[p] = vote; 
-            });
+            p.Controller.GetPlayerVote(p, newState, vote => OnVoteReceived(newState, callback, voteEvents, p, vote, votes));
         }
+    }
 
+    private void OnVoteReceived(GameState newState, Action<GameState> callback, List<VotedEvent> voteEvents, Player voter, Player target,
+        Dictionary<Player, Player> votes)
+    {
+        int voteCount;
+        lock (_lock)
+        {
+            voteEvents.Add(new VotedEvent(voter, target));
+            votes[voter] = target;
+            voteCount = votes.Count;
+        }
+        
+        if (voteCount == newState.Players.Count())
+        {
+            OnAllVotesReceived(newState, callback, voteEvents, votes);
+        }
+    }
+
+    private static void OnAllVotesReceived(GameState newState, Action<GameState> callback, List<VotedEvent> voteEvents, Dictionary<Player, Player> votes)
+    {
         // Add all the vote events.
         // This is done after votes are gathered so later players don't see votes of earlier players until all have voted
         foreach (var vote in voteEvents)

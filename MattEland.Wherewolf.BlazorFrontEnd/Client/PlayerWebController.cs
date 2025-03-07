@@ -5,19 +5,23 @@ using MattEland.Wherewolf.Roles;
 
 namespace MattEland.Wherewolf.BlazorFrontEnd.Client;
 
-public class PlayerWebController : PlayerController, IRecipient<RoleClaimedMessage>, IRecipient<VotedMessage>
+public class PlayerWebController : PlayerController, 
+    IRecipient<RoleClaimedMessage>, 
+    IRecipient<VotedMessage>, 
+    IRecipient<RobbedPlayerMessage>,
+    IRecipient<LoneWolfSlotSelectionMessage>
 {
     private Action<GameRole>? _roleClaimCallback;
     private Action<Player>? _voteCallback;
     private Action<Player>? _robberCallback;
-    private Action<string>? _loneWolfCallback;
+    private Action<GameSlot>? _loneWolfCallback;
 
     public PlayerWebController()
     {
         WeakReferenceMessenger.Default.RegisterAll(this);
     }
     
-    public override void SelectLoneWolfCenterCard(string[] centerSlotNames, Action<string> callback)
+    public override void SelectLoneWolfCenterCard(GameSlot[] centerSlots, Action<GameSlot> callback)
     {
         _loneWolfCallback = callback;
         WeakReferenceMessenger.Default.Send(new ChangeClientModeMessage(ClientMode.SelectLoneWolfPeekCard));
@@ -61,5 +65,27 @@ public class PlayerWebController : PlayerController, IRecipient<RoleClaimedMessa
         
         WeakReferenceMessenger.Default.Send(new ChangeClientModeMessage(ClientMode.Normal));
         callback(message.Target);
+    }
+
+    public void Receive(RobbedPlayerMessage message)
+    {
+        Action<Player>? callback = _robberCallback;
+        if (callback is null) return;
+        
+        _robberCallback = null;
+        
+        WeakReferenceMessenger.Default.Send(new ChangeClientModeMessage(ClientMode.Normal));
+        callback(message.Target);
+    }
+
+    public void Receive(LoneWolfSlotSelectionMessage message)
+    {
+        Action<GameSlot>? callback = _loneWolfCallback;
+        if (callback is null) return;
+        
+        _loneWolfCallback = null;
+        
+        WeakReferenceMessenger.Default.Send(new ChangeClientModeMessage(ClientMode.Normal));
+        callback(message.Slot);
     }
 }

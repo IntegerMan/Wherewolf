@@ -9,11 +9,12 @@ namespace MattEland.Wherewolf.Console;
 
 public class HumanConsoleController : PlayerController
 {
-    public override void SelectLoneWolfCenterCard(string[] centerSlotNames, Action<string> callback)
+    public override void SelectLoneWolfCenterCard(GameSlot[] centerSlots, Action<GameSlot> callback)
     {
-        string choice = AnsiConsole.Prompt(new SelectionPrompt<string>()
+        GameSlot choice = AnsiConsole.Prompt(new SelectionPrompt<GameSlot>()
             .Title("Select a card to look at from the center as the lone wolf")
-            .AddChoices(centerSlotNames));
+            .AddChoices(centerSlots)
+            .UseConverter(s => s.Name));
         
         callback(choice);
     }

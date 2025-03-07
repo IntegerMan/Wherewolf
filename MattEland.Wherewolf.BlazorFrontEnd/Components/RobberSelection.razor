@@ -1,0 +1,18 @@
+<section>
+    <MudText Typo="Typo.h4">Rob Player</MudText>
+    <MudText Typo="Typo.body2">
+        Select a player whose card you will rob. You'll take their card, look at it, and then give them your card without their knowledge. So sneaky!
+    </MudText>
+    <MudGrid Class="mt-1">
+        @foreach (var player in Game.Players.Where(p => p != PerspectivePlayer)) {
+            <MudItem>
+                <MudButton Variant="Variant.Filled"
+                           Color="Color.Primary"
+                           Size="Size.Large"
+                           OnClick="() => PlayerSelected(player)">
+                    @player.Name
+                </MudButton>
+            </MudItem>
+        }
+    </MudGrid>
+</section>

@@ -5,7 +5,7 @@ namespace MattEland.Wherewolf.Controllers;
 
 public abstract class PlayerController
 {
-    public abstract void SelectLoneWolfCenterCard(string[] centerSlotNames, Action<string> callback);
+    public abstract void SelectLoneWolfCenterCard(GameSlot[] centerSlots, Action<GameSlot> callback);
 
     public abstract void SelectRobberTarget(Player[] otherPlayers, GameState gameState, Player robbingPlayer, Action<Player> callback);
 

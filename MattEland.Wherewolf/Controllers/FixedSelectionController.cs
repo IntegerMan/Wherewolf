@@ -13,10 +13,10 @@ public class FixedSelectionController : PlayerController
         _selection = new Queue<string>(selection);
     }
     
-    public override void SelectLoneWolfCenterCard(string[] centerSlotNames, Action<string> callback)
+    public override void SelectLoneWolfCenterCard(GameSlot[] centerSlots, Action<GameSlot> callback)
     {
         string next = _selection.Dequeue();
-        string choice = centerSlotNames.Single(s => s == next);
+        GameSlot choice = centerSlots.Single(s => s.Name == next);
         callback(choice);
     }
 

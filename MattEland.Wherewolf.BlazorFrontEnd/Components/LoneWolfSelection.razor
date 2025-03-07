@@ -1,0 +1,18 @@
+<section>
+    <MudText Typo="Typo.h4">Lone Wolf</MudText>
+    <MudText Typo="Typo.body2">
+        As the lone wolf you get to look at a card in the center. This can be helpful later as a bluff.
+    </MudText>
+    <MudGrid Class="mt-1">
+        @foreach (var slot in Game.CenterSlots) {
+            <MudItem>
+                <MudButton Variant="Variant.Filled"
+                           Color="Color.Primary"
+                           Size="Size.Large"
+                           OnClick="() => SlotSelected(slot)">
+                    @slot.Name
+                </MudButton>
+            </MudItem>
+        }
+    </MudGrid>
+</section>

@@ -15,9 +15,9 @@ public class RandomController : PlayerController
         _rand = rand ?? new Random();
     }
 
-    public override void SelectLoneWolfCenterCard(string[] centerSlotNames, Action<string> callback)
+    public override void SelectLoneWolfCenterCard(GameSlot[] centerSlots, Action<GameSlot> callback)
     {
-        string choice = centerSlotNames.ElementAt(_rand.Next(centerSlotNames.Length));
+        GameSlot choice = centerSlots.ElementAt(_rand.Next(centerSlots.Length));
         callback(choice);
     }
 

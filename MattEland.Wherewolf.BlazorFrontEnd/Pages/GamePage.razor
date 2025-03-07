@@ -86,10 +86,10 @@ else
                             <VoteSelection Game="@Game" PerspectivePlayer="@PerspectivePlayer" />
                             break;
                         case ClientMode.SelectRobberVictim:
-                            <MudAlert Severity="Severity.Warning" Variant="Variant.Filled">Robber Control Not Implemented</MudAlert>
+                            <RobberSelection Game="@Game" PerspectivePlayer="@PerspectivePlayer" />
                             break;
                         case ClientMode.SelectLoneWolfPeekCard:
-                            <MudAlert Severity="Severity.Warning" Variant="Variant.Filled">Lone Wolf Control Not Implemented</MudAlert>
+                            <LoneWolfSelection Game="@Game" PerspectivePlayer="@PerspectivePlayer" />
                             break;
                         default:
                             <MudAlert Severity="Severity.Error" Variant="Variant.Filled">Unexpected Mode: @Mode</MudAlert>
