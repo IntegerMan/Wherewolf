@@ -10,7 +10,7 @@ public class RobberNightPhase : GamePhase
     public override void Run(GameState newState, Action<GameState> callback)
     {
         newState.AddEvent(new GamePhaseAnnouncedEvent("Robber, wake up and exchange cards with another player, then look at your new card."));
-        
+
         GameSlot? robber = newState.PlayerSlots.SingleOrDefault(p => newState.GetStartRole(p) == GameRole.Robber);
         if (robber is not null)
         {
@@ -20,10 +20,13 @@ public class RobberNightPhase : GamePhase
             robber.Player!.Controller.SelectRobberTarget(targets, newState, robber.Player, target =>
             {
                 newState = PerformRobbery(newState, newState.GetSlot(target), robber, broadcast: true);
+                callback(newState);
             });
         }
-        
-        callback(newState);
+        else
+        {
+            callback(newState);
+        }
     }
 
     private static GameState PerformRobbery(GameState newState, GameSlot target, GameSlot robber, bool broadcast)
@@ -33,7 +36,7 @@ public class RobberNightPhase : GamePhase
         // Swap roles
         GameState swappedState = newState.SwapRoles(target.Name, robber.Name);
         RobbedPlayerEvent robbedEvent = new(robber.Player!, target.Player!, stolenRole);
-        swappedState.AddEvent(robbedEvent, broadcastToController: broadcast);
+        swappedState.AddEvent(robbedEvent, broadcast);
         
         return swappedState;
     }

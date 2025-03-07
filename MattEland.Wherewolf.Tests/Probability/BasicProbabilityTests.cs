@@ -15,7 +15,7 @@ public class BasicProbabilityTests : GameTestsBase
         AddMinimumRequiredRoles(gameSetup);
         Player player = gameSetup.Players.First();
         GameState? state = null;
-        gameSetup.StartGame().RunToEnd(s => state = s);
+        gameSetup.StartGame(new NonShuffler()).RunToEnd(s => state = s);
 
         // Act
         PlayerProbabilities probabilities = state!.CalculateProbabilities(player);

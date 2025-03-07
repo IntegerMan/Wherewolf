@@ -19,7 +19,7 @@ try
     gameSetup.AddPlayers(
         new Player("Rufus", new RandomOptimalVoteController(roleClaimStrategy)),
         new Player("Jimothy", new RandomOptimalVoteController(roleClaimStrategy)),
-        new Player("Matt", new RandomOptimalVoteController(roleClaimStrategy))
+        new Player("Matt", new HumanConsoleController())
     );
     gameSetup.AddRoles(
         GameRole.Villager,

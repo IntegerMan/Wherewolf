@@ -6,7 +6,6 @@ public static class GameSummarizer
 {
     public static void OnGameEnded(GameState gameState)
     {
-        
         // Display the game results
         GameResult result = gameState.GameResult!;
         AnsiConsole.WriteLine();

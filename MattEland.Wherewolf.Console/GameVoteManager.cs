@@ -6,7 +6,6 @@ public static class GameVoteManager
 {
     public static void OnEndOfNight(GameState gameState)
     {
-        
         // Display Player States
         foreach (var player in gameState.Setup.Players)
         {

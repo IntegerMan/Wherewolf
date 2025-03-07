@@ -98,12 +98,15 @@ public partial class ConfigureGamePage : IRecipient<SetupRoleChangedMessage>
         setup.AddRoles(AssignedRoles);
         
         // Set players
+        IRoleClaimStrategy roleClaimStrategy = new ClaimSafestRoleStrategy(new Random());
+        RandomOptimalVoteController aiController = new RandomOptimalVoteController(roleClaimStrategy);
+        
         Player[] players = Enumerable.Range(1, PlayerCount)
             .Select(n =>
             {
                 PlayerController controller = n == 1 && HumanControlsPlayerOne
                     ? _playerController
-                    : new RandomOptimalVoteController();
+                    : aiController;
                 return new Player($"Player {n}", controller);
             })
             .ToArray();

@@ -32,7 +32,7 @@ public class GameState
 
         foreach (var slot in AllSlots)
         {
-            AddEvent(new DealtCardEvent(slot.Role, slot), false);
+            AddEvent(new DealtCardEvent(slot.Role, slot), broadcastToController: false);
         }
 
         _remainingPhases = new Queue<GamePhase>(setup.Phases);
@@ -64,7 +64,6 @@ public class GameState
         _remainingPhases = new Queue<GamePhase>(parentState._remainingPhases);
         _centerSlots = centerSlots.ToArray();
         _playerSlots = playerSlots.ToArray();
-        _events = parentState._events.ToList();
         
         foreach(var slot in AllSlots)
         {
@@ -387,5 +386,19 @@ public class GameState
             .Select(kvp => kvp.Key);
 
         return new GameResult(dead, this, votes, supportingClaims);
+    }
+
+    public void BroadcastAllEvents()
+    {
+        foreach (var evt in _events)
+        {
+            foreach (var player in Players)
+            {
+                if (evt.IsObservedBy(player))
+                {
+                    player.Controller.ObservedEvent(evt, this);
+                }
+            }
+        }
     }
 }
