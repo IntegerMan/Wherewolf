@@ -19,8 +19,9 @@ public class StartRoleClaimedEvent(Player player, GameRole role) : SocialEvent
 
     public override Team? AssociatedTeam => ClaimedRole.GetTeam();
 
-    public bool CanBeBelievedBy(Player perspective, GameState state)
+    public bool CanBeBelievedBy(GameState state, PlayerProbabilities probabilities)
     {
-        return VotingHelper.GetPossibleGameStatesForPlayer(perspective, state).Any(s => IsClaimValidFor(s));
+        SlotRoleProbabilities slotProbabilities = probabilities.GetStartProbabilities(state[Player.Name]);
+        return slotProbabilities[role].Probability > 0;
     }
 }

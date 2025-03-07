@@ -141,7 +141,7 @@
                                         </MudText>
                                     }
                                 } 
-                                else if (Perspective is not null && !claimEvent.CanBeBelievedBy(Perspective, Game))
+                                else if (Probabilities is not null && !claimEvent.CanBeBelievedBy(Game, Probabilities))
                                 {
                                     if (claimEvent.Player == Perspective)
                                     {
@@ -180,7 +180,7 @@
                     </ItemDot>
                     <ItemContent>
                         <MudText Color="@CalculateEventColor(evt)">
-                            @gameOverEvent.Description
+                            The <strong>@gameOverEvent.AssociatedTeam</strong> team has won!
                         </MudText>
                     </ItemContent>
                 </MudTimelineItem>
@@ -208,14 +208,21 @@
                     </ItemContent>
                 </MudTimelineItem>
                 break;
-            case LoneWolfEvent:
+            case LoneWolfEvent loneEvent:
                 <MudTimelineItem Color="@CalculateEventColor(evt)" Size="Size.Small" Variant="Variant.Filled">
                     <ItemDot>
                         <MudIcon Size="Size.Small" Icon="@GameRole.Werewolf.GetRoleIcon()"/>
                     </ItemDot>
                     <ItemContent>
                         <MudText Color="@CalculateEventColor(evt)">
-                            @evt.Description 
+                            <div style="display: flex; flex-direction: row; align-items: center;">
+                            <MudText Color="Color.Primary" Inline="true">
+                                <strong>@loneEvent.Player.Name</strong>
+                            </MudText>
+                            <MudText Inline="true" Class="mx-1">
+                                woke and saw they were the only one on the <strong>Werewolf</strong> team.
+                            </MudText>
+                            </div>
                         </MudText>
                     </ItemContent>
                 </MudTimelineItem>

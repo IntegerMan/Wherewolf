@@ -2,6 +2,7 @@ using MattEland.Wherewolf.BlazorFrontEnd.Helpers;
 using MattEland.Wherewolf.Events;
 using MattEland.Wherewolf.Events.Game;
 using MattEland.Wherewolf.Events.Social;
+using MattEland.Wherewolf.Probability;
 using Microsoft.AspNetCore.Components;
 using MudBlazor;
 
@@ -18,8 +19,11 @@ public partial class EventTimeline : ComponentBase
             null => [],
             _ => Game.EventsForPlayer(Perspective)
         };
-    
-        
+
+    [Parameter]
+    public PlayerProbabilities? Probabilities { get; set; }
+
+
     private Color CalculateEventColor(IGameEvent evt)
     {
         if (evt is GamePhaseAnnouncedEvent)
