@@ -55,28 +55,31 @@
                 break;
 
             case DealtCardEvent dealtEvent:
-                <MudTimelineItem Color="@CalculateEventColor(evt)" Size="Size.Small" Variant="Variant.Filled">
-                    <ItemDot>
-                        <MudIcon Size="Size.Small" Icon="@dealtEvent.Role.GetRoleIcon()"/>
-                    </ItemDot>
-                    <ItemContent>
-                        <MudText Color="@CalculateEventColor(evt)">
-                            <div style="display: flex; flex-direction: row; align-items: center;">
-                                <MudText Color="Color.Primary" Inline="true">
-                                    <strong>@dealtEvent.Slot.Name</strong>
-                                </MudText>
-                                <MudText Inline="true" Class="mx-1">
-                                    was dealt
-                                </MudText>
-                                <MudIcon Size="Size.Medium" Icon="@dealtEvent.Role.GetRoleIcon()" Class="mx-1"/>
-                                <MudText Inline="true">
-                                    <strong>@dealtEvent.Role</strong>
-                                </MudText>
-                            </div>
-                        </MudText>
+                @if (dealtEvent.Slot.Player is not null)
+                {
+                    <MudTimelineItem Color="@CalculateEventColor(evt)" Size="Size.Small" Variant="Variant.Filled">
+                        <ItemDot>
+                            <MudIcon Size="Size.Small" Icon="@dealtEvent.Role.GetRoleIcon()"/>
+                        </ItemDot>
+                        <ItemContent>
+                            <MudText Color="@CalculateEventColor(evt)">
+                                <div style="display: flex; flex-direction: row; align-items: center;">
+                                    <MudText Color="Color.Primary" Inline="true">
+                                        <strong>@dealtEvent.Slot.Name</strong>
+                                    </MudText>
+                                    <MudText Inline="true" Class="mx-1">
+                                        was dealt
+                                    </MudText>
+                                    <MudIcon Size="Size.Medium" Icon="@dealtEvent.Role.GetRoleIcon()" Class="mx-1"/>
+                                    <MudText Inline="true">
+                                        <strong>@dealtEvent.Role</strong>
+                                    </MudText>
+                                </div>
+                            </MudText>
 
-                    </ItemContent>
-                </MudTimelineItem>
+                        </ItemContent>
+                    </MudTimelineItem>
+                }
                 break;
             case RobbedPlayerEvent robEvent:
                 <MudTimelineItem Color="@robEvent.NewRole.GetTeamColor()" Size="Size.Small" Variant="Variant.Filled">
