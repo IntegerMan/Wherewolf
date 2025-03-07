@@ -24,4 +24,10 @@ public class StartRoleClaimedEvent(Player player, GameRole role) : SocialEvent
         SlotRoleProbabilities slotProbabilities = probabilities.GetStartProbabilities(state[Player.Name]);
         return slotProbabilities[role].Probability > 0;
     }
+    
+    public bool CannotBeFalse(GameState state, PlayerProbabilities probabilities)
+    {
+        SlotRoleProbabilities slotProbabilities = probabilities.GetStartProbabilities(state[Player.Name]);
+        return slotProbabilities[role].Probability >= 1;
+    }
 }

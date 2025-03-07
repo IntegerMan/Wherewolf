@@ -144,18 +144,27 @@
                                         </MudText>
                                     }
                                 } 
-                                else if (Probabilities is not null && !claimEvent.CanBeBelievedBy(Game, Probabilities))
+                                else if (Probabilities is not null)
                                 {
-                                    if (claimEvent.Player == Perspective)
+                                    if (!claimEvent.CanBeBelievedBy(Game, Probabilities))
                                     {
-                                        <MudText Inline="true" Color="Color.Error" Class="ml-1">
-                                            <strong>(lie)</strong>
-                                        </MudText>
-                                    }
-                                    else
+                                        if (claimEvent.Player == Perspective)
+                                        {
+                                            <MudText Inline="true" Color="Color.Error" Class="ml-1">
+                                                <strong>(lie)</strong>
+                                            </MudText>
+                                        }
+                                        else
+                                        {
+                                            <MudText Inline="true" Color="Color.Warning" Class="ml-1">
+                                                <strong>(cannot be true)</strong>
+                                            </MudText>
+                                        }
+                                    } 
+                                    else if (claimEvent.CannotBeFalse(Game, Probabilities))
                                     {
-                                        <MudText Inline="true" Color="Color.Warning" Class="ml-1">
-                                            <strong>(cannot be true)</strong>
+                                        <MudText Inline="true" Color="Color.Success" Class="ml-1">
+                                            <strong>(true)</strong>
                                         </MudText>
                                     }
                                 }
