@@ -96,8 +96,8 @@ public class GameState
     {
         foreach (var evt in Events)
         {
-            // If it's a standard event and the player saw it or we're omniscient, show it
-            if (player is null || evt.IsObservedBy(player))
+            // If it's a standard event and the player saw it or if we're omniscient, show it
+            if (player is null || evt.IsObservedBy(player) || IsGameOver)
                 yield return evt;
 
             // At this point we can marry in our social claims observed
