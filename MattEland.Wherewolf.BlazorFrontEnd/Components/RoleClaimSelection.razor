@@ -5,18 +5,34 @@
     <MudText Typo="Typo.body2">
         Select a role you wish to tell other players you started the game as. This does not have to be true.
     </MudText>
-    <MudGrid Class="mt-1">
-        @foreach (var role in Game.Roles.OrderBy(r => r.ToString()).GroupBy(r => r).Select(r => r.Key))
+    <MudSimpleTable Class="mt-1">
+        <thead>
+            <th>Role</th>
+            <th>Support</th>
+            <th>Times in Play</th>
+            <th>Times in Center</th>
+            <th>Voted Likelihood</th>
+        </thead>
+        <tbody>
+        @foreach (var kvp in Stats)
         {
-            <MudItem>
-                <MudButton Variant="Variant.Filled"
-                           Color="@role.GetTeamColor()"
-                           StartIcon="@role.GetRoleIcon()"
-                           Size="Size.Large"
-                           OnClick="() => RoleClaimed(role)">
-                    @role
-                </MudButton>
-            </MudItem>
+            <tr>
+                <td style="display: flex; justify-content: stretch;">
+                    <MudButton Variant="Variant.Filled"
+                               Color="@kvp.Key.GetTeamColor()"
+                               StartIcon="@kvp.Key.GetRoleIcon()"
+                               Size="Size.Large"
+                               Style="flex-grow: 1;"
+                               OnClick="() => RoleClaimed(kvp.Key)">
+                        @kvp.Key
+                    </MudButton>
+                </td>
+                <td>@kvp.Value.Support.ToString("0")</td>
+                <td>@kvp.Value.InPlayPercent.ToString("P0")</td>
+                <td>@kvp.Value.OutOfPlayPercent.ToString("P0")</td>
+                <td>@kvp.Value.VotesPerGame.ToString("0.0")</td>
+            </tr>
         }
-    </MudGrid>
+        </tbody>
+    </MudSimpleTable>
 </section>

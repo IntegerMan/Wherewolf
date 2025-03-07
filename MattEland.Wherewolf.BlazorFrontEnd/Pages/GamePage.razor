@@ -80,7 +80,7 @@ else
                             </MudButtonGroup>
                             break;
                         case ClientMode.RoleClaim:
-                            <RoleClaimSelection Game="@Game" />
+                            <RoleClaimSelection Game="@Game" PerspectivePlayer="@PerspectivePlayer" />
                             break;
                         case ClientMode.Vote:
                             <VoteSelection Game="@Game" PerspectivePlayer="@PerspectivePlayer" />

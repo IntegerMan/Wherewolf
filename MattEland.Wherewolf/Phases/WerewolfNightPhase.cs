@@ -46,6 +46,7 @@ public class WerewolfNightPhase : GamePhase
         List<GameSlot> werewolves = priorState.PlayerSlots
             .Where(p => priorState.GetStartRole(p).GetTeam() == Team.Werewolf)
             .ToList();
+        
         switch (werewolves.Count)
         {
             case 1:
