@@ -10,7 +10,7 @@
                            Color="Color.Primary"
                            Size="Size.Large"
                            OnClick="() => PlayerSelected(player)">
-                    @player.Name
+                    @player.Name (@Stats[player].ToString("P0") win)
                 </MudButton>
             </MudItem>
         }
