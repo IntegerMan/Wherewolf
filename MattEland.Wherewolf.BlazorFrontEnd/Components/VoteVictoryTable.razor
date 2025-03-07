@@ -1,0 +1,58 @@
+@using MattEland.Wherewolf.BlazorFrontEnd.Helpers
+<MudSimpleTable Class="mt-1">
+        <thead>
+        <th>
+            <MudText Typo="Typo.h6">Player</MudText>
+        </th>
+        @foreach (var role in Game.Roles.Distinct())
+        {
+            <th>
+                <MudText Color="@role.GetTeamColor()" Typo="Typo.h6">@role</MudText>
+            </th>
+        }
+        <th>
+            <MudText Typo="Typo.h6">Vote Win %</MudText>
+        </th>
+        </thead>
+        <tbody>
+        @foreach (var player in Game.PlayerSlots)
+        {
+            <tr>
+                <th>
+                    @if (player.Player != PerspectivePlayer && AllowVoting)
+                    {
+                        <MudButton Variant="Variant.Filled"
+                                   StartIcon="@Icons.Material.Filled.HowToVote"
+                                   Color="Color.Primary"
+                                   Size="Size.Large"
+                                   OnClick="() => PlayerSelected(player.Player!)">
+                            @player.Name
+                        </MudButton>
+                    }
+                    else
+                    {
+                        <MudText Typo="Typo.h6" Color="Color.Primary" Align="Align.Center">
+                            @player.Name
+                        </MudText>
+                    }
+                </th>
+                @foreach (var role in Game.Roles.Distinct())
+                {
+                    <td>
+                        <MudText Align="Align.Right">
+                            @Probabilities.GetCurrentProbabilities(player)[role].Probability.ToString("P0")
+                        </MudText>
+                    </td>
+                }
+                <td>
+                    @if (player.Player != PerspectivePlayer)
+                    {
+                        <MudText Align="Align.Right">
+                            @Stats[player.Player!].ToString("P0")
+                        </MudText>
+                    }
+                </td>
+            </tr>
+        }
+        </tbody>
+    </MudSimpleTable>

@@ -9,62 +9,6 @@
         of the players with the most votes against them, the villager team wins. Otherwise, werewolves win.
     </MudText>
     
-    <MudSimpleTable Class="mt-1">
-        <thead>
-        <th>
-            <MudText Typo="Typo.h6">Player</MudText>
-        </th>
-        @foreach (var role in Game.Roles.Distinct())
-        {
-            <th>
-                <MudText Color="@role.GetTeamColor()" Typo="Typo.h6">@role</MudText>
-            </th>
-        }
-        <th>
-            <MudText Typo="Typo.h6">Vote Win %</MudText>
-        </th>
-        </thead>
-        <tbody>
-        @foreach (var player in Game.PlayerSlots)
-        {
-            <tr>
-                <th>
-                    @if (player.Player != PerspectivePlayer)
-                    {
-                        <MudButton Variant="Variant.Filled"
-                                   StartIcon="@Icons.Material.Filled.HowToVote"
-                                   Color="Color.Primary"
-                                   Size="Size.Large"
-                                   OnClick="() => PlayerSelected(player.Player!)">
-                            @player.Name
-                        </MudButton>
-                    }
-                    else
-                    {
-                        <MudText Typo="Typo.h6" Color="Color.Primary" Align="Align.Center">
-                            @player.Name
-                        </MudText>
-                    }
-                </th>
-                @foreach (var role in Game.Roles.Distinct())
-                {
-                    <td>
-                        <MudText>
-                            @Probabilities.GetCurrentProbabilities(player)[role].Probability.ToString("P0")
-                        </MudText>
-                    </td>
-                }
-                <td>
-                    @if (player.Player != PerspectivePlayer)
-                    {
-                        <MudText>
-                            @Stats[player.Player!].ToString("P0")
-                        </MudText>
-                    }
-                </td>
-            </tr>
-        }
-        </tbody>
-    </MudSimpleTable>
+    <VoteVictoryTable Game="@Game" PerspectivePlayer="@PerspectivePlayer" Probabilities="@Probabilities" AllowVoting="true" />
 
 </section>
