@@ -6,11 +6,14 @@ namespace MattEland.Wherewolf.Phases;
 public class RobberNightPhase : GamePhase
 {
     public override string Name => "Robber";
-    
+
+    private void AddRobberNightAnnouncement(GameState newState, bool broadcast)
+    {
+        newState.AddEvent(new GamePhaseAnnouncedEvent("Robber, wake up and exchange cards with another player, then look at your new card.", GameRole.Robber), broadcast);
+    }
+
     public override void Run(GameState newState, Action<GameState> callback)
     {
-        newState.AddEvent(new GamePhaseAnnouncedEvent("Robber, wake up and exchange cards with another player, then look at your new card."));
-
         GameSlot? robber = newState.PlayerSlots.SingleOrDefault(p => newState.GetStartRole(p) == GameRole.Robber);
         if (robber is not null)
         {
@@ -25,16 +28,19 @@ public class RobberNightPhase : GamePhase
         }
         else
         {
+            AddRobberNightAnnouncement(newState, broadcast: true);
             callback(newState);
         }
     }
 
-    private static GameState PerformRobbery(GameState newState, GameSlot target, GameSlot robber, bool broadcast)
+    private GameState PerformRobbery(GameState newState, GameSlot target, GameSlot robber, bool broadcast)
     {
         GameRole stolenRole = target.Role;
             
         // Swap roles
         GameState swappedState = newState.SwapRoles(target.Name, robber.Name);
+        
+        AddRobberNightAnnouncement(swappedState, broadcast);
         RobbedPlayerEvent robbedEvent = new(robber.Player!, target.Player!, stolenRole);
         swappedState.AddEvent(robbedEvent, broadcast);
         

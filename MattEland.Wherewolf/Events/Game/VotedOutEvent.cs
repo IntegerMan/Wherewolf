@@ -9,4 +9,7 @@ public class VotedOutEvent(Player player, GameRole finalRole) : GameEvent
     public override string Description => $"{player.Name} was voted out as a {finalRole}";
 
     public override Team? AssociatedTeam => finalRole.GetTeam();
+
+    public Player Player => player;
+    public GameRole Role => finalRole;
 }

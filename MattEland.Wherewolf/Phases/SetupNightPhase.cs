@@ -12,7 +12,7 @@ public class SetupNightPhase : GamePhase
     public override void Run(GameState newState, Action<GameState> callback)
     {
         newState.SendRolesToControllers();
-        newState.AddEvent(new GamePhaseAnnouncedEvent("Everyone, go to sleep."));
+        newState.AddEvent(new GamePhaseAnnouncedEvent("Everyone, go to sleep.", null));
 
         callback(newState);
     }

@@ -1,3 +1,4 @@
+using MattEland.Wherewolf.Probability;
 using MattEland.Wherewolf.Roles;
 
 namespace MattEland.Wherewolf.Events.Social;
@@ -17,4 +18,9 @@ public class StartRoleClaimedEvent(Player player, GameRole role) : SocialEvent
         => gameState.GetStartRole(Player) == ClaimedRole;
 
     public override Team? AssociatedTeam => ClaimedRole.GetTeam();
+
+    public bool CanBeBelievedBy(Player perspective, GameState state)
+    {
+        return VotingHelper.GetPossibleGameStatesForPlayer(perspective, state).Any(s => IsClaimValidFor(s));
+    }
 }

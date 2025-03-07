@@ -9,7 +9,7 @@ public class VotingPhase : GamePhase
     
     public override void Run(GameState newState, Action<GameState> callback)
     {
-        newState.AddEvent(new GamePhaseAnnouncedEvent("Everyone, vote for one other player."));
+        newState.AddEvent(new GamePhaseAnnouncedEvent("Everyone, vote for one other player.", null));
 
         List<VotedEvent> voteEvents = new(newState.Players.Count());
         Dictionary<Player, Player> votes = new();
@@ -82,7 +82,7 @@ public class VotingPhase : GamePhase
                 votes[kvp.Key] = 0;
             }
 
-            newState.AddEvent(new GamePhaseAnnouncedEvent("Everyone, vote for one other player."), broadcastToController: false);
+            newState.AddEvent(new GamePhaseAnnouncedEvent("Everyone, vote for one other player.", null), broadcastToController: false);
 
             foreach (var kvp in perm)
             {

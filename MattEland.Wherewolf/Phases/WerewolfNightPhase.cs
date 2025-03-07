@@ -10,7 +10,7 @@ public class WerewolfNightPhase : GamePhase
     public override void Run(GameState newState, Action<GameState> callback)
     {
         newState.AddEvent(new GamePhaseAnnouncedEvent(
-            "Werewolves, wake up and look for each other. If there is only one werewolf, you may look a card in the center."));
+            "Werewolves, wake up and look for each other. If there is only one werewolf, you may look a card in the center.", GameRole.Werewolf));
 
         GameSlot[] werewolves = newState.PlayerSlots.Where(p => newState.GetStartRole(p).GetTeam() == Team.Werewolf)
             .ToArray();
