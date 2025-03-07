@@ -3,9 +3,8 @@ using Microsoft.AspNetCore.Components.Web;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
 using MattEland.Wherewolf.BlazorFrontEnd;
 using MattEland.Wherewolf.BlazorFrontEnd.Client;
-using MattEland.Wherewolf.BlazorFrontEnd.Repositories;
-using MattEland.Wherewolf.BlazorFrontEnd.Services;
 using MattEland.Wherewolf.Services;
+using MattEland.Wherewolf.Services.Repositories;
 using MudBlazor.Services;
 
 WebAssemblyHostBuilder builder = WebAssemblyHostBuilder.CreateDefault(args);

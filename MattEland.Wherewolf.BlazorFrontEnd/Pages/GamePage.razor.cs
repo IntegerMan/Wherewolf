@@ -1,8 +1,8 @@
 using CommunityToolkit.Mvvm.Messaging;
 using MattEland.Wherewolf.BlazorFrontEnd.Client;
 using MattEland.Wherewolf.BlazorFrontEnd.Messages;
-using MattEland.Wherewolf.BlazorFrontEnd.Repositories;
 using MattEland.Wherewolf.Probability;
+using MattEland.Wherewolf.Services.Repositories;
 using Microsoft.AspNetCore.Components;
 
 namespace MattEland.Wherewolf.BlazorFrontEnd.Pages;

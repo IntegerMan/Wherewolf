@@ -2,8 +2,8 @@ using MattEland.Wherewolf.Roles;
 using CommunityToolkit.Mvvm.Messaging;
 using MattEland.Wherewolf.BlazorFrontEnd.Client;
 using MattEland.Wherewolf.BlazorFrontEnd.Messages;
-using MattEland.Wherewolf.BlazorFrontEnd.Services;
 using MattEland.Wherewolf.Controllers;
+using MattEland.Wherewolf.Services;
 using MattEland.Wherewolf.Setup;
 using Microsoft.AspNetCore.Components;
 

@@ -1,4 +1,4 @@
-namespace MattEland.Wherewolf.BlazorFrontEnd.Repositories;
+namespace MattEland.Wherewolf.Services.Repositories;
 
 public class InMemoryGameStateRepository : IGameStateRepository
 {

@@ -1,7 +1,7 @@
-using MattEland.Wherewolf.BlazorFrontEnd.Repositories;
+using MattEland.Wherewolf.Services.Repositories;
 using MattEland.Wherewolf.Setup;
 
-namespace MattEland.Wherewolf.BlazorFrontEnd.Services;
+namespace MattEland.Wherewolf.Services;
 
 public class GameService(IGameStateRepository stateRepository)
 {
