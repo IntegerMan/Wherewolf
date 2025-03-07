@@ -14,6 +14,9 @@ public partial class VoteSelection : ComponentBase
     [Parameter]
     public required Player PerspectivePlayer { get; set; }
     
+    [Parameter]
+    public required PlayerProbabilities Probabilities { get; set; }
+    
     private void PlayerSelected(Player player)
     {
         WeakReferenceMessenger.Default.Send(new VotedMessage(PerspectivePlayer, player));

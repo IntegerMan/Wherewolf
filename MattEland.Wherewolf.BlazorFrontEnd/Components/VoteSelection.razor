@@ -1,18 +1,70 @@
+@using MattEland.Wherewolf.BlazorFrontEnd.Helpers
 <section>
     <MudText Typo="Typo.h4">Vote</MudText>
-    <MudText Typo="Typo.body2">
-        Select a player to vote for. If there are no werewolves in play or a werewolf has more than one vote and is one of the players with the most votes against them, the villager team wins. Otherwise, werewolves win.
+    <MudText Typo="Typo.body2" GutterBottom="true">
+        The table below shows your current estimation of player roles, including your own.
+    </MudText>    
+    <MudText Typo="Typo.body2" GutterBottom="true">
+        Select a player to vote for. If there are no werewolves in play or a werewolf has more than one vote and is one
+        of the players with the most votes against them, the villager team wins. Otherwise, werewolves win.
     </MudText>
-    <MudGrid Class="mt-1">
-        @foreach (var player in Game.Players.Where(p => p != PerspectivePlayer)) {
-            <MudItem>
-                <MudButton Variant="Variant.Filled"
-                           Color="Color.Primary"
-                           Size="Size.Large"
-                           OnClick="() => PlayerSelected(player)">
-                    @player.Name (@Stats[player].ToString("P0") win)
-                </MudButton>
-            </MudItem>
+    
+    <MudSimpleTable Class="mt-1">
+        <thead>
+        <th>
+            <MudText Typo="Typo.h6">Player</MudText>
+        </th>
+        @foreach (var role in Game.Roles.Distinct())
+        {
+            <th>
+                <MudText Color="@role.GetTeamColor()" Typo="Typo.h6">@role</MudText>
+            </th>
         }
-    </MudGrid>
+        <th>
+            <MudText Typo="Typo.h6">Vote Win %</MudText>
+        </th>
+        </thead>
+        <tbody>
+        @foreach (var player in Game.PlayerSlots)
+        {
+            <tr>
+                <th>
+                    @if (player.Player != PerspectivePlayer)
+                    {
+                        <MudButton Variant="Variant.Filled"
+                                   StartIcon="@Icons.Material.Filled.HowToVote"
+                                   Color="Color.Primary"
+                                   Size="Size.Large"
+                                   OnClick="() => PlayerSelected(player.Player!)">
+                            @player.Name
+                        </MudButton>
+                    }
+                    else
+                    {
+                        <MudText Typo="Typo.h6" Color="Color.Primary" Align="Align.Center">
+                            @player.Name
+                        </MudText>
+                    }
+                </th>
+                @foreach (var role in Game.Roles.Distinct())
+                {
+                    <td>
+                        <MudText>
+                            @Probabilities.GetCurrentProbabilities(player)[role].Probability.ToString("P0")
+                        </MudText>
+                    </td>
+                }
+                <td>
+                    @if (player.Player != PerspectivePlayer)
+                    {
+                        <MudText>
+                            @Stats[player.Player!].ToString("P0")
+                        </MudText>
+                    }
+                </td>
+            </tr>
+        }
+        </tbody>
+    </MudSimpleTable>
+
 </section>
