@@ -1,3 +1,4 @@
+using MattEland.Wherewolf.Probability;
 using MattEland.Wherewolf.Roles;
 
 namespace MattEland.Wherewolf.Controllers;
@@ -27,7 +28,7 @@ public class RandomController : PlayerController
         callback(choice);
     }
 
-    public override void GetPlayerVote(Player votingPlayer, GameState state, Action<Player> callback)
+    public override void GetPlayerVote(Player votingPlayer, GameState state, PlayerProbabilities probabilities, Dictionary<Player, double> voteProbabilities, Action<Player> callback)
     {
         Player choice = state.Players.Where(p => p != votingPlayer)
             .ElementAt(_rand.Next(state.Players.Count() - 1));

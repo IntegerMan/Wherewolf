@@ -7,7 +7,9 @@ using Microsoft.AspNetCore.Components;
 
 namespace MattEland.Wherewolf.BlazorFrontEnd.Pages;
 
-public partial class GamePage : ComponentBase, IRecipient<ChangeClientModeMessage>
+public partial class GamePage : ComponentBase, 
+    IRecipient<ChangeClientModeMessage>,
+    IRecipient<VoteRequestedMessage>
 {
     private readonly IGameStateRepository _repo;
 
@@ -70,6 +72,13 @@ public partial class GamePage : ComponentBase, IRecipient<ChangeClientModeMessag
     public void Receive(ChangeClientModeMessage message)
     {
         Mode = message.Mode;
+        StateHasChanged();
+    }
+
+    public void Receive(VoteRequestedMessage message) 
+    {
+        Mode = ClientMode.Vote;
+        PlayerProbabilities = message.PlayerProbabilities;
         StateHasChanged();
     }
 }

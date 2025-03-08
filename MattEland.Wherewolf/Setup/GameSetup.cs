@@ -89,9 +89,12 @@ public class GameSetup
             return first;
         }).ToArray();
         _root = _possibleRoots.First(s => s.AllSlots.Select(sl => sl.Role).SequenceEqual(shuffledRoles));
-        _root.BroadcastAllEvents();
 
-        return _root;
+        GameState? initial = null;
+        _root.RunNext(s => initial = s);
+        _root = initial;
+        
+        return initial!;
     }
 
     private void CalculatePhases()

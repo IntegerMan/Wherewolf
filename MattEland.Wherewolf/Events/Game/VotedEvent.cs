@@ -1,9 +1,13 @@
+using MattEland.Wherewolf.Probability;
+
 namespace MattEland.Wherewolf.Events.Game;
 
-public class VotedEvent(Player votingPlayer, Player targetPlayer) : GameEvent
+public class VotedEvent(Player votingPlayer, Player targetPlayer, PlayerProbabilities? probabilities) : GameEvent
 {
-    public Player VotingPlayer { get; } = votingPlayer;
-    public Player TargetPlayer { get; } = targetPlayer;
+    public Player VotingPlayer => votingPlayer;
+    public Player TargetPlayer => targetPlayer;
+    
+    public PlayerProbabilities? Probabilities => probabilities;
 
     public override bool IsObservedBy(Player player) => true;
 

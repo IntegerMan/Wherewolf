@@ -75,11 +75,8 @@ public class HumanConsoleController : PlayerController
         callback(choice);
     }
     
-    public override void GetPlayerVote(Player votingPlayer, GameState state, Action<Player> callback)
+    public override void GetPlayerVote(Player votingPlayer, GameState state, PlayerProbabilities playerProbs, Dictionary<Player, double> victoryProbs, Action<Player> callback)
     {
-        PlayerProbabilities playerProbs = state.CalculateProbabilities(votingPlayer);
-        Dictionary<Player, double> victoryProbs = VotingHelper.GetVoteVictoryProbabilities(votingPlayer, state);
-        
         SelectionPrompt<Player> prompt = new();
         prompt.Title("Who are you voting for?");
         prompt.AddChoices(state.Players.Where(p => p != votingPlayer));
@@ -87,13 +84,6 @@ public class HumanConsoleController : PlayerController
         {
             string claim = state.Claims.OfType<StartRoleClaimedEvent>().First(c => c.Player == p).ClaimedRole
                 .AsMarkdown();
-            
-            /*
-            string start = string.Join(", ", playerProbs.GetStartProbabilities(state.GetPlayerSlot(p))
-                .Where(kvp => kvp.Value.Probability > 0)
-                .OrderByDescending(kvp => kvp.Value.Probability)
-                .Select(kvp => $"{kvp.Key.AsMarkdown()}: {kvp.Value.Probability:P0}"));
-                */
             
             string current = string.Join(", ", playerProbs.GetCurrentProbabilities(state.GetSlot(p))
                 .Where(kvp => kvp.Value.Probability > 0)

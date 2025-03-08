@@ -1,3 +1,4 @@
+using MattEland.Wherewolf.Probability;
 using MattEland.Wherewolf.Roles;
 
 namespace MattEland.Wherewolf.Controllers;
@@ -27,7 +28,7 @@ public class FixedSelectionController : PlayerController
         callback(player);
     }
 
-    public override void GetPlayerVote(Player votingPlayer, GameState state, Action<Player> callback)
+    public override void GetPlayerVote(Player votingPlayer, GameState state, PlayerProbabilities probabilities, Dictionary<Player, double> voteProbabilities, Action<Player> callback)
     {
         string next = _selection.Dequeue();
         Player choice = state.Players.Single(p => p.Name == next);

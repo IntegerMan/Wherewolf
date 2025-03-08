@@ -2,23 +2,15 @@ using MattEland.Wherewolf.Roles;
 
 namespace MattEland.Wherewolf;
 
-public class GameSlot
+public class GameSlot(string name, GameRole startRole, Player? player = null)
 {
-    public GameSlot(string name, GameRole startRole, Player? player = null)
+    public GameSlot(GameSlot baseSlot) : this(baseSlot.Name, baseSlot.Role, baseSlot.Player)
     {
-        Name = name;
-        Player = player;
-        Role = startRole;
-    }
-    
-    public GameSlot(GameSlot baseSlot)
-    {
-        Name = baseSlot.Name;
-        Player = baseSlot.Player;
-        Role = baseSlot.Role;
     }
 
-    public string Name { get; }
-    public Player? Player { get; }
-    public GameRole Role { get; }
+    public string Name => name;
+    public Player? Player => player;
+    public GameRole Role => startRole;
+
+    public override string ToString() => Name;
 }

@@ -15,17 +15,19 @@ public class VotingPhase : GamePhase
         Dictionary<Player, Player> votes = new();
         foreach (var p in newState.Players)
         {
-            p.Controller.GetPlayerVote(p, newState, vote => OnVoteReceived(newState, callback, voteEvents, p, vote, votes));
+            PlayerProbabilities probabilities = newState.CalculateProbabilities(p);
+            Dictionary<Player, double> voteProbabilities = VotingHelper.GetVoteVictoryProbabilities(p, newState);
+            p.Controller.GetPlayerVote(p, newState, probabilities, voteProbabilities, vote => OnVoteReceived(newState, callback, voteEvents, p, vote, votes, probabilities));
         }
     }
 
     private void OnVoteReceived(GameState newState, Action<GameState> callback, List<VotedEvent> voteEvents, Player voter, Player target,
-        Dictionary<Player, Player> votes)
+        Dictionary<Player, Player> votes, PlayerProbabilities probabilities)
     {
         int voteCount;
         lock (_lock)
         {
-            voteEvents.Add(new VotedEvent(voter, target));
+            voteEvents.Add(new VotedEvent(voter, target, probabilities));
             votes[voter] = target;
             voteCount = votes.Count;
         }
@@ -90,7 +92,7 @@ public class VotingPhase : GamePhase
                 Player vote = kvp.Value;
                 votes[vote]++;
 
-                newState.AddEvent(new VotedEvent(voter, vote), broadcastToController: false);
+                newState.AddEvent(new VotedEvent(voter, vote, null), broadcastToController: false);
             }
 
             GameResult result = newState.DetermineGameResults(votes);

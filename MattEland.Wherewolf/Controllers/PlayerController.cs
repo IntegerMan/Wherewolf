@@ -1,4 +1,5 @@
 using MattEland.Wherewolf.Events.Game;
+using MattEland.Wherewolf.Probability;
 using MattEland.Wherewolf.Roles;
 
 namespace MattEland.Wherewolf.Controllers;
@@ -13,7 +14,7 @@ public abstract class PlayerController
     {
     }
 
-    public abstract void GetPlayerVote(Player votingPlayer, GameState state, Action<Player> callback);
+    public abstract void GetPlayerVote(Player votingPlayer, GameState state, PlayerProbabilities probabilities, Dictionary<Player, double> voteProbabilities, Action<Player> callback);
 
     public abstract void GetInitialRoleClaim(Player player, GameState gameState, Action<GameRole> callback);
 }

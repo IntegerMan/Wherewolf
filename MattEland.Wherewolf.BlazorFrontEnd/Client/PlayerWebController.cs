@@ -1,6 +1,7 @@
 using CommunityToolkit.Mvvm.Messaging;
 using MattEland.Wherewolf.BlazorFrontEnd.Messages;
 using MattEland.Wherewolf.Controllers;
+using MattEland.Wherewolf.Probability;
 using MattEland.Wherewolf.Roles;
 
 namespace MattEland.Wherewolf.BlazorFrontEnd.Client;
@@ -33,10 +34,11 @@ public class PlayerWebController : PlayerController,
         WeakReferenceMessenger.Default.Send(new ChangeClientModeMessage(ClientMode.SelectRobberVictim));
     }
 
-    public override void GetPlayerVote(Player votingPlayer, GameState state, Action<Player> callback)
+    public override void GetPlayerVote(Player votingPlayer, GameState state, PlayerProbabilities playerProbs, Dictionary<Player, double> victoryProbs, Action<Player> callback)
     {
         _voteCallback = callback;
-        WeakReferenceMessenger.Default.Send(new ChangeClientModeMessage(ClientMode.Vote));
+        WeakReferenceMessenger.Default.Send(new VoteRequestedMessage(state, playerProbs, victoryProbs));
+        //WeakReferenceMessenger.Default.Send(new ChangeClientModeMessage(ClientMode.Vote));
     }
 
     public override void GetInitialRoleClaim(Player player, GameState gameState, Action<GameRole> callback)

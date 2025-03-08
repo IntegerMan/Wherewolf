@@ -387,18 +387,4 @@ public class GameState
 
         return new GameResult(dead, this, votes, supportingClaims);
     }
-
-    public void BroadcastAllEvents()
-    {
-        foreach (var evt in _events)
-        {
-            foreach (var player in Players)
-            {
-                if (evt.IsObservedBy(player))
-                {
-                    player.Controller.ObservedEvent(evt, this);
-                }
-            }
-        }
-    }
 }
