@@ -34,5 +34,4 @@ public partial class RoleClaimProbabilityTable : ComponentBase
 
         Stats = VotingHelper.GetRoleClaimVoteStatistics(PerspectivePlayer, Game);
     }
-    
 }

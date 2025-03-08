@@ -1,4 +1,5 @@
 using MattEland.Wherewolf.Events.Game;
+using MattEland.Wherewolf.Events.Social;
 using MattEland.Wherewolf.Phases;
 using MattEland.Wherewolf.Roles;
 
@@ -111,9 +112,14 @@ public static class VotingHelper
         // NOTE: No Distinct. We want this weighted for double inclusion where appropriate
         IEnumerable<GameRole> roles = gameState.Setup.Roles;
         GameState[] possibleStates = GetPossibleGameStatesForPlayer(player, gameState).ToArray();
+        StartRoleClaimedEvent[] priorClaims = gameState.Claims.OfType<StartRoleClaimedEvent>().ToArray();
         
-        foreach (var possibleRole in roles) {
-            roleStats[possibleRole] = new();
+        foreach (var possibleRole in roles)
+        {
+            roleStats[possibleRole] = new()
+            {
+                OtherClaims = priorClaims.Count(e => e.ClaimedRole == possibleRole)
+            };
             
             // Filter to roles we started as the role we're considering claiming
             GameState[] roleStates = possibleEndStates.Where(s => s.GetStartRole(player) == possibleRole).ToArray();

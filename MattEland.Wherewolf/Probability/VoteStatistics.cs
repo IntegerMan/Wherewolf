@@ -10,8 +10,9 @@ public record VoteStatistics
         return $"Votes Received: {VotesReceived}, Games: {Games}, Support: {Support}";
     }
 
-    public double VotesPerGame => VotesReceived / Support;
+    public int VoteFactor => (int)Math.Round(VotesReceived / Support * 10.0);
     public double InPlayPercent { get; set; }
     public double OutOfPlayPercent { get; set; }
     public int Games { get; set; }
+    public int OtherClaims { get; init; }
 }
