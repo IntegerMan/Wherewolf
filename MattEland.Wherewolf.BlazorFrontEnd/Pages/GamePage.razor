@@ -99,11 +99,11 @@ else
         </MudCard>
         <MudPaper class="pa-8 ma-2" Elevation="3">
             <MudTabs>
-                <MudTabPanel Text="Events">
-                    <EventTimeline Game="@Game" Perspective="@PerspectivePlayer" Probabilities="@PlayerProbabilities"/>
+                <MudTabPanel Text="Events" >
+                    <EventTimeline Game="@Game" Perspective="@PerspectivePlayer" Probabilities="@PlayerProbabilities" />
                 </MudTabPanel>
                 <MudTabPanel Text="Roles">
-                    <MudGrid>
+                    <MudGrid Style="max-height: 100%; overflow-y: auto;">
                         @foreach (var role in Game.Roles.GroupBy(r => r))
                         {
                             <MudItem>

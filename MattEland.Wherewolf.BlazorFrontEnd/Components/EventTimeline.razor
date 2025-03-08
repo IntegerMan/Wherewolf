@@ -4,7 +4,8 @@
 @using MattEland.Wherewolf.Roles
 
 <MudTimeline TimelineOrientation="TimelineOrientation.Vertical"
-             TimelinePosition="TimelinePosition.Left">
+             TimelinePosition="TimelinePosition.Left"
+             Style="max-height: 75vh; overflow-y: auto;">
     @foreach (var evt in VisibleEvents)
     {
         @switch (evt)
