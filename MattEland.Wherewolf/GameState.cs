@@ -396,4 +396,19 @@ public class GameState
 
         return new GameResult(dead, this, votes, supportingClaims);
     }
+
+    public SpecificRoleClaim[] GeneratePossibleSpecificRoleClaims(Player player)
+    {
+        // TODO: It might make more sense and keep scope narrower to restrict to specific claims along their prior claim
+        // This way they couldn't claim role 1 and then role 2 with more specifics - though changing minds in some cases
+        // can be cool - like a WW outing as a WW if they think they've been robbed.
+        
+        List<SpecificRoleClaim> claims = new();
+        foreach (var role in Roles.Distinct())
+        {
+            claims.AddRange(role.GetPossibleSpecificRoleClaims(player, this));
+        }
+
+        return claims.ToArray();
+    }
 }

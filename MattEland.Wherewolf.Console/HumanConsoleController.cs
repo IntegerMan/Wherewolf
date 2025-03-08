@@ -15,11 +15,12 @@ public class HumanConsoleController : PlayerController
             .Title("Select a card to look at from the center as the lone wolf")
             .AddChoices(centerSlots)
             .UseConverter(s => s.Name));
-        
+
         callback(choice);
     }
 
-    public override void SelectRobberTarget(Player[] otherPlayers, GameState state, Player robber, Action<Player> callback)
+    public override void SelectRobberTarget(Player[] otherPlayers, GameState state, Player robber,
+        Action<Player> callback)
     {
         PlayerProbabilities probs = state.CalculateProbabilities(robber);
         SelectionPrompt<Player> prompt = new();
@@ -33,7 +34,7 @@ public class HumanConsoleController : PlayerController
                 .OrderByDescending(r => r.Value.Probability)
                 .ThenBy(r => r.Key.ToString())
                 .Select(r => $"{r.Key.AsMarkdown()} {r.Value.Probability:P0}");
-            
+
             return $"{p.GetPlayerMarkup()} ({string.Join(", ", playerProbs)})";
         };
 
@@ -53,29 +54,30 @@ public class HumanConsoleController : PlayerController
         GameRole startRole = gameState.GetStartRole(player);
         prompt.Title($"What role are you claiming you started as? (Actual: {startRole.AsMarkdown()})");
         prompt.HighlightStyle(new Style(foreground: Color.White));
-        
+
         List<GameRole> roles = [startRole];
         roles.AddRange(gameState.Roles.Where(r => r != startRole).Distinct());
         prompt.AddChoices(roles);
-        
-        IEnumerable<Player> otherPlayers = gameState.Players.Where(p => p != player);
-        
-        /*
-        prompt.Converter = r =>
-        {
-            float winProb = 0; //VotingHelper.GetRoleClaimWinProbabilityPerception(player, gameState, r);
 
-            return $"{r.AsMarkdown()} (Est. Avg. Probability: {string.Join(", ", otherPlayers
-                                 .Select(p => $"{p.GetPlayerMarkup()}: {RoleClaimVotingProbabilities.CalculateAverageBeliefProbability(gameState, player, p, r):P0}")
-                )}, {winProb:P0} probable to win)";
-        };
-        */
-        
         GameRole choice = AnsiConsole.Prompt(prompt);
         callback(choice);
     }
-    
-    public override void GetPlayerVote(Player votingPlayer, GameState state, PlayerProbabilities playerProbs, Dictionary<Player, double> victoryProbs, Action<Player> callback)
+
+    public override void GetSpecificRoleClaim(Player player, GameState gameState, GameRole initialRoleClaim,
+        SpecificRoleClaim[] possibleClaims, Action<SpecificRoleClaim> callback)
+    {
+        SpecificRoleClaim choice = AnsiConsole.Prompt(new SelectionPrompt<SpecificRoleClaim>()
+            .Title("What specific claim are you making?")
+            .HighlightStyle(new Style(foreground: Color.White))
+            .PageSize(5)
+            .AddChoices(possibleClaims)
+            .UseConverter(c => c.Description));
+
+        callback(choice);
+    }
+
+    public override void GetPlayerVote(Player votingPlayer, GameState state, PlayerProbabilities playerProbs,
+        Dictionary<Player, double> victoryProbs, Action<Player> callback)
     {
         SelectionPrompt<Player> prompt = new();
         prompt.Title("Who are you voting for?");
@@ -84,12 +86,12 @@ public class HumanConsoleController : PlayerController
         {
             string claim = state.Claims.OfType<StartRoleClaimedEvent>().First(c => c.Player == p).ClaimedRole
                 .AsMarkdown();
-            
+
             string current = string.Join(", ", playerProbs.GetCurrentProbabilities(state.GetSlot(p))
                 .Where(kvp => kvp.Value.Probability > 0)
                 .OrderByDescending(kvp => kvp.Value.Probability)
                 .Select(kvp => $"{kvp.Value.Probability:P0} {kvp.Key.AsMarkdown()}"));
-            
+
             return $"{p.GetPlayerMarkup()} (Claims {claim}, ({current}), {victoryProbs[p]:P0} win chance)";
         };
 

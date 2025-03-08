@@ -1,6 +1,7 @@
 using CommunityToolkit.Mvvm.Messaging;
 using MattEland.Wherewolf.BlazorFrontEnd.Messages;
 using MattEland.Wherewolf.Controllers;
+using MattEland.Wherewolf.Events.Social;
 using MattEland.Wherewolf.Probability;
 using MattEland.Wherewolf.Roles;
 
@@ -45,6 +46,16 @@ public class PlayerWebController : PlayerController,
     {
         _roleClaimCallback = callback;
         WeakReferenceMessenger.Default.Send(new ChangeClientModeMessage(ClientMode.RoleClaim));
+    }
+
+    public override void GetSpecificRoleClaim(Player player, GameState gameState, GameRole initialRoleClaim,
+        SpecificRoleClaim[] possibleClaims, Action<SpecificRoleClaim> callback)
+    {
+        SpecificRoleClaim choice = possibleClaims.First(c => c.Role == initialRoleClaim);
+        
+        // TODO: Get player input, obviously.
+        
+        callback(choice);
     }
 
     public void Receive(RoleClaimedMessage message)

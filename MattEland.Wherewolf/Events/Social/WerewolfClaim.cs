@@ -9,7 +9,7 @@ namespace MattEland.Wherewolf.Events.Social;
 /// <remarks>
 /// At the moment we'll only be supporting a max of two wolves per game, but this should be flexible for larger WW teams and more WW roles
 /// </remarks>
-public class WokeWithWerewolvesClaim(Player player, Player[] otherWerewolves) : SpecificRoleClaim(player, GameRole.Werewolf)
+public class WokeWithWerewolvesClaim(Player player, params Player[] otherWerewolves) : SpecificRoleClaim(player, GameRole.Werewolf)
 {
     public Player[] OtherWerewolves => otherWerewolves;
 

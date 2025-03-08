@@ -1,4 +1,5 @@
-﻿using MattEland.Wherewolf.Phases;
+﻿using MattEland.Wherewolf.Events.Social;
+using MattEland.Wherewolf.Phases;
 using MattEland.Wherewolf.Roles;
 using MoreLinq;
 
@@ -106,10 +107,11 @@ public class GameSetup
             new VotingPhase()
         ];
         
-        // Each player gets their on role claim phase
+        // Each player gets their on role claim phases - first for a general and then for a specific role
         foreach (var player in Players)
         {
             phases.Add(new InitialRoleClaimPhase(player));
+            phases.Add(new SpecificRoleClaimPhase(player));
         }
         
         foreach (var nightPhaseType in Roles.Distinct().SelectMany(r => r.GetNightPhasesForRole()))
@@ -185,6 +187,4 @@ public class GameSetup
             nextBand = [];
         }
     }
-    
-    public IEnumerable<GameState> PossibleRoots => _possibleRoots;
 }
