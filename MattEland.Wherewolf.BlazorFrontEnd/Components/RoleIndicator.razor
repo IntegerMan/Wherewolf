@@ -1,0 +1,8 @@
+@using MattEland.Wherewolf.BlazorFrontEnd.Helpers
+
+    <MudIcon Size="Size.Medium" Icon="@Role.GetRoleIcon()"
+             Class="mx-1"
+             Color="@Role.GetTeamColor()"/>
+    <MudText Inline="true" Color="@Role.GetTeamColor()">
+        <strong>@Role</strong>
+    </MudText>

@@ -114,6 +114,147 @@
                     </ItemContent>
                 </MudTimelineItem>
                 break;
+            case VillagerNoActionClaim roleClaim:
+                <MudTimelineItem Color="@CalculateEventColor(evt)" Size="Size.Small" Variant="Variant.Filled">
+                    <ItemDot>
+                        <MudIcon Size="Size.Small" Icon="@roleClaim.Role.GetRoleIcon()"/>
+                    </ItemDot>
+                    <ItemContent>
+                        <div>
+                            <MudText Color="@CalculateEventColor(evt)">
+                                <div style="display: flex; flex-direction: row; align-items: center;">
+                                    <PlayerIndicator Player="@roleClaim.Player" />
+                                    <MudText Inline="true" Class="mx-1">
+                                        claimed they started as the
+                                    </MudText>
+                                    <RoleIndicator Role="@roleClaim.Role"/>
+                                    <MudText Inline="true" Class="mx-1">
+                                        and took no action
+                                    </MudText>
+                                </div>
+                            </MudText>
+                        </div>
+                    </ItemContent>
+                </MudTimelineItem>
+                break;
+            case InsomniacWakeClaim roleClaim:
+                <MudTimelineItem Color="@CalculateEventColor(evt)" Size="Size.Small" Variant="Variant.Filled">
+                    <ItemDot>
+                        <MudIcon Size="Size.Small" Icon="@roleClaim.Role.GetRoleIcon()"/>
+                    </ItemDot>
+                    <ItemContent>
+                        <div>
+                            <MudText Color="@CalculateEventColor(evt)">
+                                <div style="display: flex; flex-direction: row; align-items: center;">
+                                    <PlayerIndicator Player="@roleClaim.Player" />
+                                    <MudText Inline="true" Class="mx-1">
+                                        claimed they started as the
+                                    </MudText>
+                                    <RoleIndicator Role="@roleClaim.Role"/>
+                                    @if (roleClaim.Role == GameRole.Insomniac)
+                                    {
+                                        <MudText Inline="true" Class="ml-1">
+                                            and still are.
+                                        </MudText>
+                                    }
+                                    else
+                                    {
+                                        <MudText Inline="true" Class="mx-1">
+                                            but are now the
+                                        </MudText>
+                                        <RoleIndicator Role="@roleClaim.FinalRole"/>
+                                    }
+                                </div>
+                            </MudText>
+                        </div>
+                    </ItemContent>
+                </MudTimelineItem>
+                break;            
+            case RobberRobbedClaim roleClaim:
+                <MudTimelineItem Color="@CalculateEventColor(evt)" Size="Size.Small" Variant="Variant.Filled">
+                    <ItemDot>
+                        <MudIcon Size="Size.Small" Icon="@roleClaim.Role.GetRoleIcon()"/>
+                    </ItemDot>
+                    <ItemContent>
+                        <div>
+                            <MudText Color="@CalculateEventColor(evt)">
+                                <div style="display: flex; flex-direction: row; align-items: center;">
+                                    <PlayerIndicator Player="@roleClaim.Player" />
+                                    <MudText Inline="true" Class="mx-1">
+                                        claimed they started as the
+                                    </MudText>
+                                    <RoleIndicator Role="@roleClaim.Role"/>
+                                    <MudText Inline="true" Class="ml-1">
+                                        and stole
+                                    </MudText>
+                                    <RoleIndicator Role="@roleClaim.StolenRole"/>
+                                    <MudText Inline="true" Class="mx-1">
+                                        from
+                                    </MudText>
+                                    <PlayerIndicator Player="@roleClaim.Target" />
+                                </div>
+                            </MudText>
+                        </div>
+                    </ItemContent>
+                </MudTimelineItem>
+                break;
+            case WokeWithWerewolvesClaim roleClaim:
+                <MudTimelineItem Color="@CalculateEventColor(evt)" Size="Size.Small" Variant="Variant.Filled">
+                    <ItemDot>
+                        <MudIcon Size="Size.Small" Icon="@roleClaim.Role.GetRoleIcon()"/>
+                    </ItemDot>
+                    <ItemContent>
+                        <div>
+                            <MudText Color="@CalculateEventColor(evt)">
+                                <div style="display: flex; flex-direction: row; align-items: center;">
+                                    <PlayerIndicator Player="@roleClaim.Player" />
+                                    <MudText Inline="true" Class="mx-1">
+                                        claimed they started as the
+                                    </MudText>
+                                    <RoleIndicator Role="@roleClaim.Role"/>
+                                    <MudText Inline="true" Class="mx-1">
+                                        and the rest of the <strong>Werewolf</strong> team includes
+                                    </MudText>
+                                    @foreach (var player in roleClaim.OtherWerewolves)
+                                    {
+                                        <PlayerIndicator Player="@player" />
+                                    }
+                                </div>
+                            </MudText>
+                        </div>
+                    </ItemContent>
+                </MudTimelineItem>
+                break;
+            case LoneWerewolfClaim roleClaim:
+                <MudTimelineItem Color="@CalculateEventColor(evt)" Size="Size.Small" Variant="Variant.Filled">
+                    <ItemDot>
+                        <MudIcon Size="Size.Small" Icon="@roleClaim.Role.GetRoleIcon()"/>
+                    </ItemDot>
+                    <ItemContent>
+                        <div>
+                            <MudText Color="@CalculateEventColor(evt)">
+                                <div style="display: flex; flex-direction: row; align-items: center;">
+                                    <PlayerIndicator Player="@roleClaim.Player" />
+                                    <MudText Inline="true" Class="mx-1">
+                                        claimed they started as the
+                                    </MudText>
+                                    <RoleIndicator Role="@roleClaim.Role"/>
+                                    <MudText Inline="true" Class="mx-1">
+                                        and were the only one on the <strong>Werewolf</strong> team. They looked at 
+                                    </MudText>
+                                    <MudText Color="Color.Primary" Inline="true" Class="mx-1">
+                                        <strong>@roleClaim.CenterSlot.Name</strong>
+                                    </MudText>
+                                    <MudText Inline="true" Class="mx-1">
+                                        and saw
+                                    </MudText>
+                                    <RoleIndicator Role="@roleClaim.ObservedRole" />
+                                </div>
+                            </MudText>
+                        </div>
+                    </ItemContent>
+                </MudTimelineItem>
+                break;
             case StartRoleClaimedEvent claimEvent:
                 <MudTimelineItem Color="@CalculateEventColor(evt)" Size="Size.Small" Variant="Variant.Filled">
                     <ItemDot>
@@ -123,18 +264,11 @@
                         <div>
                             <MudText Color="@CalculateEventColor(evt)">
                                 <div style="display: flex; flex-direction: row; align-items: center;">
-                                    <MudText Color="Color.Primary" Inline="true">
-                                        <strong>@claimEvent.Player.Name</strong>
-                                    </MudText>
+                                    <PlayerIndicator Player="@claimEvent.Player" />
                                     <MudText Inline="true" Class="mx-1">
                                         claimed they started as the
                                     </MudText>
-                                    <MudIcon Size="Size.Medium" Icon="@claimEvent.ClaimedRole.GetRoleIcon()"
-                                             Class="mx-1"
-                                             Color="@claimEvent.ClaimedRole.GetTeamColor()"/>
-                                    <MudText Inline="true" Color="@claimEvent.ClaimedRole.GetTeamColor()">
-                                        <strong>@claimEvent.ClaimedRole</strong>
-                                    </MudText>
+                                    <RoleIndicator Role="@claimEvent.ClaimedRole"/>
                                     @if (Game.IsGameOver || Perspective is null)
                                     {
                                         if (claimEvent.IsClaimValidFor(Game))
@@ -196,8 +330,9 @@
                     <ItemContent>
                         <MudPaper>
                             <MudText Color="@CalculateEventColor(evt)">
-                                <strong>@voteEvent.VotingPlayer.Name</strong> voted for
-                                <strong>@voteEvent.TargetPlayer</strong>
+                                <PlayerIndicator Player="@voteEvent.VotingPlayer" />
+                                <MudText Inline="true">voted for</MudText>
+                                <PlayerIndicator Player="@voteEvent.TargetPlayer" />
                             </MudText>
                             <MudDivider Class="my-2"/>
                             <VoteVictoryTable Game="@Game"
@@ -229,9 +364,7 @@
                     <ItemContent>
                         <MudText Color="@CalculateEventColor(evt)">
                             <div style="display: flex; flex-direction: row; align-items: center;">
-                                <MudText Color="Color.Primary" Inline="true">
-                                    <strong>@votedOutEvent.Player.Name</strong>
-                                </MudText>
+                                <PlayerIndicator Player="@votedOutEvent.Player" />
                                 <MudText Inline="true" Class="mx-1">
                                     was voted out as the
                                 </MudText>
@@ -253,9 +386,7 @@
                     <ItemContent>
                         <MudText Color="@CalculateEventColor(evt)">
                             <div style="display: flex; flex-direction: row; align-items: center;">
-                                <MudText Color="Color.Primary" Inline="true">
-                                    <strong>@loneEvent.Player.Name</strong>
-                                </MudText>
+                                <PlayerIndicator Player="@loneEvent.Player" />
                                 <MudText Inline="true" Class="mx-1">
                                     woke and saw they were the only one on the <strong>Werewolf</strong> team.
                                 </MudText>
@@ -272,9 +403,7 @@
                     <ItemContent>
                         <MudText Color="@CalculateEventColor(evt)">
                             <div style="display: flex; flex-direction: row; align-items: center;">
-                                <MudText Color="Color.Primary" Inline="true">
-                                    <strong>@loneEvent.Player.Name</strong>
-                                </MudText>
+                                <PlayerIndicator Player="@loneEvent.Player" />
                                 <MudText Inline="true" Class="mx-1">
                                     looked at slot
                                 </MudText>
@@ -311,9 +440,7 @@
                                         </MudText>
                                     }
 
-                                    <MudText Color="Color.Primary" Inline="true">
-                                        <strong>@player.Name</strong>
-                                    </MudText>
+                                    <PlayerIndicator Player="@player" />
                                 }
                                 <MudText Inline="true" Class="mx-1">
                                     saw each other on the <strong>Werewolf</strong> team.
@@ -327,7 +454,8 @@
                 <MudTimelineItem Color="@CalculateEventColor(evt)" Size="Size.Small" Variant="Variant.Filled">
                     <ItemContent>
                         <MudText Color="@CalculateEventColor(evt)">
-                            @evt.Description (@evt.GetType().Name)
+                            @evt.Description 
+                            <MudText Color="Color.Dark" Typo="Typo.caption">(@evt.GetType().Name)</MudText>
                         </MudText>
                     </ItemContent>
                 </MudTimelineItem>
