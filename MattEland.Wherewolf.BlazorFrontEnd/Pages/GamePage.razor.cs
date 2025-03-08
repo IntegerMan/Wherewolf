@@ -60,15 +60,6 @@ public partial class GamePage : ComponentBase,
 
     public PlayerProbabilities? PlayerProbabilities { get; set; }
 
-    private void AdvanceToEnd()
-    {
-        Game?.RunToEnd(game => InvokeAsync(() => { 
-            Game = game;
-            UpdateProbabilities();
-            StateHasChanged();
-        }));
-    }
-
     public void Receive(ChangeClientModeMessage message)
     {
         Mode = message.Mode;
