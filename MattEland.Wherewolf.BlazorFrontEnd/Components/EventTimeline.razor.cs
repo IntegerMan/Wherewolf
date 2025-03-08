@@ -10,7 +10,7 @@ namespace MattEland.Wherewolf.BlazorFrontEnd.Components;
 
 public partial class EventTimeline : ComponentBase
 {
-    [Parameter] public GameState? Game { get; set; }
+    [Parameter] public required GameState Game { get; set; }
     [Parameter] public Player? Perspective { get; set; }
     
     public IEnumerable<IGameEvent> VisibleEvents 
@@ -24,7 +24,7 @@ public partial class EventTimeline : ComponentBase
     public PlayerProbabilities? Probabilities { get; set; }
 
 
-    private Color CalculateEventColor(IGameEvent evt)
+    private static Color CalculateEventColor(IGameEvent evt)
     {
         if (evt is GamePhaseAnnouncedEvent)
         {

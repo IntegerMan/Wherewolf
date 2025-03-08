@@ -3,7 +3,7 @@ using MattEland.Wherewolf.Roles;
 
 namespace MattEland.Wherewolf.Events.Social;
 
-public class StartRoleClaimedEvent(Player player, GameRole role) : SocialEvent
+public class StartRoleClaimedEvent(Player player, GameRole role, GameState stateAtTime) : SocialEvent
 {
     public Player Player { get; } = player;
     public GameRole ClaimedRole { get;  } = role;
@@ -18,6 +18,7 @@ public class StartRoleClaimedEvent(Player player, GameRole role) : SocialEvent
         => gameState.GetStartRole(Player) == ClaimedRole;
 
     public override Team? AssociatedTeam => ClaimedRole.GetTeam();
+    public GameState GameState => stateAtTime;
 
     public bool CanBeBelievedBy(GameState state, PlayerProbabilities probabilities)
     {

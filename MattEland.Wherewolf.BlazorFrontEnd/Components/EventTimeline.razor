@@ -31,7 +31,7 @@
                         <MudText Color="@CalculateEventColor(evt)">
                             <div style="display: flex; flex-direction: row; align-items: center;">
                                 <MudText Color="Color.Primary" Inline="true" Class="mr-1">
-                                    <strong>@insomniacEvent.Player!.Name</strong>
+                                    <strong>@insomniacEvent.Player.Name</strong>
                                 </MudText>
                                 @if (insomniacEvent.Role == GameRole.Insomniac)
                                 {
@@ -92,7 +92,7 @@
                         <MudText Color="@CalculateEventColor(evt)">
                             <div style="display: flex; flex-direction: row; align-items: center;">
                                 <MudText Color="Color.Primary" Inline="true">
-                                    <strong>@robEvent.Player!.Name</strong>
+                                    <strong>@robEvent.Player.Name</strong>
                                 </MudText>
                                 <MudText Inline="true" Class="mx-1">
                                     stole the
@@ -105,7 +105,7 @@
                                     role from
                                 </MudText>
                                 <MudText Color="Color.Primary" Inline="true">
-                                    <strong>@robEvent.Target!.Name</strong>
+                                    <strong>@robEvent.Target.Name</strong>
                                 </MudText>
                             </div>
                         </MudText>
@@ -119,60 +119,71 @@
                         <MudIcon Size="Size.Small" Icon="@claimEvent.ClaimedRole.GetRoleIcon()"/>
                     </ItemDot>
                     <ItemContent>
-                        <MudText Color="@CalculateEventColor(evt)">
-                            <div style="display: flex; flex-direction: row; align-items: center;">
-                                <MudText Color="Color.Primary" Inline="true">
-                                    <strong>@claimEvent.Player!.Name</strong>
-                                </MudText>
-                                <MudText Inline="true" Class="mx-1">
-                                    claimed they started as the
-                                </MudText>
-                                <MudIcon Size="Size.Medium" Icon="@claimEvent.ClaimedRole.GetRoleIcon()" Class="mx-1"
-                                         Color="@claimEvent.ClaimedRole.GetTeamColor()"/>
-                                <MudText Inline="true" Color="@claimEvent.ClaimedRole.GetTeamColor()">
-                                    <strong>@claimEvent.ClaimedRole</strong>
-                                </MudText>
-                                @if (Game!.IsGameOver || Perspective is null)
-                                {
-                                    if (claimEvent.IsClaimValidFor(Game))
+                        <div>
+                            <MudText Color="@CalculateEventColor(evt)">
+                                <div style="display: flex; flex-direction: row; align-items: center;">
+                                    <MudText Color="Color.Primary" Inline="true">
+                                        <strong>@claimEvent.Player.Name</strong>
+                                    </MudText>
+                                    <MudText Inline="true" Class="mx-1">
+                                        claimed they started as the
+                                    </MudText>
+                                    <MudIcon Size="Size.Medium" Icon="@claimEvent.ClaimedRole.GetRoleIcon()"
+                                             Class="mx-1"
+                                             Color="@claimEvent.ClaimedRole.GetTeamColor()"/>
+                                    <MudText Inline="true" Color="@claimEvent.ClaimedRole.GetTeamColor()">
+                                        <strong>@claimEvent.ClaimedRole</strong>
+                                    </MudText>
+                                    @if (Game.IsGameOver || Perspective is null)
                                     {
-                                        <MudText Inline="true" Color="Color.Success" Class="ml-1">
-                                            <strong>(true)</strong>
-                                        </MudText>
-                                    }
-                                    else
-                                    {
-                                        <MudText Inline="true" Color="Color.Error" Class="ml-1">
-                                            <strong>(lie)</strong>
-                                        </MudText>
-                                    }
-                                }
-                                else if (Probabilities is not null)
-                                {
-                                    if (!claimEvent.CanBeBelievedBy(Game, Probabilities))
-                                    {
-                                        if (claimEvent.Player == Perspective)
+                                        if (claimEvent.IsClaimValidFor(Game))
+                                        {
+                                            <MudText Inline="true" Color="Color.Success" Class="ml-1">
+                                                <strong>(true)</strong>
+                                            </MudText>
+                                        }
+                                        else
                                         {
                                             <MudText Inline="true" Color="Color.Error" Class="ml-1">
                                                 <strong>(lie)</strong>
                                             </MudText>
                                         }
-                                        else
+                                    }
+                                    else if (Probabilities is not null)
+                                    {
+                                        if (!claimEvent.CanBeBelievedBy(Game, Probabilities))
                                         {
-                                            <MudText Inline="true" Color="Color.Warning" Class="ml-1">
-                                                <strong>(cannot be true)</strong>
+                                            if (claimEvent.Player == Perspective)
+                                            {
+                                                <MudText Inline="true" Color="Color.Error" Class="ml-1">
+                                                    <strong>(lie)</strong>
+                                                </MudText>
+                                            }
+                                            else
+                                            {
+                                                <MudText Inline="true" Color="Color.Warning" Class="ml-1">
+                                                    <strong>(cannot be true)</strong>
+                                                </MudText>
+                                            }
+                                        }
+                                        else if (claimEvent.CannotBeFalse(Game, Probabilities))
+                                        {
+                                            <MudText Inline="true" Color="Color.Success" Class="ml-1">
+                                                <strong>(true)</strong>
                                             </MudText>
                                         }
                                     }
-                                    else if (claimEvent.CannotBeFalse(Game, Probabilities))
-                                    {
-                                        <MudText Inline="true" Color="Color.Success" Class="ml-1">
-                                            <strong>(true)</strong>
-                                        </MudText>
-                                    }
-                                }
-                            </div>
-                        </MudText>
+                                </div>
+                            </MudText>
+                            @if (Game.IsGameOver || claimEvent.Player == Perspective)
+                            {
+                                <MudDivider Class="my-2"/>
+                                <RoleClaimProbabilityTable Game="@claimEvent.GameState"
+                                                           PerspectivePlayer="@claimEvent.Player"
+                                                           Claim="@claimEvent.ClaimedRole"
+                                                           AllowClaimingRole="false"/>
+                            }
+                        </div>
                     </ItemContent>
                 </MudTimelineItem>
                 break;
@@ -187,7 +198,7 @@
                                 <strong>@voteEvent.VotingPlayer.Name</strong> voted for
                                 <strong>@voteEvent.TargetPlayer</strong>
                             </MudText>
-                            <MudDivider Class="my-2" />
+                            <MudDivider Class="my-2"/>
                             <VoteVictoryTable Game="@Game"
                                               VotedPlayer="@voteEvent.TargetPlayer"
                                               Probabilities="@voteEvent.Probabilities"

@@ -17,7 +17,8 @@ public partial class RoleClaimProbabilityTable : ComponentBase
     [Parameter]
     public bool AllowClaimingRole { get; set; } = false;
     
-    public GameRole? Claim { get; private set; } = null;
+    [Parameter]
+    public GameRole? Claim { get; set; } = null;
     
     private void RoleClaimed(GameRole role)
     {

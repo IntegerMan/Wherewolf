@@ -1,5 +1,5 @@
 @using MattEland.Wherewolf.BlazorFrontEnd.Helpers
-<MudSimpleTable Class="mt-1">
+<MudSimpleTable Class="mt-1" Dense="true">
     <thead>
     <th>
         <MudText Typo="Typo.h6">Player</MudText>
@@ -17,7 +17,7 @@
     <tbody>
     @foreach (var player in Game.PlayerSlots.Where(p => p.Player != PerspectivePlayer))
     {
-        <tr>
+        <tr class="@(VotedPlayer == player.Player ? "mud-theme-dark" : "")">
             <th>
                 @if (player.Player != PerspectivePlayer && AllowVoting)
                 {
@@ -40,7 +40,7 @@
                     }
                     else if (VotedPlayer != null)
                     {
-                        <MudText Typo="Typo.h6" Color="Color.Dark" Align="Align.Left">
+                        <MudText Color="Color.Dark" Align="Align.Left">
                             @player.Name
                         </MudText>
                     }

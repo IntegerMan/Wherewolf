@@ -8,7 +8,7 @@ public class InitialRoleClaimPhase(Player player) : GamePhase
     {
         player.Controller.GetInitialRoleClaim(player, newState.Parent!, role =>
         {
-            newState.AddEvent(new StartRoleClaimedEvent(player, role));
+            newState.AddEvent(new StartRoleClaimedEvent(player, role, newState));
             callback(newState);
         });
     }

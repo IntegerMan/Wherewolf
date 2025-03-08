@@ -1,5 +1,5 @@
 @using MattEland.Wherewolf.BlazorFrontEnd.Helpers
-<MudSimpleTable Class="mt-1">
+<MudSimpleTable Class="mt-1" Dense="true">
     <thead>
     <th>Role</th>
     <th>Support</th>
@@ -10,8 +10,8 @@
     <tbody>
     @foreach (var kvp in Stats)
     {
-        <tr>
-            <td style="display: flex; justify-content: stretch;">
+        <tr class="@(kvp.Key == Claim ? "mud-theme-dark" : "")">
+            <th style="display: flex; justify-content: stretch;">
                 @if (AllowClaimingRole)
                 {
                     <MudButton Variant="Variant.Filled"
@@ -23,14 +23,31 @@
                         @kvp.Key
                     </MudButton>
                 }
+                else if (kvp.Key == Claim)
+                {
+                    <div style="display: flex; flex-direction: row; align-items: center;">
+                        <MudIcon Color="Color.Success" 
+                                 Icon="@kvp.Key.GetRoleIcon()" 
+                                 Class="mr-1"
+                                 Size="Size.Medium"/>
+                        <MudText Color="Color.Success" Align="Align.Left" Typo="Typo.h6">
+                            @kvp.Key
+                        </MudText>
+                    </div>
+                }
                 else
                 {
-                    <MudText Typo="@(Claim == kvp.Key ? Typo.h6 : Typo.body2)" Color="@kvp.Key.GetTeamColor()" Align="Align.Left">
-                        <MudIcon Color="@kvp.Key.GetTeamColor()" Icon="@kvp.Key.GetRoleIcon()" Class="mr-1" />
-                        @kvp.Key
-                    </MudText>
+                    <div style="display: flex; flex-direction: row; align-items: center;">
+                        <MudIcon Color="@kvp.Key.GetTeamColor()" 
+                                 Icon="@kvp.Key.GetRoleIcon()" 
+                                 Class="mr-1"
+                                 Size="Size.Medium"/>
+                        <MudText Color="@kvp.Key.GetTeamColor()" Align="Align.Left">
+                            @kvp.Key
+                        </MudText>
+                    </div>
                 }
-            </td>
+            </th>
             <td>@kvp.Value.Support.ToString("0")</td>
             <td>@kvp.Value.InPlayPercent.ToString("P0")</td>
             <td>@kvp.Value.OutOfPlayPercent.ToString("P0")</td>
