@@ -7,6 +7,9 @@ public class ClaimSafestRoleStrategy(Random rand) : IRoleClaimStrategy
 {
     public GameRole GetRoleClaim(Player player, GameState gameState)
     {
+        GameRole startRole = gameState.GetStartRole(player);
+        Team startTeam = startRole.GetTeam();
+        
         KeyValuePair<GameRole, VoteStatistics>[] roleClaimVoteStats =
             VotingHelper.GetRoleClaimVoteStatistics(player, gameState).ToArray();
 
@@ -16,7 +19,11 @@ public class ClaimSafestRoleStrategy(Random rand) : IRoleClaimStrategy
         // This will encourage us to claim the role that is least likely to get us killed
         GameRole[] bestRoles = roleClaimVoteStats
             .Where(rs => rs.Value.VotesPerGame <= best)
-            .OrderByDescending(rs => rs.Value.Support)
+            // This makes the werewolf team more likely to claim safe roles while villager team more likely to claim their own role
+            .OrderByDescending(rs => startTeam == Team.Werewolf ? rs.Value.OutOfPlayPercent : rs.Value.InPlayPercent)
+            // High support are more likely to be true
+            .ThenByDescending(rs => rs.Value.Support)
+            // Resolve ties with randomness
             .ThenBy(_ => rand.Next())
             .Select(rs => rs.Key)
             .ToArray();
@@ -28,7 +35,6 @@ public class ClaimSafestRoleStrategy(Random rand) : IRoleClaimStrategy
         }
 
         // If we have a tie, we want to go with the role we actually started as
-        GameRole startRole = gameState.GetStartRole(player);
         if (bestRoles.Contains(startRole))
         {
             return startRole;
