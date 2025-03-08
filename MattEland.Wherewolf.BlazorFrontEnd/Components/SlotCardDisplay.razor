@@ -1,13 +1,22 @@
 @using ApexCharts
+@using Color = MudBlazor.Color
 @using Size = MudBlazor.Size
 
 <MudCard Elevation="3" Style="width:150px; height: 225px;" Class="@CardClass">
     <MudCardHeader>
         <CardHeaderContent>
-            <MudText Typo="Typo.h6">
+            <MudText>
                 @Slot.Name
             </MudText>
         </CardHeaderContent>
+        <CardHeaderActions>
+            @if (Votes > 0)
+            {
+                <MudChip T="string" Color="@(IsVotedOut ? Color.Error : Color.Primary)">
+                    @Votes
+                </MudChip>
+            }
+        </CardHeaderActions>
     </MudCardHeader>
     <MudCardContent>
 

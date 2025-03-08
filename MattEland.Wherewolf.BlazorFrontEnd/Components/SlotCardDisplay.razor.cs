@@ -1,6 +1,7 @@
 using System.Text;
 using ApexCharts;
 using MattEland.Wherewolf.BlazorFrontEnd.Helpers;
+using MattEland.Wherewolf.Events.Game;
 using MattEland.Wherewolf.Probability;
 using MattEland.Wherewolf.Roles;
 using Microsoft.AspNetCore.Components;
@@ -29,6 +30,8 @@ public partial class SlotCardDisplay : ComponentBase
     {
         get
         {
+            if (IsVotedOut) return "mud-theme-dark";
+            
             KeyValuePair<GameRole,SlotProbability>[] possible = Probabilities.Where(p => p.Value.Probability > 0)
                     .ToArray();
 
@@ -113,6 +116,10 @@ public partial class SlotCardDisplay : ComponentBase
             return $"{probs.Key}?";
         }
     }
+
+    public int Votes => Game.GameResult == null || Slot.Player == null ? 0 : Game.GameResult.Votes[Slot.Player];
+    
+    public bool IsVotedOut => Game.GameResult != null && Game.GameResult.DeadPlayers.Contains(Slot.Player);
 }
 
 public class ChartDataItem
