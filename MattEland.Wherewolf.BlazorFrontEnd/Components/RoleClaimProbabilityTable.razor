@@ -1,0 +1,41 @@
+@using MattEland.Wherewolf.BlazorFrontEnd.Helpers
+<MudSimpleTable Class="mt-1">
+    <thead>
+    <th>Role</th>
+    <th>Support</th>
+    <th>Times in Play</th>
+    <th>Times in Center</th>
+    <th>Voted Likelihood</th>
+    </thead>
+    <tbody>
+    @foreach (var kvp in Stats)
+    {
+        <tr>
+            <td style="display: flex; justify-content: stretch;">
+                @if (AllowClaimingRole)
+                {
+                    <MudButton Variant="Variant.Filled"
+                               Color="@kvp.Key.GetTeamColor()"
+                               StartIcon="@kvp.Key.GetRoleIcon()"
+                               Size="Size.Large"
+                               Style="flex-grow: 1;"
+                               OnClick="() => RoleClaimed(kvp.Key)">
+                        @kvp.Key
+                    </MudButton>
+                }
+                else
+                {
+                    <MudText Typo="@(Claim == kvp.Key ? Typo.h6 : Typo.body2)" Color="@kvp.Key.GetTeamColor()" Align="Align.Left">
+                        <MudIcon Color="@kvp.Key.GetTeamColor()" Icon="@kvp.Key.GetRoleIcon()" Class="mr-1" />
+                        @kvp.Key
+                    </MudText>
+                }
+            </td>
+            <td>@kvp.Value.Support.ToString("0")</td>
+            <td>@kvp.Value.InPlayPercent.ToString("P0")</td>
+            <td>@kvp.Value.OutOfPlayPercent.ToString("P0")</td>
+            <td>@kvp.Value.VotesPerGame.ToString("0.0")</td>
+        </tr>
+    }
+    </tbody>
+</MudSimpleTable>

@@ -13,19 +13,4 @@ public partial class RoleClaimSelection : ComponentBase
     
     [Parameter]
     public required Player PerspectivePlayer { get; set; }
-
-    
-    private void RoleClaimed(GameRole role)
-    {
-        WeakReferenceMessenger.Default.Send(new RoleClaimedMessage(role));
-    }
-    
-    
-    public IEnumerable<KeyValuePair<GameRole, VoteStatistics>> Stats { get; private set; } = [];
-    protected override void OnParametersSet()
-    {
-        base.OnParametersSet();
-
-        Stats = VotingHelper.GetRoleClaimVoteStatistics(PerspectivePlayer, Game);
-    }
 }
