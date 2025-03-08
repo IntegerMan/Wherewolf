@@ -241,7 +241,16 @@ public class GameState
         if (phase is null) throw new InvalidOperationException("Cannot run the next phase; no current phase");
 
         GameState nextState = new(this, Support);
-        phase.Run(nextState, callback);
+        
+        if (phase.AutoAdvance) 
+        {
+            phase.Run(nextState, s => s.RunNext(callback));
+        }
+        else
+        {
+            phase.Run(nextState, callback);
+        }
+
     }
 
     public bool IsGameOver => _remainingPhases.Count == 0;

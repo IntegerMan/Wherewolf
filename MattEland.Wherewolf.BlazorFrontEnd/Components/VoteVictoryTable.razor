@@ -1,58 +1,74 @@
 @using MattEland.Wherewolf.BlazorFrontEnd.Helpers
 <MudSimpleTable Class="mt-1">
-        <thead>
+    <thead>
+    <th>
+        <MudText Typo="Typo.h6">Player</MudText>
+    </th>
+    @foreach (var role in Game.Roles.Distinct())
+    {
         <th>
-            <MudText Typo="Typo.h6">Player</MudText>
+            <MudText Color="@role.GetTeamColor()" Typo="Typo.h6">@role</MudText>
         </th>
-        @foreach (var role in Game.Roles.Distinct())
-        {
+    }
+    <th>
+        <MudText Typo="Typo.h6">Win %</MudText>
+    </th>
+    </thead>
+    <tbody>
+    @foreach (var player in Game.PlayerSlots.Where(p => p.Player != PerspectivePlayer))
+    {
+        <tr>
             <th>
-                <MudText Color="@role.GetTeamColor()" Typo="Typo.h6">@role</MudText>
-            </th>
-        }
-        <th>
-            <MudText Typo="Typo.h6">Vote Win %</MudText>
-        </th>
-        </thead>
-        <tbody>
-        @foreach (var player in Game.PlayerSlots)
-        {
-            <tr>
-                <th>
-                    @if (player.Player != PerspectivePlayer && AllowVoting)
+                @if (player.Player != PerspectivePlayer && AllowVoting)
+                {
+                    <MudButton Variant="Variant.Filled"
+                               StartIcon="@Icons.Material.Filled.HowToVote"
+                               Color="Color.Primary"
+                               Size="Size.Large"
+                               OnClick="() => PlayerSelected(player.Player!)">
+                        @player.Name
+                    </MudButton>
+                }
+                else
+                {
+                    @if (VotedPlayer == player.Player)
                     {
-                        <MudButton Variant="Variant.Filled"
-                                   StartIcon="@Icons.Material.Filled.HowToVote"
-                                   Color="Color.Primary"
-                                   Size="Size.Large"
-                                   OnClick="() => PlayerSelected(player.Player!)">
+                        <MudText Typo="Typo.h6" Color="Color.Success" Align="Align.Left">
                             @player.Name
-                        </MudButton>
+                            <MudIcon Icon="@Icons.Material.Filled.HowToVote" Color="Color.Success" Class="ml-1"/>
+                        </MudText>
+                    }
+                    else if (VotedPlayer != null)
+                    {
+                        <MudText Typo="Typo.h6" Color="Color.Dark" Align="Align.Left">
+                            @player.Name
+                        </MudText>
                     }
                     else
                     {
-                        <MudText Typo="Typo.h6" Color="Color.Primary" Align="Align.Center">
+                        <MudText Typo="Typo.h6" Color="Color.Primary" Align="Align.Left">
                             @player.Name
                         </MudText>
                     }
-                </th>
-                @foreach (var role in Game.Roles.Distinct())
-                {
-                    <td>
-                        <MudText Align="Align.Right">
-                            @Probabilities.GetCurrentProbabilities(player)[role].Probability.ToString("P0")
-                        </MudText>
-                    </td>
                 }
+            </th>
+            @foreach (var role in Game.Roles.Distinct())
+            {
                 <td>
-                    @if (player.Player != PerspectivePlayer)
-                    {
-                        <MudText Align="Align.Right">
-                            @Stats[player.Player!].ToString("P0")
-                        </MudText>
-                    }
+                    <MudText Align="Align.Right">
+                        @Probabilities.GetCurrentProbabilities(player)[role].Probability.ToString("P0")
+                    </MudText>
                 </td>
-            </tr>
-        }
-        </tbody>
-    </MudSimpleTable>
+            }
+            <td>
+                @if (player.Player != PerspectivePlayer)
+                {
+                    <MudText Align="Align.Right">
+                        @Stats[player.Player!].ToString("P0")
+                    </MudText>
+                }
+            </td>
+        </tr>
+    }
+    </tbody>
+</MudSimpleTable>

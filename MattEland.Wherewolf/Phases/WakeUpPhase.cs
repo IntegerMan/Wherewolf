@@ -16,4 +16,6 @@ public class WakeUpPhase : GamePhase
     {
         yield return new GameState(priorState, priorState.Support);
     }
+
+    public override bool AutoAdvance => true;
 }

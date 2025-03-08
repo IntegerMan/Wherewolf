@@ -36,7 +36,7 @@ public class LoneWolfLookedAtSlotEvent(Player player, GameSlot slot) : GameEvent
         }
 
         GameState? wwPhaseState = state;
-        while (wwPhaseState != null && wwPhaseState.CurrentPhase is not { Name: "Werewolves" })
+        while (wwPhaseState is { CurrentPhase: not { Name: "Werewolves" } })
         {
             wwPhaseState = wwPhaseState.Parent;
         }

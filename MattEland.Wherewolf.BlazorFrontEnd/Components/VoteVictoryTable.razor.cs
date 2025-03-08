@@ -16,6 +16,9 @@ public partial class VoteVictoryTable : ComponentBase
     [Parameter]
     public required PlayerProbabilities Probabilities { get; set; }
 
+    [Parameter]
+    public Player? VotedPlayer { get; set; }
+    
     [Parameter] public bool AllowVoting { get; set; } = true;
     
     public Dictionary<Player, double> Stats { get; private set; } = [];
@@ -28,6 +31,8 @@ public partial class VoteVictoryTable : ComponentBase
     
     private void PlayerSelected(Player player)
     {
+        VotedPlayer = player;
+        AllowVoting = false;
         WeakReferenceMessenger.Default.Send(new VotedMessage(PerspectivePlayer, player));
     }
 }

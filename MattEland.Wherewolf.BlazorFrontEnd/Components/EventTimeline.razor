@@ -12,7 +12,8 @@
             case GamePhaseAnnouncedEvent announceEvent:
                 <MudTimelineItem Color="@CalculateEventColor(evt)" Size="Size.Small" Variant="Variant.Filled">
                     <ItemDot>
-                        <MudIcon Size="Size.Small" Icon="@(announceEvent.AssociatedRole == null ? Icons.Material.Filled.Speaker : announceEvent.AssociatedRole.GetRoleIcon())"/>
+                        <MudIcon Size="Size.Small"
+                                 Icon="@(announceEvent.AssociatedRole == null ? Icons.Material.Filled.Speaker : announceEvent.AssociatedRole.GetRoleIcon())"/>
                     </ItemDot>
                     <ItemContent>
                         <MudText Color="@CalculateEventColor(evt)">
@@ -80,6 +81,7 @@
                         </ItemContent>
                     </MudTimelineItem>
                 }
+
                 break;
             case RobbedPlayerEvent robEvent:
                 <MudTimelineItem Color="@robEvent.NewRole.GetTeamColor()" Size="Size.Small" Variant="Variant.Filled">
@@ -123,9 +125,10 @@
                                     <strong>@claimEvent.Player!.Name</strong>
                                 </MudText>
                                 <MudText Inline="true" Class="mx-1">
-                                    claimed they started as the 
+                                    claimed they started as the
                                 </MudText>
-                                <MudIcon Size="Size.Medium" Icon="@claimEvent.ClaimedRole.GetRoleIcon()" Class="mx-1" Color="@claimEvent.ClaimedRole.GetTeamColor()"/>
+                                <MudIcon Size="Size.Medium" Icon="@claimEvent.ClaimedRole.GetRoleIcon()" Class="mx-1"
+                                         Color="@claimEvent.ClaimedRole.GetTeamColor()"/>
                                 <MudText Inline="true" Color="@claimEvent.ClaimedRole.GetTeamColor()">
                                     <strong>@claimEvent.ClaimedRole</strong>
                                 </MudText>
@@ -143,7 +146,7 @@
                                             <strong>(lie)</strong>
                                         </MudText>
                                     }
-                                } 
+                                }
                                 else if (Probabilities is not null)
                                 {
                                     if (!claimEvent.CanBeBelievedBy(Game, Probabilities))
@@ -160,7 +163,7 @@
                                                 <strong>(cannot be true)</strong>
                                             </MudText>
                                         }
-                                    } 
+                                    }
                                     else if (claimEvent.CannotBeFalse(Game, Probabilities))
                                     {
                                         <MudText Inline="true" Color="Color.Success" Class="ml-1">
@@ -179,9 +182,18 @@
                         <MudIcon Size="Size.Small" Icon="@Icons.Material.Filled.HowToVote"/>
                     </ItemDot>
                     <ItemContent>
-                        <MudText Color="@CalculateEventColor(evt)">
-                            <strong>@voteEvent.VotingPlayer.Name</strong> voted for <strong>@voteEvent.TargetPlayer</strong>
-                        </MudText>
+                        <MudPaper>
+                            <MudText Color="@CalculateEventColor(evt)">
+                                <strong>@voteEvent.VotingPlayer.Name</strong> voted for
+                                <strong>@voteEvent.TargetPlayer</strong>
+                            </MudText>
+                            <MudDivider Class="my-2" />
+                            <VoteVictoryTable Game="@Game"
+                                              VotedPlayer="@voteEvent.TargetPlayer"
+                                              Probabilities="@voteEvent.Probabilities"
+                                              PerspectivePlayer="@voteEvent.VotingPlayer"
+                                              AllowVoting="false"/>
+                        </MudPaper>
                     </ItemContent>
                 </MudTimelineItem>
                 break;
@@ -209,9 +221,10 @@
                                     <strong>@votedOutEvent.Player.Name</strong>
                                 </MudText>
                                 <MudText Inline="true" Class="mx-1">
-                                    was voted out as the 
+                                    was voted out as the
                                 </MudText>
-                                <MudIcon Size="Size.Medium" Icon="@votedOutEvent.Role.GetRoleIcon()" Class="mx-1" Color="@votedOutEvent.Role.GetTeamColor()"/>
+                                <MudIcon Size="Size.Medium" Icon="@votedOutEvent.Role.GetRoleIcon()" Class="mx-1"
+                                         Color="@votedOutEvent.Role.GetTeamColor()"/>
                                 <MudText Inline="true" Color="@votedOutEvent.Role.GetTeamColor()">
                                     <strong>@votedOutEvent.Role</strong>
                                 </MudText>
@@ -228,12 +241,12 @@
                     <ItemContent>
                         <MudText Color="@CalculateEventColor(evt)">
                             <div style="display: flex; flex-direction: row; align-items: center;">
-                            <MudText Color="Color.Primary" Inline="true">
-                                <strong>@loneEvent.Player.Name</strong>
-                            </MudText>
-                            <MudText Inline="true" Class="mx-1">
-                                woke and saw they were the only one on the <strong>Werewolf</strong> team.
-                            </MudText>
+                                <MudText Color="Color.Primary" Inline="true">
+                                    <strong>@loneEvent.Player.Name</strong>
+                                </MudText>
+                                <MudText Inline="true" Class="mx-1">
+                                    woke and saw they were the only one on the <strong>Werewolf</strong> team.
+                                </MudText>
                             </div>
                         </MudText>
                     </ItemContent>
@@ -251,15 +264,16 @@
                                     <strong>@loneEvent.Player.Name</strong>
                                 </MudText>
                                 <MudText Inline="true" Class="mx-1">
-                                    looked at slot 
+                                    looked at slot
                                 </MudText>
                                 <MudText Color="Color.Primary" Inline="true">
                                     <strong>@loneEvent.Slot.Name</strong>
                                 </MudText>
                                 <MudText Inline="true" Class="mx-1">
-                                    as the lone wolf and saw that it was a 
+                                    as the lone wolf and saw that it was a
                                 </MudText>
-                                <MudIcon Size="Size.Medium" Icon="@loneEvent.ObservedRole.GetRoleIcon()" Class="mx-1" Color="@loneEvent.ObservedRole.GetTeamColor()"/>
+                                <MudIcon Size="Size.Medium" Icon="@loneEvent.ObservedRole.GetRoleIcon()" Class="mx-1"
+                                         Color="@loneEvent.ObservedRole.GetTeamColor()"/>
                                 <MudText Inline="true" Color="@loneEvent.ObservedRole.GetTeamColor()">
                                     <strong>@loneEvent.ObservedRole</strong>
                                 </MudText>
@@ -284,6 +298,7 @@
                                             and
                                         </MudText>
                                     }
+
                                     <MudText Color="Color.Primary" Inline="true">
                                         <strong>@player.Name</strong>
                                     </MudText>
