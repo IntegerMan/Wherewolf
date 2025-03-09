@@ -130,4 +130,50 @@ public static class VotingHelper
 
         return roleStats;
     }
+    
+    public static IEnumerable<KeyValuePair<SpecificRoleClaim, VoteStatistics>> GetSpecificRoleClaimVoteStatistics(Player player, GameState gameState, SpecificRoleClaim[] possibleClaims)
+    {
+        GameState[] possibleEndStates = gameState.Setup.GetPermutationsAtPhase(null).ToArray();
+
+        // Now, let's take roles into account and see what victory % each other player gets voting for us based on who they think we are
+        Dictionary<SpecificRoleClaim, VoteStatistics> roleStats 
+            = GetOtherPlayersWinRatesGivenMySpecificRoleClaim(player, gameState, possibleEndStates, possibleClaims);
+        
+        return roleStats;
+    }
+    
+    private static Dictionary<SpecificRoleClaim, VoteStatistics> GetOtherPlayersWinRatesGivenMySpecificRoleClaim(
+        Player player, 
+        GameState gameState, 
+        GameState[] possibleEndStates,
+        SpecificRoleClaim[] possibleClaims)
+    {
+        Dictionary<SpecificRoleClaim, VoteStatistics> roleStats = new();
+
+        GameState[] possibleStates = GetPossibleGameStatesForPlayer(player, gameState).ToArray();
+        StartRoleClaimedEvent[] priorClaims = gameState.Claims.OfType<StartRoleClaimedEvent>().ToArray();
+        
+        foreach (var possibleClaim in possibleClaims)
+        {
+            roleStats[possibleClaim] = new()
+            {
+                OtherClaims = priorClaims.Count(e => e.ClaimedRole == possibleClaim.Role)
+            };
+            
+            // Filter to roles we started as the role we're considering claiming
+            GameState[] claimStates = possibleEndStates.Where(s => possibleClaim.IsClaimValidFor(s)).ToArray();
+
+            foreach (var hypotheticalState in claimStates)
+            {
+                roleStats[possibleClaim].Games++;
+                roleStats[possibleClaim].Support += hypotheticalState.Support;
+                roleStats[possibleClaim].VotesReceived += hypotheticalState.Events.OfType<VotedEvent>().Count(ve => ve.TargetPlayer == player);
+            }
+            
+            roleStats[possibleClaim].InPlayPercent = possibleStates.Count(s => s.Root.PlayerSlots.Any(p => p.Role == possibleClaim.Role)) / (double)possibleStates.Length;
+            roleStats[possibleClaim].OutOfPlayPercent = possibleStates.Count(s => s.Root.CenterSlots.Any(c => c.Role == possibleClaim.Role)) / (double)possibleStates.Length;
+        }
+
+        return roleStats;
+    }
 }

@@ -49,6 +49,25 @@ public class ClaimSafestRoleStrategy(Random rand) : IRoleClaimStrategy
     public SpecificRoleClaim GetSpecificRoleClaim(Player player, GameState gameState, SpecificRoleClaim[] possibleClaims,
         GameRole initialClaim)
     {
-        return possibleClaims.First(claim => claim.Player == player && claim.Role == initialClaim);
+        KeyValuePair<SpecificRoleClaim, VoteStatistics>[] options = 
+            VotingHelper.GetSpecificRoleClaimVoteStatistics(player, gameState, possibleClaims)
+                .OrderBy(o => o.Value.VoteFactor)
+                .ToArray();
+        
+        double best = options.Min(rs => rs.Value.VoteFactor);
+        SpecificRoleClaim[] rankedChoices = options
+            .Where(rs => rs.Value.VoteFactor <= best)
+            // This makes the werewolf team more likely to claim safe roles while villager team more likely to claim their own role
+            .OrderByDescending(rs => rs.Value.InPlayPercent)
+            // High support are more likely to be true
+            .ThenByDescending(rs => rs.Value.Support)
+            // Low claims are good
+            .ThenBy(rs => rs.Value.OtherClaims)
+            // Resolve ties with randomness
+            .ThenBy(_ => rand.Next())
+            .Select(o => o.Key)
+            .ToArray();
+
+        return rankedChoices.FirstOrDefault() ?? options.First().Key;
     }
 }
