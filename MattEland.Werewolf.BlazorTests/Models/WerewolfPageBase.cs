@@ -10,4 +10,6 @@ public abstract class WerewolfPageBase(IPage page)
     
     public async Task LoadAsync() 
         => await page.GotoAsync(Url);
+
+    protected IPage Page => page;
 }

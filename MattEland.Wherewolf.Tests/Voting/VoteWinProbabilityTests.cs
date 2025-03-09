@@ -1,4 +1,5 @@
 using MattEland.Wherewolf.Controllers;
+using MattEland.Wherewolf.Events.Social;
 using MattEland.Wherewolf.Probability;
 using MattEland.Wherewolf.Roles;
 using MattEland.Wherewolf.Setup;
@@ -11,9 +12,10 @@ public class VoteWinProbabilityTests
     public void VoteProbabilitiesShouldBeEqualWhenNoInformationAvailable()
     {
         // Arrange
-        Player a = new("A", new RandomController(new ClaimFixedRoleStrategy(GameRole.Villager))); // Villager
-        Player b = new("B", new RandomController(new ClaimFixedRoleStrategy(GameRole.Villager))); // Villager
-        Player c = new("C", new RandomController(new ClaimFixedRoleStrategy(GameRole.Villager))); // Werewolf
+        RandomController controller = new RandomController(new ClaimFixedRoleStrategy(GameRole.Villager, (p,_) => new VillagerNoActionClaim(p)));
+        Player a = new("A", controller); // Villager
+        Player b = new("B", controller); // Villager
+        Player c = new("C", controller); // Werewolf
         
         GameSetup setup = new();
         setup.AddPlayers(a, b, c);

@@ -2,13 +2,10 @@ namespace MattEland.Wherewolf.Probability;
 
 public record VoteVictoryStatistics
 {
-    public int Support { get; set; }
-    public int Wins { get; set; }
+    public double Support { get; set; }
+    public double WinningSupport { get; set; }
 
-    public override string ToString()
-    {
-        return $"Wins: {Wins} / Support: {Support}";
-    }
+    public override string ToString() => $"Wins: {WinningSupport} / Support: {Support}";
 
-    public double WinPercent => (double) Wins / Support;
+    public double WinPercent => WinningSupport / Support;
 }

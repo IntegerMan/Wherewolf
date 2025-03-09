@@ -1,4 +1,5 @@
 using MattEland.Wherewolf.Controllers;
+using MattEland.Wherewolf.Events.Social;
 using MattEland.Wherewolf.Probability;
 using MattEland.Wherewolf.Roles;
 using MattEland.Wherewolf.Setup;
@@ -13,7 +14,7 @@ public class RoleSwapProbabilityTests
         // Arrange
         GameSetup gameSetup = new();
         gameSetup.AddPlayers(
-            new Player("Matt", new FixedSelectionController(new ClaimFixedRoleStrategy(GameRole.Insomniac),"Rufus")),
+            new Player("Matt", new FixedSelectionController(new ClaimFixedRoleStrategy(GameRole.Insomniac, (p,_) => new InsomniacWakeClaim(p, GameRole.Insomniac)),"Rufus")),
             new Player("Rufus", new RandomController()),
             new Player("Jimothy", new RandomController())
         );
@@ -45,7 +46,7 @@ public class RoleSwapProbabilityTests
         // Arrange
         GameSetup gameSetup = new();
         gameSetup.AddPlayers(
-            new Player("Matt", new FixedSelectionController(new ClaimFixedRoleStrategy(GameRole.Insomniac), "Rufus")),
+            new Player("Matt", new FixedSelectionController(new ClaimFixedRoleStrategy(GameRole.Insomniac, (p, _) => new InsomniacWakeClaim(p, GameRole.Insomniac) ), "Rufus")),
             new Player("Rufus", new RandomController()),
             new Player("Jimothy", new RandomController())
         );

@@ -11,8 +11,10 @@ public static class VotingHelper
     {
         GamePhase? votingPhase = null;
         GameEvent[] observedEvents = state.Events.Where(e => e.IsObservedBy(player)).ToArray();
-        IEnumerable<GameState> permutations = state.Setup.GetPermutationsAtPhase(votingPhase)
+        IEnumerable<GameState> possiblyTrueStates = state.Setup.GetPermutationsAtPhase(votingPhase)
             .Where(p => p.IsPossibleGivenEvents(observedEvents));
+
+        SocialEvent[] otherClaims = state.Claims.Where(c => c.Player != player).ToArray();
         
         // Set up our results
         Dictionary<Player, VoteVictoryStatistics> results = new(state.Players.Count() - 1);
@@ -22,14 +24,18 @@ public static class VotingHelper
         }
         
         // Tabulate results based on who the player voted for that permutation
-        foreach (var perm in permutations)
-        {
-            VotedEvent vote = perm.Events.OfType<VotedEvent>().First(v => v.VotingPlayer == player);
 
-            results[vote.TargetPlayer].Support++;
-            if (perm.GameResult!.DidPlayerWin(player))
+        foreach (var possibleState in possiblyTrueStates)
+        {
+            VotedEvent vote = possibleState.Events.OfType<VotedEvent>().First(v => v.VotingPlayer == player);
+
+            // Support always goes up by one, but we'll also factor in other player's claims as well
+            double stateImpact = possibleState.Support + otherClaims.Count(c => c.IsClaimValidFor(possibleState));;
+            results[vote.TargetPlayer].Support += stateImpact;
+            
+            if (possibleState.GameResult!.DidPlayerWin(player))
             {
-                results[vote.TargetPlayer].Wins++;
+                results[vote.TargetPlayer].WinningSupport += stateImpact; // if we don't add the support factor in, the % gets wonky
             }
         }
         

@@ -1,3 +1,4 @@
+using MattEland.Wherewolf.Events.Social;
 using MattEland.Wherewolf.Probability;
 using MattEland.Wherewolf.Roles;
 
@@ -43,5 +44,11 @@ public class ClaimSafestRoleStrategy(Random rand) : IRoleClaimStrategy
         }
 
         return bestRoles.First();
+    }
+
+    public SpecificRoleClaim GetSpecificRoleClaim(Player player, GameState gameState, SpecificRoleClaim[] possibleClaims,
+        GameRole initialClaim)
+    {
+        return possibleClaims.First(claim => claim.Player == player && claim.Role == initialClaim);
     }
 }

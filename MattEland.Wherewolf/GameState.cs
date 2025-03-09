@@ -234,6 +234,18 @@ public class GameState
             RunNext(state => state.RunToEndOfNight(callback));
         }
     }    
+    
+    public void RunToVoting(Action<GameState> callback)
+    {
+        if (CurrentPhase is VotingPhase)
+        {
+            callback(this);
+        }
+        else
+        {
+            RunNext(state => state.RunToVoting(callback));
+        }
+    }  
 
     public void RunNext(Action<GameState> callback)
     {

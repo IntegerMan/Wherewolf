@@ -1,5 +1,6 @@
 using MattEland.Wherewolf.Controllers;
 using MattEland.Wherewolf.Events.Game;
+using MattEland.Wherewolf.Events.Social;
 using MattEland.Wherewolf.Probability;
 using MattEland.Wherewolf.Roles;
 using MattEland.Wherewolf.Setup;
@@ -72,7 +73,7 @@ public class WerewolfRoleTests : RoleTestBase
             GameRole.Villager
         );
         setup.AddPlayers(
-            new Player("A", new FixedSelectionController(new ClaimFixedRoleStrategy(GameRole.Villager), "Center 2", "B")),
+            new Player("A", new FixedSelectionController(new ClaimFixedRoleStrategy(GameRole.Villager, (p,_) => new VillagerNoActionClaim(p)), "Center 2", "B")),
             new Player("B", new RandomController()),
             new Player("C", new RandomController())
         );

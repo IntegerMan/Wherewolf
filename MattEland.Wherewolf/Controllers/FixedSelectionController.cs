@@ -44,8 +44,7 @@ public class FixedSelectionController : PlayerController
 
     public override void GetSpecificRoleClaim(Player player, GameState gameState, GameRole initialRoleClaim, SpecificRoleClaim[] possibleClaims, Action<SpecificRoleClaim> callback)
     {
-        // TODO: Probably want to have a way of selecting one of these for testing
-        SpecificRoleClaim choice = possibleClaims.First(c => c.Role == initialRoleClaim);
+        SpecificRoleClaim choice = _roleClaimStrategy.GetSpecificRoleClaim(player, gameState, possibleClaims, initialRoleClaim);
         callback(choice);
     }
 }
