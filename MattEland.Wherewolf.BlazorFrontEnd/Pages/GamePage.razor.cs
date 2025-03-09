@@ -9,7 +9,8 @@ namespace MattEland.Wherewolf.BlazorFrontEnd.Pages;
 
 public partial class GamePage : ComponentBase, 
     IRecipient<ChangeClientModeMessage>,
-    IRecipient<VoteRequestedMessage>
+    IRecipient<VoteRequestedMessage>,
+    IRecipient<SpecificRoleClaimNeededMessage>
 {
     private readonly IGameStateRepository _repo;
 
@@ -59,6 +60,7 @@ public partial class GamePage : ComponentBase,
     }
 
     public PlayerProbabilities? PlayerProbabilities { get; set; }
+    public SpecificRoleClaimNeededMessage? SpecificRoleClaimNeededMessage { get; set; }
 
     public void Receive(ChangeClientModeMessage message)
     {
@@ -70,6 +72,13 @@ public partial class GamePage : ComponentBase,
     {
         Mode = ClientMode.Vote;
         PlayerProbabilities = message.PlayerProbabilities;
+        StateHasChanged();
+    }
+
+    public void Receive(SpecificRoleClaimNeededMessage message)
+    {
+        Mode = ClientMode.SpecificRoleClaim;
+        SpecificRoleClaimNeededMessage = message;
         StateHasChanged();
     }
 }

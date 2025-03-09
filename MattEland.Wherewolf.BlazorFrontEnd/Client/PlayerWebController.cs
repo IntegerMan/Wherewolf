@@ -11,12 +11,14 @@ public class PlayerWebController : PlayerController,
     IRecipient<RoleClaimedMessage>, 
     IRecipient<VotedMessage>, 
     IRecipient<RobbedPlayerMessage>,
-    IRecipient<LoneWolfSlotSelectionMessage>
+    IRecipient<LoneWolfSlotSelectionMessage>,
+    IRecipient<SpecificClaimMadeMessage>
 {
-    private Action<GameRole>? _roleClaimCallback;
     private Action<Player>? _voteCallback;
     private Action<Player>? _robberCallback;
     private Action<GameSlot>? _loneWolfCallback;
+    private Action<GameRole>? _initialRoleClaimCallback;
+    private Action<SpecificRoleClaim>? _specificRoleClaimCallback;
 
     public PlayerWebController()
     {
@@ -39,31 +41,27 @@ public class PlayerWebController : PlayerController,
     {
         _voteCallback = callback;
         WeakReferenceMessenger.Default.Send(new VoteRequestedMessage(state, playerProbs, victoryProbs));
-        //WeakReferenceMessenger.Default.Send(new ChangeClientModeMessage(ClientMode.Vote));
     }
 
     public override void GetInitialRoleClaim(Player player, GameState gameState, Action<GameRole> callback)
     {
-        _roleClaimCallback = callback;
-        WeakReferenceMessenger.Default.Send(new ChangeClientModeMessage(ClientMode.RoleClaim));
+        _initialRoleClaimCallback = callback;
+        WeakReferenceMessenger.Default.Send(new ChangeClientModeMessage(ClientMode.InitialRoleClaim));
     }
 
     public override void GetSpecificRoleClaim(Player player, GameState gameState, GameRole initialRoleClaim,
         SpecificRoleClaim[] possibleClaims, Action<SpecificRoleClaim> callback)
     {
-        SpecificRoleClaim choice = possibleClaims.First(c => c.Role == initialRoleClaim);
-        
-        // TODO: Get player input, obviously.
-        
-        callback(choice);
+        _specificRoleClaimCallback = callback;
+        WeakReferenceMessenger.Default.Send(new SpecificRoleClaimNeededMessage(possibleClaims, initialRoleClaim));
     }
 
     public void Receive(RoleClaimedMessage message)
     {
-        Action<GameRole>? callback = _roleClaimCallback;
+        Action<GameRole>? callback = _initialRoleClaimCallback;
         if (callback is null) return;
         
-        _roleClaimCallback = null;
+        _initialRoleClaimCallback = null;
         
         WeakReferenceMessenger.Default.Send(new ChangeClientModeMessage(ClientMode.Normal));    
         callback(message.Role);
@@ -100,5 +98,16 @@ public class PlayerWebController : PlayerController,
         
         WeakReferenceMessenger.Default.Send(new ChangeClientModeMessage(ClientMode.Normal));
         callback(message.Slot);
+    }
+
+    public void Receive(SpecificClaimMadeMessage message)
+    {
+        Action<SpecificRoleClaim>? callback = _specificRoleClaimCallback;
+        if (callback is null) return;
+        
+        _specificRoleClaimCallback = null;
+        
+        WeakReferenceMessenger.Default.Send(new ChangeClientModeMessage(ClientMode.Normal));
+        callback(message.Claim);
     }
 }

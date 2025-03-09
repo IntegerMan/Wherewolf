@@ -1,8 +1,17 @@
 @using MattEland.Wherewolf.BlazorFrontEnd.Helpers
 
+@if (CenterAlign)
+{
+    <div class="display: flax; flex-direction: row; justify-content: center;">
+        <RoleIndicator Role="@Role" CenterAlign="false" />
+    </div>
+}
+else
+{
     <MudIcon Size="Size.Medium" Icon="@Role.GetRoleIcon()"
              Class="mx-1"
              Color="@Role.GetTeamColor()"/>
     <MudText Inline="true" Color="@Role.GetTeamColor()">
         <strong>@Role</strong>
     </MudText>
+}
