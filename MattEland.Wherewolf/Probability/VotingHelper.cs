@@ -30,7 +30,7 @@ public static class VotingHelper
             VotedEvent vote = possibleState.Events.OfType<VotedEvent>().First(v => v.VotingPlayer == player);
 
             // Support always goes up by one, but we'll also factor in other player's claims as well
-            double stateImpact = possibleState.Support + otherClaims.Count(c => c.IsClaimValidFor(possibleState));;
+            double stateImpact = 1 + possibleState.Support + otherClaims.Count(c => c.IsClaimValidFor(possibleState));;
             results[vote.TargetPlayer].Support += stateImpact;
             
             if (possibleState.GameResult!.DidPlayerWin(player))
