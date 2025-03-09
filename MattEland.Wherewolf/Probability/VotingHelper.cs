@@ -157,7 +157,7 @@ public static class VotingHelper
         {
             roleStats[possibleClaim] = new()
             {
-                OtherClaims = priorClaims.Count(e => e.ClaimedRole == possibleClaim.Role)
+                OtherClaims = priorClaims.Count(e => e.ClaimedRole == possibleClaim.Role && e.Player != player)
             };
             
             // Filter to roles we started as the role we're considering claiming
