@@ -78,7 +78,6 @@
                                     </MudText>
                                 </div>
                             </MudText>
-
                         </ItemContent>
                     </MudTimelineItem>
                 }
@@ -131,6 +130,7 @@
                                     <MudText Inline="true" Class="mx-1">
                                         and took no action
                                     </MudText>
+                                    <LieTruthIndicator IsTruth="@roleClaim.EvaluateTruthfulness(Game, Perspective)" />
                                 </div>
                             </MudText>
                         </div>
@@ -151,7 +151,7 @@
                                         claimed they started as the
                                     </MudText>
                                     <RoleIndicator Role="@roleClaim.Role"/>
-                                    @if (roleClaim.Role == GameRole.Insomniac)
+                                    @if (roleClaim.FinalRole == GameRole.Insomniac)
                                     {
                                         <MudText Inline="true" Class="ml-1">
                                             and still are.
@@ -164,6 +164,7 @@
                                         </MudText>
                                         <RoleIndicator Role="@roleClaim.FinalRole"/>
                                     }
+                                    <LieTruthIndicator IsTruth="@roleClaim.EvaluateTruthfulness(Game, Perspective)" />
                                 </div>
                             </MudText>
                         </div>
@@ -192,6 +193,7 @@
                                         from
                                     </MudText>
                                     <PlayerIndicator Player="@roleClaim.Target" />
+                                    <LieTruthIndicator IsTruth="@roleClaim.EvaluateTruthfulness(Game, Perspective)" />
                                 </div>
                             </MudText>
                         </div>
@@ -219,6 +221,7 @@
                                     {
                                         <PlayerIndicator Player="@player" />
                                     }
+                                    <LieTruthIndicator IsTruth="@roleClaim.EvaluateTruthfulness(Game, Perspective)" />
                                 </div>
                             </MudText>
                         </div>
@@ -249,6 +252,7 @@
                                         and saw
                                     </MudText>
                                     <RoleIndicator Role="@roleClaim.ObservedRole" />
+                                    <LieTruthIndicator IsTruth="@roleClaim.EvaluateTruthfulness(Game, Perspective)" />
                                 </div>
                             </MudText>
                         </div>
@@ -271,41 +275,17 @@
                                     <RoleIndicator Role="@claimEvent.ClaimedRole"/>
                                     @if (Game.IsGameOver || Perspective is null)
                                     {
-                                        if (claimEvent.IsClaimValidFor(Game))
-                                        {
-                                            <MudText Inline="true" Color="Color.Success" Class="ml-1">
-                                                <strong>(true)</strong>
-                                            </MudText>
-                                        }
-                                        else
-                                        {
-                                            <MudText Inline="true" Color="Color.Error" Class="ml-1">
-                                                <strong>(lie)</strong>
-                                            </MudText>
-                                        }
+                                        <LieTruthIndicator IsTruth="@claimEvent.IsClaimValidFor(Game)" />
                                     }
                                     else if (Probabilities is not null)
                                     {
                                         if (!claimEvent.CanBeBelievedBy(Game, Probabilities))
                                         {
-                                            if (claimEvent.Player == Perspective)
-                                            {
-                                                <MudText Inline="true" Color="Color.Error" Class="ml-1">
-                                                    <strong>(lie)</strong>
-                                                </MudText>
-                                            }
-                                            else
-                                            {
-                                                <MudText Inline="true" Color="Color.Warning" Class="ml-1">
-                                                    <strong>(cannot be true)</strong>
-                                                </MudText>
-                                            }
+                                            <LieTruthIndicator IsTruth="false" />
                                         }
                                         else if (claimEvent.CannotBeFalse(Game, Probabilities))
                                         {
-                                            <MudText Inline="true" Color="Color.Success" Class="ml-1">
-                                                <strong>(true)</strong>
-                                            </MudText>
+                                            <LieTruthIndicator IsTruth="true" />
                                         }
                                     }
                                 </div>

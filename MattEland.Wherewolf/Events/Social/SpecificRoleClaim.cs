@@ -10,4 +10,14 @@ public abstract class SpecificRoleClaim(Player player, GameRole role) : SocialEv
 {
     public GameRole Role => role;
     public override Team? AssociatedTeam => Role.GetTeam();
+    
+    public bool? EvaluateTruthfulness(GameState game, Player? perspective)
+    {
+        if (perspective == null || game.IsGameOver || perspective == Player)
+        {
+            return IsClaimValidFor(game);
+        }
+
+        return null;
+    }
 }
