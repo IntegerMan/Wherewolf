@@ -78,8 +78,11 @@ else
                                 Next
                             </MudButton>
                             break;
-                        case ClientMode.RoleClaim:
+                        case ClientMode.InitialRoleClaim:
                             <RoleClaimSelection Game="@Game" PerspectivePlayer="@PerspectivePlayer" />
+                            break;
+                        case ClientMode.SpecificRoleClaim:
+                            <SpecificRoleClaimSelection Game="@Game" PerspectivePlayer="@PerspectivePlayer" DataSource="@SpecificRoleClaimNeededMessage" />
                             break;
                         case ClientMode.Vote:
                             <VoteSelection Game="@Game" PerspectivePlayer="@PerspectivePlayer" Probabilities="@PlayerProbabilities" />

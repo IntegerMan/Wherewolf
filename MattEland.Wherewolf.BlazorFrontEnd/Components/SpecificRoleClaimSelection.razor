@@ -1,0 +1,35 @@
+@using MattEland.Wherewolf.BlazorFrontEnd.Helpers
+@using MattEland.Wherewolf.Events.Social
+
+<section style="width: 100%;">
+    <MudText Typo="Typo.h4">Make a Specific Role Claim</MudText>
+    <MudText Typo="Typo.body2" GutterBottom="true">
+        Select a role and associated action you wish to claim.
+    </MudText>
+    <div class="my-2" style="max-height: 400px; overflow-y: auto; width: 100%; display: flex;">
+        <MudList T="SpecificRoleClaim" SelectionMode="SelectionMode.SingleSelection" Dense="true"
+                 Style="width: 100%;"
+                 @bind-SelectedValue="SelectedClaim">
+            @foreach (var role in DataSource.PossibleClaims.GroupBy(c => c.Role)
+                          .OrderByDescending(r => r.Key == DataSource.InitialClaim)
+                          .ThenBy(r => r.Key.ToString()))
+            {
+                <MudListSubheader>
+                    <RoleIndicator Role="@role.Key" CenterAlign="true" />
+                    @foreach (var claim in role.OrderBy(c => c.Description))
+                    {
+                        <MudListItem Text="@claim.Description" Color="@claim.Role.GetTeamColor()" Value="@claim" Dense="true"/>
+                    }
+                </MudListSubheader>
+                <MudDivider />
+            }
+        </MudList>
+    </div>
+    <MudButton Variant="Variant.Filled" Color="Color.Primary" 
+               StartIcon="@(SelectedClaim is null ? Icons.Material.Filled.ChatBubble : SelectedClaim.Role.GetRoleIcon())"
+               Disabled="SelectedClaim is null"
+               Class="mt-1"
+               OnClick="OnClaimSelected"> 
+        Claim
+    </MudButton>
+</section>

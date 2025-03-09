@@ -1,3 +1,4 @@
+using MattEland.Wherewolf.Events.Social;
 using MattEland.Wherewolf.Probability;
 using MattEland.Wherewolf.Roles;
 
@@ -38,6 +39,13 @@ public class RandomController : PlayerController
     public override void GetInitialRoleClaim(Player player, GameState gameState, Action<GameRole> callback)
     {
         GameRole choice = _roleClaimStrategy.GetRoleClaim(player, gameState);
+        callback(choice);
+    }
+
+    public override void GetSpecificRoleClaim(Player player, GameState gameState, GameRole initialRoleClaim, SpecificRoleClaim[] possibleClaims, Action<SpecificRoleClaim> callback)
+    {
+        SpecificRoleClaim[] claimsOfType = possibleClaims.Where(r => r.Role == initialRoleClaim).ToArray();
+        SpecificRoleClaim choice = claimsOfType.ElementAt(_rand.Next(claimsOfType.Length));
         callback(choice);
     }
 }
