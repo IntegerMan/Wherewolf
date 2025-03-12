@@ -6,7 +6,7 @@ namespace MattEland.Wherewolf.Events.Social;
 
 public class StartRoleClaimedEvent(Player player, GameRole role, GameState stateAtTime) : SocialEvent(player)
 {
-    private readonly DealtCardEvent _underlyingEvent = EventPool.DealtCardEvent(player.Name, role);
+    private readonly GameEvent _underlyingEvent = EventPool.DealtCardEvent(player.Name, role);
 
     public GameRole ClaimedRole => role;
 

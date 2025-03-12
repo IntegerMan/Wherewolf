@@ -358,23 +358,6 @@
                     </ItemContent>
                 </MudTimelineItem>
                 break;
-            case LoneWolfEvent loneEvent:
-                <MudTimelineItem Color="@CalculateEventColor(evt)" Size="Size.Small" Variant="Variant.Filled">
-                    <ItemDot>
-                        <MudIcon Size="Size.Small" Icon="@GameRole.Werewolf.GetRoleIcon()"/>
-                    </ItemDot>
-                    <ItemContent>
-                        <MudText Color="@CalculateEventColor(evt)">
-                            <div style="display: flex; flex-direction: row; align-items: center;">
-                                <PlayerIndicator Player="@loneEvent.Player" />
-                                <MudText Inline="true" Class="mx-1">
-                                    woke and saw they were the only one on the <strong>Werewolf</strong> team.
-                                </MudText>
-                            </div>
-                        </MudText>
-                    </ItemContent>
-                </MudTimelineItem>
-                break;
             case LoneWolfLookedAtSlotEvent loneEvent:
                 <MudTimelineItem Color="@CalculateEventColor(evt)" Size="Size.Small" Variant="Variant.Filled">
                     <ItemDot>
@@ -388,7 +371,7 @@
                                     looked at slot
                                 </MudText>
                                 <MudText Color="Color.Primary" Inline="true">
-                                    <strong>@loneEvent.Slot.Name</strong>
+                                    <strong>@loneEvent.SlotName</strong>
                                 </MudText>
                                 <MudText Inline="true" Class="mx-1">
                                     as the lone wolf and saw that it was a

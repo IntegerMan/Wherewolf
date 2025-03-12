@@ -1,3 +1,4 @@
+using MattEland.Wherewolf.Events;
 using MattEland.Wherewolf.Events.Game;
 using MattEland.Wherewolf.Roles;
 
@@ -9,22 +10,21 @@ public class WerewolfNightPhase : GamePhase
 
     public override void Run(GameState newState, Action<GameState> callback)
     {
-        newState.AddEvent(new GamePhaseAnnouncedEvent(
+        newState.AddEvent(EventPool.Announcement(
             "Werewolves, wake up and look for each other. If there is only one werewolf, you may look a card in the center.", GameRole.Werewolf));
 
         GameSlot[] werewolves = newState.PlayerSlots.Where(p => newState.GetStartRole(p).GetTeam() == Team.Werewolf)
             .ToArray();
+        
         if (werewolves.Length == 1)
         {
             Player loneWolfPlayer = werewolves.First().Player!;
-
-            newState.AddEvent(new LoneWolfEvent(loneWolfPlayer));
 
             // If the lone wolf is the only werewolf, let them pick which center card to look at
             GameSlot[] slots = newState.CenterSlots.ToArray();
             loneWolfPlayer.Controller.SelectLoneWolfCenterCard(slots, choice =>
             {
-                newState.AddEvent(new LoneWolfLookedAtSlotEvent(loneWolfPlayer, choice));
+                newState.AddEvent(EventPool.LoneWolf(loneWolfPlayer, choice));
                 callback(newState);
             });
         }
@@ -32,7 +32,7 @@ public class WerewolfNightPhase : GamePhase
         {
             if (werewolves.Length > 1)
             {
-                newState.AddEvent(new SawOtherWolvesEvent(werewolves.Select(w => w.Player!)));
+                newState.AddEvent(EventPool.WolfTeam(werewolves.Select(w => w.Player!)));
             }
 
             callback(newState);
@@ -55,10 +55,8 @@ public class WerewolfNightPhase : GamePhase
                 Player loneWolfPlayer = werewolves.First().Player!;
                 foreach (var centerSlot in priorState.CenterSlots)
                 {
-                    GameState lookedAtCenterCardState =
-                        new(priorState, priorState.Support / priorState.CenterSlots.Length);
-                    lookedAtCenterCardState.AddEvent(new LoneWolfEvent(loneWolfPlayer), broadcastToController: false);
-                    lookedAtCenterCardState.AddEvent(new LoneWolfLookedAtSlotEvent(loneWolfPlayer, centerSlot),
+                    GameState lookedAtCenterCardState = new(priorState, priorState.Support / priorState.CenterSlots.Length);
+                    lookedAtCenterCardState.AddEvent(EventPool.LoneWolf(loneWolfPlayer, centerSlot),
                         broadcastToController: false);
 
                     yield return lookedAtCenterCardState;

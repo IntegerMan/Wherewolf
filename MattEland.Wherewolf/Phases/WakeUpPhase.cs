@@ -1,3 +1,4 @@
+using MattEland.Wherewolf.Events;
 using MattEland.Wherewolf.Events.Game;
 
 namespace MattEland.Wherewolf.Phases;
@@ -6,7 +7,7 @@ public class WakeUpPhase : GamePhase
 {
     public override void Run(GameState newState, Action<GameState> callback)
     {
-        newState.AddEvent(new MakeSocialClaimsNowEvent());
+        newState.AddEvent(EventPool.MakeSocialClaimsNow());
         callback(newState);
     }
 

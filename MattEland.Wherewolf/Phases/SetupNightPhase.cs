@@ -1,3 +1,4 @@
+using MattEland.Wherewolf.Events;
 using MattEland.Wherewolf.Events.Game;
 
 namespace MattEland.Wherewolf.Phases;
@@ -12,7 +13,7 @@ public class SetupNightPhase : GamePhase
     public override void Run(GameState newState, Action<GameState> callback)
     {
         newState.SendRolesToControllers();
-        newState.AddEvent(new GamePhaseAnnouncedEvent("Everyone, go to sleep.", null));
+        newState.AddEvent(EventPool.Announcement("Everyone, go to sleep."));
 
         callback(newState);
     }

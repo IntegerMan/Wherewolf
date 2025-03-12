@@ -406,7 +406,7 @@ public class GameState
         IEnumerable<Player> dead = votes.Where(kvp => kvp.Value == maxVotes && kvp.Value >= minExecutionVotes)
             .Select(kvp => kvp.Key);
 
-        return new GameResult(dead, this, votes, supportingClaims);
+        return new GameResult(dead, this, votes);
     }
 
     public SpecificRoleClaim[] GeneratePossibleSpecificRoleClaims(Player player)

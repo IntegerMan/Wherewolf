@@ -10,30 +10,6 @@ namespace MattEland.Wherewolf.Tests.Roles;
 public class WerewolfRoleTests : RoleTestBase
 {
     [Fact]
-    public void LoneWerewolfShouldHaveLoneWerewolfEvent()
-    {
-        // Arrange
-        GameState gameState = CreateTestGameState(            
-            GameRole.Werewolf, // This will go to our player
-            GameRole.Villager,
-            GameRole.Villager,
-            // Center Cards
-            GameRole.Villager,
-            GameRole.Werewolf,
-            GameRole.Villager
-        );
-        gameState.RunToEnd(s => gameState = s);
-        Player player = gameState.Players.First();
-
-        // Act
-        List<GameEvent> observedEvents = gameState.Events.Where(e => e.IsObservedBy(player)).ToList();
-
-        // Assert
-        observedEvents.ShouldNotBeEmpty();
-        observedEvents.OfType<LoneWolfEvent>().Count().ShouldBe(1);
-    }
-
-    [Fact]
     public void LoneWerewolfShouldHaveLookedAtCardInCenterEvent()
     {
         // Arrange
@@ -87,7 +63,7 @@ public class WerewolfRoleTests : RoleTestBase
 
         // Assert
         List<GameEvent> observedEvents = gameState.Events.Where(e => e.IsObservedBy(player)).ToList();
-        observedEvents.OfType<LoneWolfLookedAtSlotEvent>().Single().Slot.Name.ShouldBe("Center 2");
+        observedEvents.OfType<LoneWolfLookedAtSlotEvent>().Single().SlotName.ShouldBe("Center 2");
         slotProbabilities.Role[GameRole.Werewolf].Probability.ShouldBe(0);
         slotProbabilities.Role[GameRole.Villager].Probability.ShouldBe(1);
     }    

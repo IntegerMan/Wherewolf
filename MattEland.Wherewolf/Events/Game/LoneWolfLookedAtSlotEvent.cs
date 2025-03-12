@@ -7,11 +7,23 @@ namespace MattEland.Wherewolf.Events.Game;
 /// for the lone wolf to help eliminate possible worlds at the deduction layer later. It may make more sense long-term
 /// to merge all card looking abilities into a single event type.
 /// </summary>
-public class LoneWolfLookedAtSlotEvent(Player player, GameSlot slot) : GameEvent
+public class LoneWolfLookedAtSlotEvent : GameEvent
 {
-    public Player Player { get; } = player;
-    public GameSlot Slot { get; } = slot;
-    public GameRole ObservedRole { get; } = slot.Role;
+    /// <summary>
+    /// This is a specialized event that occurs when a player is a lone wolf. I'm choosing to make this event specialized
+    /// for the lone wolf to help eliminate possible worlds at the deduction layer later. It may make more sense long-term
+    /// to merge all card looking abilities into a single event type.
+    /// </summary>
+    internal LoneWolfLookedAtSlotEvent(Player player, string slotName, GameRole role)
+    {
+        Player = player;
+        SlotName = slotName;
+        ObservedRole = role;
+    }
+
+    public Player Player { get; }
+    public string SlotName { get; }
+    public GameRole ObservedRole { get; }
 
     public override bool IsObservedBy(Player player) 
         => Player == player;
@@ -19,7 +31,7 @@ public class LoneWolfLookedAtSlotEvent(Player player, GameSlot slot) : GameEvent
     public override Team? AssociatedTeam => Team.Werewolf;
 
     public override string Description
-        => $"{Player.Name} looked at {Slot.Name} since they were the only werewolf and saw a {ObservedRole}";
+        => $"{Player.Name} looked at {SlotName} since they were the only werewolf and saw a {ObservedRole}";
 
     public override bool IsPossibleInGameState(GameState state)
     {
@@ -48,6 +60,6 @@ public class LoneWolfLookedAtSlotEvent(Player player, GameSlot slot) : GameEvent
         }
         
         // In the game state, the current role needs to be the one the event recorded seeing
-        return wwPhaseState[Slot.Name].Role == ObservedRole;
+        return wwPhaseState[SlotName].Role == ObservedRole;
     }
 }

@@ -7,11 +7,10 @@ public class GameResult
     private readonly GameState _state;
     private readonly List<Player> _winningPlayers = new();
 
-    public GameResult(IEnumerable<Player> dead, GameState state, IDictionary<Player, int> votes, int supportingClaims)
+    public GameResult(IEnumerable<Player> dead, GameState state, IDictionary<Player, int> votes)
     {
         _state = state;
         Votes = votes;
-        SupportingClaims = supportingClaims;
         DeadPlayers = dead;
         
         WinningTeam = DetermineWinningTeam();
@@ -29,7 +28,6 @@ public class GameResult
 
     public IEnumerable<Player> DeadPlayers { get; }
     public IEnumerable<GameRole> DeadRoles => DeadPlayers.Select(p => _state[p.Name].Role).Distinct();
-    public int SupportingClaims { get; }
 
     public Team WinningTeam { get; }
 
