@@ -11,6 +11,4 @@ public abstract class GamePhase
     public abstract IEnumerable<GameState> BuildPossibleStates(GameState priorState);
 
     public override string ToString() => Name;
-
-    public virtual bool AutoAdvance { get; } = false;
 } 

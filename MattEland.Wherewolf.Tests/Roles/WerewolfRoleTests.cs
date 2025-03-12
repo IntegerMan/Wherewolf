@@ -30,6 +30,7 @@ public class WerewolfRoleTests : RoleTestBase
 
         // Assert
         observedEvents.ShouldNotBeEmpty();
+        // TODO: Something about running parallel tests seems to get this particular event to be skipped from callbacks
         observedEvents.OfType<LoneWolfLookedAtSlotEvent>().Count().ShouldBe(1);
     }
     
@@ -63,6 +64,7 @@ public class WerewolfRoleTests : RoleTestBase
 
         // Assert
         List<GameEvent> observedEvents = gameState.Events.Where(e => e.IsObservedBy(player)).ToList();
+        // TODO: Something about running parallel tests seems to get this particular event to be skipped from callbacks
         observedEvents.OfType<LoneWolfLookedAtSlotEvent>().Single().SlotName.ShouldBe("Center 2");
         slotProbabilities.Role[GameRole.Werewolf].Probability.ShouldBe(0);
         slotProbabilities.Role[GameRole.Villager].Probability.ShouldBe(1);

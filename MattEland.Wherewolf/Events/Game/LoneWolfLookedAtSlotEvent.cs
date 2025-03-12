@@ -25,41 +25,12 @@ public class LoneWolfLookedAtSlotEvent : GameEvent
     public string SlotName { get; }
     public GameRole ObservedRole { get; }
 
-    public override bool IsObservedBy(Player player) 
-        => Player == player;
+    public override bool IsObservedBy(Player player) => Player == player;
     
     public override Team? AssociatedTeam => Team.Werewolf;
 
     public override string Description
         => $"{Player.Name} looked at {SlotName} since they were the only werewolf and saw a {ObservedRole}";
 
-    public override bool IsPossibleInGameState(GameState state)
-    {
-        // This event is only possible with a solo wolf
-        if (state.PlayerSlots.Count(p => state.GetStartRole(p).GetTeam() == Team.Werewolf) != 1)
-        {
-            return false;
-        }
-        
-        // If the executing player was not a werewolf, this event is not possible
-        if (state.GetStartRole(Player).GetTeam() != Team.Werewolf)
-        {
-            return false;
-        }
-
-        GameState? wwPhaseState = state;
-        while (wwPhaseState is { CurrentPhase: not { Name: "Werewolves" } })
-        {
-            wwPhaseState = wwPhaseState.Parent;
-        }
-        
-        // If we didn't find a werewolf phase, we're looking at a phase before the WW phase, so this should be true
-        if (wwPhaseState == null)
-        {
-            return true;
-        }
-        
-        // In the game state, the current role needs to be the one the event recorded seeing
-        return wwPhaseState[SlotName].Role == ObservedRole;
-    }
+    public override bool IsPossibleInGameState(GameState state) => state.Events.Contains(this);
 }
