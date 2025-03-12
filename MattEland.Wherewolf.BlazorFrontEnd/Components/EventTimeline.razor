@@ -57,7 +57,7 @@
                 break;
 
             case DealtCardEvent dealtEvent:
-                @if (dealtEvent.Slot.Player is not null)
+                @if (!dealtEvent.SlotName.StartsWith("Center"))
                 {
                     <MudTimelineItem Color="@CalculateEventColor(evt)" Size="Size.Small" Variant="Variant.Filled">
                         <ItemDot>
@@ -67,7 +67,7 @@
                             <MudText Color="@CalculateEventColor(evt)">
                                 <div style="display: flex; flex-direction: row; align-items: center;">
                                     <MudText Color="Color.Primary" Inline="true">
-                                        <strong>@dealtEvent.Slot.Name</strong>
+                                        <strong>@dealtEvent.SlotName</strong>
                                     </MudText>
                                     <MudText Inline="true" Class="mx-1">
                                         was dealt

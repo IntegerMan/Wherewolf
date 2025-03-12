@@ -32,7 +32,7 @@ public class GameState
 
         foreach (var slot in AllSlots)
         {
-            AddEvent(new DealtCardEvent(slot.Role, slot), broadcastToController: false);
+            AddEvent(EventPool.DealtCardEvent(slot.Name, slot.Role), broadcastToController: false);
         }
 
         _remainingPhases = new Queue<GamePhase>(setup.Phases);
@@ -330,7 +330,7 @@ public class GameState
         // In order to avoid sending events from possible worlds to players, we only broadcast dealt events after a root state has been chosen
         foreach (var dealtEvent in _events.OfType<DealtCardEvent>())
         {
-            dealtEvent.Player?.Controller.ObservedEvent(dealtEvent, this);
+            _slots[dealtEvent.SlotName].Player!.Controller.ObservedEvent(dealtEvent, this);
         }
     }
     

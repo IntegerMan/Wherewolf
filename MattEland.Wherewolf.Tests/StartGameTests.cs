@@ -180,7 +180,7 @@ public class StartGameTests : GameTestsBase
         state.ShouldNotBeNull();
         foreach (var slot in state.AllSlots)
         {
-            state.Events.OfType<DealtCardEvent>().ShouldContain(e => e.Slot.Name == slot.Name);
+            state.Events.OfType<DealtCardEvent>().ShouldContain(e => e.SlotName == slot.Name);
         }
     }
 }

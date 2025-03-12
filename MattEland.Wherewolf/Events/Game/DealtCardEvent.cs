@@ -5,18 +5,26 @@ namespace MattEland.Wherewolf.Events.Game;
 /// <summary>
 /// An event that occurs when a card is dealt to a slot.
 /// </summary>
-public class DealtCardEvent(GameRole role, GameSlot slot) : GameEvent
+public class DealtCardEvent : GameEvent
 {
-    public GameRole Role { get; } = role;
-    public GameSlot Slot { get; } = slot;
-    public Player? Player { get; } = slot.Player;
+    /// <summary>
+    /// An event that occurs when a card is dealt to a slot.
+    /// </summary>
+    internal DealtCardEvent(string slotName, GameRole role)
+    {
+        Role = role;
+        SlotName = slotName;
+    }
 
-    public override bool IsObservedBy(Player player) => Player == player;
-    public override string Description => $"{Slot.Name} was dealt {Role}";
+    public GameRole Role { get; }
+    public string SlotName { get; }
+
+    public override bool IsObservedBy(Player player) => SlotName == player.Name;
+    public override string Description => $"{SlotName} was dealt {Role}";
     
     public override bool IsPossibleInGameState(GameState state)
     {
-        GameSlot stateSlot = state.Root[Slot.Name];
+        GameSlot stateSlot = state.Root[SlotName];
         
         return stateSlot.Role == Role;
     }
