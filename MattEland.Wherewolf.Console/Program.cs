@@ -16,10 +16,12 @@ try
     Random rand = new();
     GameSetup gameSetup = new();
     IRoleClaimStrategy roleClaimStrategy = new ClaimSafestRoleStrategy(rand);
+    RandomOptimalVoteController aiController = new RandomOptimalVoteController(roleClaimStrategy);
+    const bool controlPlayer1 = false;
     gameSetup.AddPlayers(
-        new Player("Rufus", new RandomOptimalVoteController(roleClaimStrategy)),
-        new Player("Jimothy", new RandomOptimalVoteController(roleClaimStrategy)),
-        new Player("Matt", new HumanConsoleController())
+        new Player("Rufus", aiController),
+        new Player("Jimothy", aiController),
+        new Player("Matt", controlPlayer1 ? new HumanConsoleController() : aiController)
     );
     gameSetup.AddRoles(
         GameRole.Villager,
