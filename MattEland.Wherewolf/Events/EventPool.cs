@@ -1,3 +1,4 @@
+using System.Collections.Concurrent;
 using MattEland.Wherewolf.Events.Game;
 using MattEland.Wherewolf.Roles;
 
@@ -5,20 +6,13 @@ namespace MattEland.Wherewolf.Events;
 
 public static class EventPool
 {
-    private static readonly Dictionary<string, GameEvent> _events = new();
-    private static readonly Lock _lock = new();
+    private static readonly ConcurrentDictionary<string, GameEvent> _events = new();
 
     private static GameEvent GetOrInstantiateEvent(string key, Func<GameEvent> eventFactory)
     {
-        // This lock should ensure we don't have two threads trying to create the same event
-        lock (_lock)
-        {
-            if (_events.TryGetValue(key, out var gameEvent)) return gameEvent;
-            GameEvent newEvent = eventFactory();
-            _events[key] = newEvent;
-
-            return newEvent;
-        }
+        return _events.GetOrAdd(key, (Func<string, GameEvent>)Factory);
+        
+        GameEvent Factory(string _) => eventFactory();
     }
 
     public static GameEvent DealtCardEvent(string slotName, GameRole slotRole)
@@ -42,7 +36,8 @@ public static class EventPool
             () => new InsomniacSawFinalCardEvent(insomniacPlayer, insomniacRole));
 
     public static GameEvent LoneWolf(Player loneWolfPlayer, GameSlot choice)
-        => GetOrInstantiateEvent($"{nameof(LoneWolfLookedAtSlotEvent)}:{loneWolfPlayer.Name}:{choice.Name}:{choice.Role}",
+        => GetOrInstantiateEvent(
+            $"{nameof(LoneWolfLookedAtSlotEvent)}:{loneWolfPlayer.Name}:{choice.Name}:{choice.Role}",
             () => new LoneWolfLookedAtSlotEvent(loneWolfPlayer, choice.Name, choice.Role));
 
     public static GameEvent WolfTeam(IEnumerable<Player> wolves)
