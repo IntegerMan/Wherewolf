@@ -5,19 +5,15 @@ namespace MattEland.Wherewolf.Events.Game;
 /// <summary>
 /// This event occurs during the night Werewolf phase when 2 or more players started as a werewolf
 /// </summary>
-public class SawOtherWolvesEvent(IEnumerable<Player> wolves) : GameEvent
+public class SawOtherWolvesEvent(IEnumerable<string> wolves) : GameEvent
 {
-    public IEnumerable<Player> Players { get; } = wolves;
+    public HashSet<string> Players { get; } = wolves.ToHashSet();
 
-    public override bool IsObservedBy(Player player)
-    {
-        return Players.Contains(player);
-    }
-    
+    public override bool IsObservedBy(Player player) => Players.Contains(player.Name);
+
     public override Team? AssociatedTeam => Team.Werewolf;
 
-    public override string Description
-        => $"{string.Join(" and ", Players.Select(p => p.Name))} saw that each other were on the werewolf team";
+    public override string Description => $"{string.Join(" and ", Players)} saw that each other were on the werewolf team";
     
     public override bool IsPossibleInGameState(GameState state)
     {
@@ -35,7 +31,7 @@ public class SawOtherWolvesEvent(IEnumerable<Player> wolves) : GameEvent
         // Cannot occur if other players not listed are also werewolves
         foreach (var slot in state.PlayerSlots)
         {
-            if (state.GetStartRole(slot).GetTeam() == Team.Werewolf && !Players.Contains(slot.Player))
+            if (state.GetStartRole(slot).GetTeam() == Team.Werewolf && !Players.Contains(slot.Player!.Name))
             {
                 return false;
             }

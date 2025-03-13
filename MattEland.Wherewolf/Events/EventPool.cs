@@ -41,8 +41,8 @@ public static class EventPool
             $"{nameof(LoneWolfLookedAtSlotEvent)}:{loneWolfPlayerName}:{choice.Name}:{choice.Role}",
             () => new LoneWolfLookedAtSlotEvent(loneWolfPlayerName, choice.Name, choice.Role));
 
-    public static GameEvent WolfTeam(IEnumerable<Player> wolves)
-        => GetOrInstantiateEvent($"{nameof(SawOtherWolvesEvent)}:{string.Join(",", wolves.Select(p => p.Name))}",
+    public static GameEvent WolfTeam(IEnumerable<string> wolves)
+        => GetOrInstantiateEvent($"{nameof(SawOtherWolvesEvent)}:{string.Join(",", wolves)}",
             () => new SawOtherWolvesEvent(wolves));
 
     public static GameEvent Robbed(string robberPlayer, string targetPlayer, GameRole stolenRole)

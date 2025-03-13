@@ -32,7 +32,7 @@ public class WerewolfNightPhase : GamePhase
         {
             if (werewolves.Length > 1)
             {
-                newState.AddEvent(EventPool.WolfTeam(werewolves.Select(w => w.Player!)));
+                newState.AddEvent(EventPool.WolfTeam(werewolves.Select(w => w.Name)));
             }
 
             callback(newState);
@@ -68,7 +68,7 @@ public class WerewolfNightPhase : GamePhase
             {
                 // In this case we had multiple werewolves, they do no action but we get an event
                 GameState newState = new(priorState, priorState.Support);
-                newState.AddEvent(new SawOtherWolvesEvent(werewolves.Select(w => w.Player!)),
+                newState.AddEvent(new SawOtherWolvesEvent(werewolves.Select(w => w.Name)),
                     broadcastToController: false);
                 yield return newState;
                 break;
