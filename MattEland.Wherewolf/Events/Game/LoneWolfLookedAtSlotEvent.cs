@@ -32,5 +32,19 @@ public class LoneWolfLookedAtSlotEvent : GameEvent
     public override string Description
         => $"{PlayerName} looked at {SlotName} since they were the only werewolf and saw a {ObservedRole}";
 
-    public override bool IsPossibleInGameState(GameState state) => state.ContainsEvent(this);
+    public override bool IsPossibleInGameState(GameState state)
+    {
+        if (state.ContainsEvent(this)) return true;
+        
+        // Can only occur if the player is a werewolf
+        if (state.GetStartRole(PlayerName) != GameRole.Werewolf) return false;
+        
+        // Can only occur if the target starts as the observed role
+        if (state.GetStartRole(SlotName) != ObservedRole) return false;
+        
+        // Can only occur if the player is the only werewolf
+        if (state.PlayerSlots.Count(p => p.Role.GetTeam() == Team.Werewolf) > 1) return false;
+        
+        return true;
+    }
 }

@@ -21,5 +21,16 @@ public class InsomniacSawFinalCardEvent : GameEvent
     
     public override Team? AssociatedTeam => Role.GetTeam();
 
-    public override bool IsPossibleInGameState(GameState state) => state.ContainsEvent(this);
+    public override bool IsPossibleInGameState(GameState state)
+    {
+        if (state.ContainsEvent(this)) return true;
+        
+        // If the player didn't start as an Insomniac, they can't see their final card
+        if (state.GetStartRole(PlayerName) != GameRole.Insomniac) return false;
+        
+        // If the final role is wrong, this event can't happen
+        if (state[PlayerName].Role != Role) return false;
+
+        return true;
+    }
 }
