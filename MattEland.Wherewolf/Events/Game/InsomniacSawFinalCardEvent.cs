@@ -2,25 +2,35 @@ using MattEland.Wherewolf.Roles;
 
 namespace MattEland.Wherewolf.Events.Game;
 
-public class InsomniacSawFinalCardEvent(Player player, GameRole role) : GameEvent
+public class InsomniacSawFinalCardEvent : GameEvent
 {
-    public Player Player { get; } = player;
-    public GameRole Role { get; } = role;
+    internal InsomniacSawFinalCardEvent(string playerName, GameRole role)
+    {
+        PlayerName = playerName;
+        Role = role;
+    }
 
-    public override bool IsObservedBy(Player player) 
-        => Player == player;
+    public string PlayerName { get; }
+    public GameRole Role { get; }
+
+    public override bool IsObservedBy(Player player) => PlayerName == player.Name;
 
     public override string Description => Role == GameRole.Insomniac
-        ? $"{Player.Name} saw that they were still the {Role}"
-        : $"{Player.Name} saw that they were now the {Role}";
+        ? $"{PlayerName} saw that they were still the {Role}"
+        : $"{PlayerName} saw that they were now the {Role}";
     
     public override Team? AssociatedTeam => Role.GetTeam();
-    
+
     public override bool IsPossibleInGameState(GameState state)
     {
-        GameSlot playerSlot = state.GetSlot(Player);
-        GameRole startRole = state.Root[Player.Name].Role;
+        if (state.ContainsEvent(this)) return true;
         
-        return startRole == GameRole.Insomniac && playerSlot.Role == Role;
+        // If the player didn't start as an Insomniac, they can't see their final card
+        if (state.GetStartRole(PlayerName) != GameRole.Insomniac) return false;
+        
+        // If the final role is wrong, this event can't happen
+        if (state[PlayerName].Role != Role) return false;
+
+        return true;
     }
 }

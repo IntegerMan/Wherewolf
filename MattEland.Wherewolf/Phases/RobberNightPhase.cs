@@ -1,3 +1,4 @@
+using MattEland.Wherewolf.Events;
 using MattEland.Wherewolf.Events.Game;
 using MattEland.Wherewolf.Roles;
 
@@ -9,7 +10,7 @@ public class RobberNightPhase : GamePhase
 
     private void AddRobberNightAnnouncement(GameState newState, bool broadcast)
     {
-        newState.AddEvent(new GamePhaseAnnouncedEvent("Robber, wake up and exchange cards with another player, then look at your new card.", GameRole.Robber), broadcast);
+        newState.AddEvent(EventPool.Announcement("Robber, wake up and exchange cards with another player, then look at your new card.", GameRole.Robber), broadcast);
     }
 
     public override void Run(GameState newState, Action<GameState> callback)
@@ -41,8 +42,7 @@ public class RobberNightPhase : GamePhase
         GameState swappedState = newState.SwapRoles(target.Name, robber.Name);
         
         AddRobberNightAnnouncement(swappedState, broadcast);
-        RobbedPlayerEvent robbedEvent = new(robber.Player!, target.Player!, stolenRole);
-        swappedState.AddEvent(robbedEvent, broadcast);
+        swappedState.AddEvent(EventPool.Robbed(robber.Player!.Name, target.Player!.Name, stolenRole), broadcast);
         
         return swappedState;
     }

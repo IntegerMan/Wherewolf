@@ -17,5 +17,5 @@ public class WokeWithWerewolvesClaim(Player player, params Player[] otherWerewol
     
     public override bool IsClaimValidFor(GameState state) 
         => state.Events.OfType<SawOtherWolvesEvent>()
-            .Any(e => e.Players.Contains(Player) && OtherWerewolves.All(w => e.Players.Contains(w)) && e.Players.Count() == OtherWerewolves.Length + 1);
+            .Any(e => e.Players.Contains(Player.Name) && OtherWerewolves.All(w => e.Players.Contains(w.Name)) && e.Players.Count == OtherWerewolves.Length + 1);
 }

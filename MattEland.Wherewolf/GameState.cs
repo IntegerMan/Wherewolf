@@ -11,8 +11,6 @@ namespace MattEland.Wherewolf;
 
 public class GameState
 {
-    private readonly GameSlot[] _centerSlots;
-    private readonly GameSlot[] _playerSlots;
     private readonly Queue<GamePhase> _remainingPhases;
     private readonly List<GameEvent> _events = [];
     private readonly List<SocialEvent> _claims = [];
@@ -23,8 +21,8 @@ public class GameState
     public GameState(GameSetup setup, IReadOnlyList<GameRole> shuffledRoles, double support)
     {
         Setup = setup;
-        _playerSlots = BuildPlayerSlots(setup.Players, shuffledRoles);
-        _centerSlots = BuildCenterSlots(setup.Players, shuffledRoles);
+        PlayerSlots = BuildPlayerSlots(setup.Players, shuffledRoles);
+        CenterSlots = BuildCenterSlots(setup.Players, shuffledRoles);
         foreach(var slot in AllSlots)
         {
             _slots[slot.Name] = slot;
@@ -32,7 +30,7 @@ public class GameState
 
         foreach (var slot in AllSlots)
         {
-            AddEvent(new DealtCardEvent(slot.Role, slot), broadcastToController: false);
+            AddEvent(EventPool.DealtCardEvent(slot.Name, slot.Role), broadcastToController: false);
         }
 
         _remainingPhases = new Queue<GamePhase>(setup.Phases);
@@ -44,8 +42,8 @@ public class GameState
     {
         Setup = parentState.Setup;
         _remainingPhases = new Queue<GamePhase>(parentState._remainingPhases.Skip(1));
-        _centerSlots = parentState.CenterSlots.Select(c => new GameSlot(c)).ToArray();
-        _playerSlots = parentState.PlayerSlots.Select(c => new GameSlot(c)).ToArray();
+        CenterSlots = parentState.CenterSlots.Select(c => new GameSlot(c)).ToArray();
+        PlayerSlots = parentState.PlayerSlots.Select(c => new GameSlot(c)).ToArray();
         foreach(var slot in AllSlots)
         {
             _slots[slot.Name] = slot;
@@ -62,8 +60,8 @@ public class GameState
     {
         Setup = parentState.Setup;
         _remainingPhases = new Queue<GamePhase>(parentState._remainingPhases);
-        _centerSlots = centerSlots.ToArray();
-        _playerSlots = playerSlots.ToArray();
+        CenterSlots = centerSlots.ToArray();
+        PlayerSlots = playerSlots.ToArray();
         
         foreach(var slot in AllSlots)
         {
@@ -111,19 +109,20 @@ public class GameState
         }
     }
 
-    public GameSlot[] PlayerSlots => _playerSlots;
-    public GameSlot[] CenterSlots => _centerSlots;
+    public GameSlot[] PlayerSlots { get; }
+
+    public GameSlot[] CenterSlots { get; }
 
     public IEnumerable<GameSlot> AllSlots
     {
         get
         {
-            foreach (var slot in _playerSlots)
+            foreach (var slot in PlayerSlots)
             {
                 yield return slot;
             }
 
-            foreach (var slot in _centerSlots)
+            foreach (var slot in CenterSlots)
             {
                 yield return slot;
             }
@@ -254,15 +253,7 @@ public class GameState
 
         GameState nextState = new(this, Support);
         
-        if (phase.AutoAdvance) 
-        {
-            phase.Run(nextState, s => s.RunNext(callback));
-        }
-        else
-        {
-            phase.Run(nextState, callback);
-        }
-
+        phase.Run(nextState, callback);
     }
 
     public bool IsGameOver => _remainingPhases.Count == 0;
@@ -286,7 +277,7 @@ public class GameState
     public GameState Root { get; }
     public GameResult? GameResult { get; internal set; }
 
-    public void AddEvent(GameEvent newEvent, bool broadcastToController = true)
+    internal void AddEvent(GameEvent newEvent, bool broadcastToController = true)
     {
         _events.Add(newEvent);
 
@@ -301,8 +292,8 @@ public class GameState
             }
         }
     }
-    
-    public void AddEvent(SocialEvent newEvent)
+
+    internal void AddEvent(SocialEvent newEvent)
     {
         _claims.Add(newEvent);
     }
@@ -330,7 +321,7 @@ public class GameState
         // In order to avoid sending events from possible worlds to players, we only broadcast dealt events after a root state has been chosen
         foreach (var dealtEvent in _events.OfType<DealtCardEvent>())
         {
-            dealtEvent.Player?.Controller.ObservedEvent(dealtEvent, this);
+            _slots[dealtEvent.SlotName].Player!.Controller.ObservedEvent(dealtEvent, this);
         }
     }
     
@@ -381,7 +372,9 @@ public class GameState
             if (s == s1)
             {
                 return new GameSlot(s.Name, role2, s.Player);
-            } else if (s == s2)
+            }
+
+            if (s == s2)
             {
                 return new GameSlot(s.Name, role1, s.Player);
             }
@@ -406,7 +399,7 @@ public class GameState
         IEnumerable<Player> dead = votes.Where(kvp => kvp.Value == maxVotes && kvp.Value >= minExecutionVotes)
             .Select(kvp => kvp.Key);
 
-        return new GameResult(dead, this, votes, supportingClaims);
+        return new GameResult(dead, this, votes);
     }
 
     public SpecificRoleClaim[] GeneratePossibleSpecificRoleClaims(Player player)
@@ -423,4 +416,6 @@ public class GameState
 
         return claims.ToArray();
     }
+
+    public bool ContainsEvent(GameEvent e) => Events.Contains(e);
 }

@@ -19,7 +19,7 @@ public class VillagerRoleTests : RoleTestBase
 
         // Assert
         dealtCardEvent.Role.ShouldBe(GameRole.Villager);
-        dealtCardEvent.Player.ShouldBe(player);
+        dealtCardEvent.SlotName.ShouldBe(player.Name);
     }
 
 }

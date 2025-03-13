@@ -15,5 +15,5 @@ public class InsomniacWakeClaim(Player player, GameRole finalRole) : SpecificRol
 
     public override bool IsClaimValidFor(GameState state) 
         => state.Events.OfType<InsomniacSawFinalCardEvent>()
-            .Any(e => e.Player == Player && e.Role == FinalRole);
+            .Any(e => e.PlayerName == Player.Name && e.Role == FinalRole);
 }

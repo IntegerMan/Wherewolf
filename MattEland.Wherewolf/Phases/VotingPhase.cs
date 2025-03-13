@@ -1,3 +1,4 @@
+using MattEland.Wherewolf.Events;
 using MattEland.Wherewolf.Events.Game;
 using MattEland.Wherewolf.Probability;
 
@@ -9,7 +10,7 @@ public class VotingPhase : GamePhase
     
     public override void Run(GameState newState, Action<GameState> callback)
     {
-        newState.AddEvent(new GamePhaseAnnouncedEvent("Everyone, vote for one other player.", null));
+        newState.AddEvent(EventPool.Announcement("Everyone, vote for one other player."));
 
         List<VotedEvent> voteEvents = new(newState.Players.Count());
         Dictionary<Player, Player> votes = new();
@@ -62,11 +63,11 @@ public class VotingPhase : GamePhase
         foreach (var deadPlayer in result.DeadPlayers)
         {
             GameSlot playerSlot = newState[deadPlayer.Name];
-            newState.AddEvent(new VotedOutEvent(deadPlayer, playerSlot.Role), broadcast);
+            newState.AddEvent(EventPool.VotedOut(deadPlayer, playerSlot.Role), broadcast);
         }
 
         // Get a final event to tell us who won the game
-        newState.AddEvent(new GameOverEvent(result), broadcast);
+        newState.AddEvent(EventPool.GameOver(result.WinningTeam), broadcast);
     }
 
     public override double Order => double.MaxValue;
@@ -84,7 +85,7 @@ public class VotingPhase : GamePhase
                 votes[kvp.Key] = 0;
             }
 
-            newState.AddEvent(new GamePhaseAnnouncedEvent("Everyone, vote for one other player.", null), broadcastToController: false);
+            newState.AddEvent(EventPool.Announcement("Everyone, vote for one other player."), broadcastToController: false);
 
             foreach (var kvp in perm)
             {
