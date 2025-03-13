@@ -12,5 +12,5 @@ public class RobberRobbedClaim(Player player, Player target, GameRole stolenRole
     
     public override bool IsClaimValidFor(GameState state) 
         => state.Events.OfType<RobbedPlayerEvent>()
-            .Any(e => e.Player == Player && e.Target == Target && e.NewRole == StolenRole);
+            .Any(e => e.PlayerName == Player.Name && e.TargetName == Target.Name && e.NewRole == StolenRole);
 }

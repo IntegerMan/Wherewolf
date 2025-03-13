@@ -32,7 +32,7 @@
                         <MudText Color="@CalculateEventColor(evt)">
                             <div style="display: flex; flex-direction: row; align-items: center;">
                                 <MudText Color="Color.Primary" Inline="true" Class="mr-1">
-                                    <strong>@insomniacEvent.Player.Name</strong>
+                                    <strong>@insomniacEvent.PlayerName</strong>
                                 </MudText>
                                 @if (insomniacEvent.Role == GameRole.Insomniac)
                                 {
@@ -92,7 +92,7 @@
                         <MudText Color="@CalculateEventColor(evt)">
                             <div style="display: flex; flex-direction: row; align-items: center;">
                                 <MudText Color="Color.Primary" Inline="true">
-                                    <strong>@robEvent.Player.Name</strong>
+                                    <strong>@robEvent.PlayerName</strong>
                                 </MudText>
                                 <MudText Inline="true" Class="mx-1">
                                     stole the
@@ -105,7 +105,7 @@
                                     role from
                                 </MudText>
                                 <MudText Color="Color.Primary" Inline="true">
-                                    <strong>@robEvent.Target.Name</strong>
+                                    <strong>@robEvent.TargetName</strong>
                                 </MudText>
                             </div>
                         </MudText>
@@ -122,7 +122,7 @@
                         <div>
                             <MudText Color="@CalculateEventColor(evt)">
                                 <div style="display: flex; flex-direction: row; align-items: center;">
-                                    <PlayerIndicator Player="@roleClaim.Player" />
+                                    <PlayerIndicator PlayerName="@roleClaim.Player.Name" />
                                     <MudText Inline="true" Class="mx-1">
                                         claimed they started as the
                                     </MudText>
@@ -146,7 +146,7 @@
                         <div>
                             <MudText Color="@CalculateEventColor(evt)">
                                 <div style="display: flex; flex-direction: row; align-items: center;">
-                                    <PlayerIndicator Player="@roleClaim.Player" />
+                                    <PlayerIndicator PlayerName="@roleClaim.Player.Name" />
                                     <MudText Inline="true" Class="mx-1">
                                         claimed they started as the
                                     </MudText>
@@ -180,7 +180,7 @@
                         <div>
                             <MudText Color="@CalculateEventColor(evt)">
                                 <div style="display: flex; flex-direction: row; align-items: center;">
-                                    <PlayerIndicator Player="@roleClaim.Player" />
+                                    <PlayerIndicator PlayerName="@roleClaim.Player.Name" />
                                     <MudText Inline="true" Class="mx-1">
                                         claimed they started as the
                                     </MudText>
@@ -192,7 +192,7 @@
                                     <MudText Inline="true" Class="mx-1">
                                         from
                                     </MudText>
-                                    <PlayerIndicator Player="@roleClaim.Target" />
+                                    <PlayerIndicator PlayerName="@roleClaim.Target.Name" />
                                     <LieTruthIndicator IsTruth="@roleClaim.EvaluateTruthfulness(Game, Perspective)" />
                                 </div>
                             </MudText>
@@ -209,7 +209,7 @@
                         <div>
                             <MudText Color="@CalculateEventColor(evt)">
                                 <div style="display: flex; flex-direction: row; align-items: center;">
-                                    <PlayerIndicator Player="@roleClaim.Player" />
+                                    <PlayerIndicator PlayerName="@roleClaim.Player.Name" />
                                     <MudText Inline="true" Class="mx-1">
                                         claimed they started as the
                                     </MudText>
@@ -219,7 +219,7 @@
                                     </MudText>
                                     @foreach (var player in roleClaim.OtherWerewolves)
                                     {
-                                        <PlayerIndicator Player="@player" />
+                                        <PlayerIndicator PlayerName="@player.Name" />
                                     }
                                     <LieTruthIndicator IsTruth="@roleClaim.EvaluateTruthfulness(Game, Perspective)" />
                                 </div>
@@ -237,7 +237,7 @@
                         <div>
                             <MudText Color="@CalculateEventColor(evt)">
                                 <div style="display: flex; flex-direction: row; align-items: center;">
-                                    <PlayerIndicator Player="@roleClaim.Player" />
+                                    <PlayerIndicator PlayerName="@roleClaim.Player.Name" />
                                     <MudText Inline="true" Class="mx-1">
                                         claimed they started as the
                                     </MudText>
@@ -268,7 +268,7 @@
                         <div>
                             <MudText Color="@CalculateEventColor(evt)">
                                 <div style="display: flex; flex-direction: row; align-items: center;">
-                                    <PlayerIndicator Player="@claimEvent.Player" />
+                                    <PlayerIndicator PlayerName="@claimEvent.Player.Name" />
                                     <MudText Inline="true" Class="mx-1">
                                         claimed they started as the
                                     </MudText>
@@ -310,9 +310,9 @@
                     <ItemContent>
                         <MudPaper>
                             <MudText Color="@CalculateEventColor(evt)">
-                                <PlayerIndicator Player="@voteEvent.VotingPlayer" />
+                                <PlayerIndicator PlayerName="@voteEvent.VotingPlayer.Name" />
                                 <MudText Inline="true">voted for</MudText>
-                                <PlayerIndicator Player="@voteEvent.TargetPlayer" />
+                                <PlayerIndicator PlayerName="@voteEvent.TargetPlayer.Name" />
                             </MudText>
                             <MudDivider Class="my-2"/>
                             <VoteVictoryTable Game="@Game"
@@ -344,7 +344,7 @@
                     <ItemContent>
                         <MudText Color="@CalculateEventColor(evt)">
                             <div style="display: flex; flex-direction: row; align-items: center;">
-                                <PlayerIndicator Player="@votedOutEvent.Player" />
+                                <PlayerIndicator PlayerName="@votedOutEvent.Player.Name" />
                                 <MudText Inline="true" Class="mx-1">
                                     was voted out as the
                                 </MudText>
@@ -366,7 +366,7 @@
                     <ItemContent>
                         <MudText Color="@CalculateEventColor(evt)">
                             <div style="display: flex; flex-direction: row; align-items: center;">
-                                <PlayerIndicator Player="@loneEvent.Player" />
+                                <PlayerIndicator PlayerName="@loneEvent.PlayerName" />
                                 <MudText Inline="true" Class="mx-1">
                                     looked at slot
                                 </MudText>
@@ -403,7 +403,7 @@
                                         </MudText>
                                     }
 
-                                    <PlayerIndicator Player="@player" />
+                                    <PlayerIndicator PlayerName="@player.Name" />
                                 }
                                 <MudText Inline="true" Class="mx-1">
                                     saw each other on the <strong>Werewolf</strong> team.

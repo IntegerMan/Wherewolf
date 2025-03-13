@@ -30,7 +30,7 @@ public class InsomniacNightPhase : GamePhase
     {
         foreach (var insomniac in state.PlayerSlots.Where(p => state.GetStartRole(p) == GameRole.Insomniac))
         {
-            state.AddEvent(EventPool.InsomniacSawCard(insomniac.Player!, insomniac.Role), broadcast);
+            state.AddEvent(EventPool.InsomniacSawCard(insomniac.Player!.Name, insomniac.Role), broadcast);
         }
     }
 }

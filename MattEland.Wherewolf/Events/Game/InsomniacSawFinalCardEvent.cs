@@ -4,29 +4,22 @@ namespace MattEland.Wherewolf.Events.Game;
 
 public class InsomniacSawFinalCardEvent : GameEvent
 {
-    internal InsomniacSawFinalCardEvent(Player player, GameRole role)
+    internal InsomniacSawFinalCardEvent(string playerName, GameRole role)
     {
-        Player = player;
+        PlayerName = playerName;
         Role = role;
     }
 
-    public Player Player { get; }
+    public string PlayerName { get; }
     public GameRole Role { get; }
 
-    public override bool IsObservedBy(Player player) 
-        => Player == player;
+    public override bool IsObservedBy(Player player) => PlayerName == player.Name;
 
     public override string Description => Role == GameRole.Insomniac
-        ? $"{Player.Name} saw that they were still the {Role}"
-        : $"{Player.Name} saw that they were now the {Role}";
+        ? $"{PlayerName} saw that they were still the {Role}"
+        : $"{PlayerName} saw that they were now the {Role}";
     
     public override Team? AssociatedTeam => Role.GetTeam();
-    
-    public override bool IsPossibleInGameState(GameState state)
-    {
-        GameSlot playerSlot = state.GetSlot(Player);
-        GameRole startRole = state.Root[Player.Name].Role;
-        
-        return startRole == GameRole.Insomniac && playerSlot.Role == Role;
-    }
+
+    public override bool IsPossibleInGameState(GameState state) => state.ContainsEvent(this);
 }

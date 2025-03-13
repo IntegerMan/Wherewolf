@@ -24,7 +24,7 @@ public class WerewolfNightPhase : GamePhase
             GameSlot[] slots = newState.CenterSlots.ToArray();
             loneWolfPlayer.Controller.SelectLoneWolfCenterCard(slots, choice =>
             {
-                newState.AddEvent(EventPool.LoneWolf(loneWolfPlayer, choice));
+                newState.AddEvent(EventPool.LoneWolf(loneWolfPlayer.Name, choice));
                 callback(newState);
             });
         }
@@ -56,7 +56,7 @@ public class WerewolfNightPhase : GamePhase
                 foreach (var centerSlot in priorState.CenterSlots)
                 {
                     GameState lookedAtCenterCardState = new(priorState, priorState.Support / priorState.CenterSlots.Length);
-                    lookedAtCenterCardState.AddEvent(EventPool.LoneWolf(loneWolfPlayer, centerSlot),
+                    lookedAtCenterCardState.AddEvent(EventPool.LoneWolf(loneWolfPlayer.Name, centerSlot),
                         broadcastToController: false);
 
                     yield return lookedAtCenterCardState;

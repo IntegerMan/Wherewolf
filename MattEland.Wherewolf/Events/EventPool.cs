@@ -6,11 +6,12 @@ namespace MattEland.Wherewolf.Events;
 
 public static class EventPool
 {
-    private static readonly ConcurrentDictionary<string, GameEvent> _events = new();
+    // NOTE: If this becomes too frequently locked or too large to sift through, we could use separate dictionaries per event type
+    private static readonly ConcurrentDictionary<string, GameEvent> Events = new();
 
     private static GameEvent GetOrInstantiateEvent(string key, Func<GameEvent> eventFactory)
     {
-        return _events.GetOrAdd(key, (Func<string, GameEvent>)Factory);
+        return Events.GetOrAdd(key, (Func<string, GameEvent>)Factory);
         
         GameEvent Factory(string _) => eventFactory();
     }
@@ -31,21 +32,21 @@ public static class EventPool
         => GetOrInstantiateEvent(nameof(MakeSocialClaimsNowEvent),
             () => new MakeSocialClaimsNowEvent());
 
-    public static GameEvent InsomniacSawCard(Player insomniacPlayer, GameRole insomniacRole)
-        => GetOrInstantiateEvent(nameof(InsomniacSawFinalCardEvent),
-            () => new InsomniacSawFinalCardEvent(insomniacPlayer, insomniacRole));
+    public static GameEvent InsomniacSawCard(string playerName, GameRole insomniacRole)
+        => GetOrInstantiateEvent($"{nameof(InsomniacSawFinalCardEvent)}:{playerName}:{insomniacRole}",
+            () => new InsomniacSawFinalCardEvent(playerName, insomniacRole));
 
-    public static GameEvent LoneWolf(Player loneWolfPlayer, GameSlot choice)
+    public static GameEvent LoneWolf(string loneWolfPlayerName, GameSlot choice)
         => GetOrInstantiateEvent(
-            $"{nameof(LoneWolfLookedAtSlotEvent)}:{loneWolfPlayer.Name}:{choice.Name}:{choice.Role}",
-            () => new LoneWolfLookedAtSlotEvent(loneWolfPlayer, choice.Name, choice.Role));
+            $"{nameof(LoneWolfLookedAtSlotEvent)}:{loneWolfPlayerName}:{choice.Name}:{choice.Role}",
+            () => new LoneWolfLookedAtSlotEvent(loneWolfPlayerName, choice.Name, choice.Role));
 
     public static GameEvent WolfTeam(IEnumerable<Player> wolves)
         => GetOrInstantiateEvent($"{nameof(SawOtherWolvesEvent)}:{string.Join(",", wolves.Select(p => p.Name))}",
             () => new SawOtherWolvesEvent(wolves));
 
-    public static GameEvent Robbed(Player robberPlayer, Player targetPlayer, GameRole stolenRole)
-        => GetOrInstantiateEvent($"{nameof(RobbedPlayerEvent)}:{robberPlayer.Name}:{targetPlayer.Name}:{stolenRole}",
+    public static GameEvent Robbed(string robberPlayer, string targetPlayer, GameRole stolenRole)
+        => GetOrInstantiateEvent($"{nameof(RobbedPlayerEvent)}:{robberPlayer}:{targetPlayer}:{stolenRole}",
             () => new RobbedPlayerEvent(robberPlayer, targetPlayer, stolenRole));
 
     public static GameEvent VotedOut(Player deadPlayer, GameRole finalRole)

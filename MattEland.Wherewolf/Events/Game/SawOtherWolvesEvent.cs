@@ -19,26 +19,5 @@ public class SawOtherWolvesEvent(IEnumerable<Player> wolves) : GameEvent
     public override string Description
         => $"{string.Join(" and ", Players.Select(p => p.Name))} saw that each other were on the werewolf team";
 
-    public override bool IsPossibleInGameState(GameState state)
-    {
-        // Can only occur if all listed players are werewolves
-        foreach (var player in Players)
-        {
-            if (state.GetStartRole(player).GetTeam() != Team.Werewolf)
-            {
-                return false;
-            }
-        }
-        
-        // Cannot occur if other players not listed are also werewolves
-        foreach (var slot in state.PlayerSlots)
-        {
-            if (state.GetStartRole(slot).GetTeam() == Team.Werewolf && !Players.Contains(slot.Player))
-            {
-                return false;
-            }
-        }
-
-        return true;
-    }
+    public override bool IsPossibleInGameState(GameState state) => state.ContainsEvent(this);
 }

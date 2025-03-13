@@ -42,7 +42,7 @@ public class RobberNightPhase : GamePhase
         GameState swappedState = newState.SwapRoles(target.Name, robber.Name);
         
         AddRobberNightAnnouncement(swappedState, broadcast);
-        swappedState.AddEvent(EventPool.Robbed(robber.Player!, target.Player!, stolenRole), broadcast);
+        swappedState.AddEvent(EventPool.Robbed(robber.Player!.Name, target.Player!.Name, stolenRole), broadcast);
         
         return swappedState;
     }

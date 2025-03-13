@@ -416,4 +416,6 @@ public class GameState
 
         return claims.ToArray();
     }
+
+    public bool ContainsEvent(GameEvent e) => Events.Contains(e);
 }

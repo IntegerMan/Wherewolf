@@ -22,12 +22,7 @@ public class DealtCardEvent : GameEvent
     public override bool IsObservedBy(Player player) => SlotName == player.Name;
     public override string Description => $"{SlotName} was dealt {Role}";
     
-    public override bool IsPossibleInGameState(GameState state)
-    {
-        GameSlot stateSlot = state.Root[SlotName];
-        
-        return stateSlot.Role == Role;
-    }
+    public override bool IsPossibleInGameState(GameState state) => state.ContainsEvent(this);
 
     public override Team? AssociatedTeam => Role.GetTeam();
 }

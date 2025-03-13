@@ -16,5 +16,5 @@ public class LoneWerewolfClaim(Player player, GameSlot centerSlot, GameRole obse
     public override bool IsClaimValidFor(GameState state) =>
         state.GetStartRole(Player) == GameRole.Werewolf
         && state.Events.OfType<LoneWolfLookedAtSlotEvent>()
-            .Any(e => e.Player == Player && e.SlotName == CenterSlot.Name && e.ObservedRole == ObservedRole);
+            .Any(e => e.PlayerName == Player.Name && e.SlotName == CenterSlot.Name && e.ObservedRole == ObservedRole);
 }
