@@ -5,7 +5,7 @@ using MoreLinq;
 
 namespace MattEland.Wherewolf.Setup;
 
-public class GameSetup
+public class GameSetup(ISlotShuffler? shuffler = null)
 {
     private readonly List<GamePhase> _phases = new();
     private readonly List<Player> _players = new();
@@ -63,11 +63,10 @@ public class GameSetup
         }
     }
 
-    public GameState StartGame(ISlotShuffler? slotShuffler = null)
+    public GameState StartGame()
     {
         Validate();
-        
-        slotShuffler ??= new RandomShuffler();
+        ISlotShuffler slotShuffler = shuffler ?? new RandomShuffler();
 
         // Pre-calculate all phases
         CalculatePhases();

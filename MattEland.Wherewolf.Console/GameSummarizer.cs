@@ -1,3 +1,4 @@
+using MattEland.Wherewolf.Events.Game;
 using Spectre.Console;
 
 namespace MattEland.Wherewolf.Console;
@@ -28,11 +29,14 @@ public static class GameSummarizer
         foreach (var e in gameState.Events)
         {
             AnsiConsole.MarkupLine(DisplayHelpers.StylizeEventMessage(e.Description, gameState.AllSlots, gameState.Setup.Roles));
-        }
-    
-        foreach (var claim in gameState.Claims)
-        {
-            AnsiConsole.MarkupLine(DisplayHelpers.StylizeEventMessage(claim.Description, gameState.AllSlots, gameState.Setup.Roles));
+
+            if (e is MakeSocialClaimsNowEvent)
+            {
+                foreach (var claim in gameState.Claims)
+                {
+                    AnsiConsole.MarkupLine(DisplayHelpers.StylizeEventMessage(claim.Description, gameState.AllSlots, gameState.Setup.Roles));
+                }
+            }
         }
     
         AnsiConsole.WriteLine();

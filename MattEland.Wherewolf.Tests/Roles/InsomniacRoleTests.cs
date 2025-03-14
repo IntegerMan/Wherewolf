@@ -102,7 +102,7 @@ public class InsomniacRoleTests : RoleTestBase
     
     private static GameState RunInsomniacGame(bool robPlayer)
     {
-        GameSetup setup = new();
+        GameSetup setup = new(new NonShuffler());
         setup.AddPlayers(
             new Player("Player", new RandomController()),
             new Player("Thief", new FixedSelectionController(new ClaimStartingRoleStrategy(), robPlayer ? "Player" : "Other", "Player")),
@@ -118,7 +118,7 @@ public class InsomniacRoleTests : RoleTestBase
         ); 
         
         GameState? finalState = null;
-        setup.StartGame(new NonShuffler()).RunToEnd(s => finalState = s);
+        setup.StartGame().RunToEnd(s => finalState = s);
 
         return finalState!;
     }

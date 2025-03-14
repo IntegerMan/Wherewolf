@@ -69,7 +69,7 @@ public class RobberRoleTests : RoleTestBase
 
     private static GameState RunRobberGame()
     {
-        GameSetup setup = new();
+        GameSetup setup = new(new NonShuffler());
         setup.AddPlayers(
             new Player("Player", new FixedSelectionController(new ClaimStartingRoleStrategy(), "Target", "Other")),
             new Player("Target", new RandomController()),
@@ -84,7 +84,7 @@ public class RobberRoleTests : RoleTestBase
             GameRole.Werewolf
         );
         GameState? finalState = null;
-        setup.StartGame(new NonShuffler()).RunToEnd(s => finalState = s);
+        setup.StartGame().RunToEnd(s => finalState = s);
 
         return finalState!;
     }

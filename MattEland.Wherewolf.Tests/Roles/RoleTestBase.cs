@@ -8,7 +8,7 @@ public abstract class RoleTestBase
 {
     protected GameState CreateTestGameState(params GameRole[] roles)
     {
-        GameSetup gameSetup = new();
+        GameSetup gameSetup = new(new NonShuffler());
         RandomController controller = new(new ClaimStartingRoleStrategy());
         
         gameSetup.AddPlayers(
@@ -18,6 +18,6 @@ public abstract class RoleTestBase
         
         gameSetup.AddRoles(roles);
 
-        return gameSetup.StartGame(new NonShuffler());
+        return gameSetup.StartGame();
     }
 }

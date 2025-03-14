@@ -39,7 +39,7 @@ public class WerewolfRoleTests : RoleTestBase
     public void LoneWerewolfShouldHaveCertainKnowledgeOfStartingRoleOfTheCardTheyLookedAt()
     {
         // Arrange
-        GameSetup setup = new();
+        GameSetup setup = new(new NonShuffler());
         setup.AddRoles(            
             GameRole.Werewolf, // This will go to our player
             GameRole.Villager,
@@ -55,7 +55,7 @@ public class WerewolfRoleTests : RoleTestBase
             new Player("C", new RandomController())
         );
         GameState? gameState = null;
-        setup.StartGame(new NonShuffler()).RunToEnd(s => gameState = s);
+        setup.StartGame().RunToEnd(s => gameState = s);
         Player player = gameState!.Players.Single(p => p.Name == "A");
         
         // Act

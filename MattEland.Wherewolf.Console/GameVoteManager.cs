@@ -17,8 +17,5 @@ public static class GameVoteManager
                 AnsiConsole.WriteLine();
             }
         }
-    
-        // This will cause the voting and claims to actually occur
-        gameState.RunToEnd(GameSummarizer.OnGameEnded);
     }
 }

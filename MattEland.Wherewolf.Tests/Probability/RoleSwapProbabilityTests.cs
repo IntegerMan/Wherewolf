@@ -12,7 +12,7 @@ public class RoleSwapProbabilityTests
     public void RobberStealingInsomniacShouldNotThinkTheyAreCurrentlyWerewolf()
     {
         // Arrange
-        GameSetup gameSetup = new();
+        GameSetup gameSetup = new(new NonShuffler());
         gameSetup.AddPlayers(
             new Player("Matt", new FixedSelectionController(new ClaimFixedRoleStrategy(GameRole.Insomniac, (p,_) => new InsomniacWakeClaim(p, GameRole.Insomniac)),"Rufus")),
             new Player("Rufus", new RandomController()),
@@ -24,7 +24,7 @@ public class RoleSwapProbabilityTests
             GameRole.Villager, GameRole.Villager, 
             GameRole.Werewolf, GameRole.Werewolf
         );
-        GameState gameState = gameSetup.StartGame(new NonShuffler());
+        GameState gameState = gameSetup.StartGame();
         
         // Act
         gameState.RunToEndOfNight(s => gameState = s);
@@ -44,7 +44,7 @@ public class RoleSwapProbabilityTests
     public void RobberStealingInsomniacShouldNotThinkTheyStartedAsVillager()
     {
         // Arrange
-        GameSetup gameSetup = new();
+        GameSetup gameSetup = new(new NonShuffler());
         gameSetup.AddPlayers(
             new Player("Matt", new FixedSelectionController(new ClaimFixedRoleStrategy(GameRole.Insomniac, (p, _) => new InsomniacWakeClaim(p, GameRole.Insomniac) ), "Rufus")),
             new Player("Rufus", new RandomController()),
@@ -56,7 +56,7 @@ public class RoleSwapProbabilityTests
             GameRole.Villager, GameRole.Villager, 
             GameRole.Werewolf, GameRole.Werewolf
         );
-        GameState gameState = gameSetup.StartGame(new NonShuffler());
+        GameState gameState = gameSetup.StartGame();
         
         // Act
         gameState.RunToEndOfNight(s => gameState = s);

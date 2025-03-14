@@ -10,10 +10,10 @@ public class GameStatePermutationTests
     public void TwoWolvesGameStateAtWerewolfPhaseShouldHaveOneChildStateForNextPhase()
     {
         // Arrange
-        GameSetup setup = new();
+        GameSetup setup = new(new NonShuffler());
         setup.AddPlayers(new Player("A", new RandomController()), new Player("B", new RandomController()), new Player("C", new RandomController()));
         setup.AddRoles(GameRole.Werewolf, GameRole.Werewolf, GameRole.Villager, GameRole.Villager, GameRole.Villager, GameRole.Villager);
-        GameState startState = setup.StartGame(new NonShuffler());
+        GameState startState = setup.StartGame();
 
         // Act
         List<GameState> childStates = startState.PossibleNextStates.ToList();
@@ -28,12 +28,12 @@ public class GameStatePermutationTests
     public void ChildStatesShouldHaveCorrectParentState()
     {
         // Arrange
-        GameSetup setup = new();
+        GameSetup setup = new(new NonShuffler());
         setup.AddPlayers(new Player("A", new RandomController()), new Player("B", new RandomController()),
             new Player("C", new RandomController()));
         setup.AddRoles(GameRole.Werewolf, GameRole.Werewolf, GameRole.Villager, GameRole.Villager,
             GameRole.Villager, GameRole.Villager);
-        GameState startState = setup.StartGame(new NonShuffler());
+        GameState startState = setup.StartGame();
 
         // Act
         GameState? childState = startState.PossibleNextStates.FirstOrDefault();
@@ -47,10 +47,10 @@ public class GameStatePermutationTests
     public void ChildStatesShouldHaveDifferentSlotArrays()
     {
         // Arrange
-        GameSetup setup = new();
+        GameSetup setup = new(new NonShuffler());
         setup.AddPlayers(new Player("A", new RandomController()), new Player("B", new RandomController()), new Player("C", new RandomController()));
         setup.AddRoles(GameRole.Werewolf, GameRole.Werewolf, GameRole.Villager, GameRole.Villager, GameRole.Villager, GameRole.Villager);
-        GameState startState = setup.StartGame(new NonShuffler());
+        GameState startState = setup.StartGame();
 
         // Act
         GameState? childState = startState.PossibleNextStates.FirstOrDefault();
@@ -65,10 +65,10 @@ public class GameStatePermutationTests
     public void ChildStatesShouldHaveDifferentSlotObjects()
     {
         // Arrange
-        GameSetup setup = new();
+        GameSetup setup = new(new NonShuffler());
         setup.AddPlayers(new Player("A", new RandomController()), new Player("B", new RandomController()), new Player("C", new RandomController()));
         setup.AddRoles(GameRole.Werewolf, GameRole.Werewolf, GameRole.Villager, GameRole.Villager, GameRole.Villager, GameRole.Villager);
-        GameState startState = setup.StartGame(new NonShuffler());
+        GameState startState = setup.StartGame();
 
         // Act
         GameState? childState = startState.PossibleNextStates.FirstOrDefault();

@@ -10,12 +10,12 @@ public class BasicProbabilityTests : GameTestsBase
     public void PlayersShouldBeCertainOfTheirStartRole()
     {
         // Arrange
-        GameSetup gameSetup = new();
+        GameSetup gameSetup = new(new NonShuffler());
         AddMinimumRequiredPlayers(gameSetup);
         AddMinimumRequiredRoles(gameSetup);
         Player player = gameSetup.Players.First();
         GameState? state = null;
-        gameSetup.StartGame(new NonShuffler()).RunToEnd(s => state = s);
+        gameSetup.StartGame().RunToEnd(s => state = s);
 
         // Act
         PlayerProbabilities probabilities = state!.CalculateProbabilities(player);
@@ -30,13 +30,13 @@ public class BasicProbabilityTests : GameTestsBase
     public void PlayersShouldHaveAccuratePercentagesForOtherPlayerStartingRolesOnNoInformation()
     {
         // Arrange
-        GameSetup gameSetup = new();
+        GameSetup gameSetup = new(new NonShuffler());
         AddMinimumRequiredPlayers(gameSetup);
         AddMinimumRequiredRoles(gameSetup);
         Player villager = gameSetup.Players.ToList()[2]; // This is a villager
         Player werewolf = gameSetup.Players.ToList()[0];
         GameState? state = null;
-        gameSetup.StartGame(new NonShuffler()).RunToEnd(s => state = s);
+        gameSetup.StartGame().RunToEnd(s => state = s);
         
         // Act
         PlayerProbabilities probabilities = state!.CalculateProbabilities(villager);
@@ -52,13 +52,13 @@ public class BasicProbabilityTests : GameTestsBase
     public void WerewolvesShouldBeCertainNonWolvesAreVillagersInWolvesVsVillagers()
     {
         // Arrange
-        GameSetup gameSetup = new();
+        GameSetup gameSetup = new(new NonShuffler());
         AddMinimumRequiredPlayers(gameSetup);
         AddMinimumRequiredRoles(gameSetup);
         Player villager = gameSetup.Players.ToList()[2]; // This is a villager
         Player werewolf = gameSetup.Players.ToList()[0];
         GameState? state = null;
-        gameSetup.StartGame(new NonShuffler()).RunToEnd(s => state = s);
+        gameSetup.StartGame().RunToEnd(s => state = s);
 
         // Act
         PlayerProbabilities probabilities = state!.CalculateProbabilities(werewolf);
@@ -73,13 +73,13 @@ public class BasicProbabilityTests : GameTestsBase
     public void WerewolvesShouldBeCertainFellowWolvesAreWolves()
     {
         // Arrange
-        GameSetup gameSetup = new();
+        GameSetup gameSetup = new(new NonShuffler());
         AddMinimumRequiredPlayers(gameSetup);
         AddMinimumRequiredRoles(gameSetup);
         Player ww1 = gameSetup.Players.ToList()[0];
         Player ww2 = gameSetup.Players.ToList()[1];
         GameState? state = null;
-        gameSetup.StartGame(new NonShuffler()).RunToEnd(s => state = s);
+        gameSetup.StartGame().RunToEnd(s => state = s);
 
         // Act
         PlayerProbabilities probabilities = state!.CalculateProbabilities(ww1);
@@ -94,12 +94,12 @@ public class BasicProbabilityTests : GameTestsBase
     public void PlayersShouldBeCertainOfTheirEndRoleWhenNoRoleChangersExist()
     {
         // Arrange
-        GameSetup gameSetup = new();
+        GameSetup gameSetup = new(new NonShuffler());
         AddMinimumRequiredPlayers(gameSetup);
         AddMinimumRequiredRoles(gameSetup);
         Player player = gameSetup.Players.First();
         GameState? state = null;
-        gameSetup.StartGame(new NonShuffler()).RunToEnd(s => state = s);
+        gameSetup.StartGame().RunToEnd(s => state = s);
 
         // Act
         PlayerProbabilities probabilities = state!.CalculateProbabilities(player);

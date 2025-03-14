@@ -8,10 +8,10 @@ public class RunGameTests : GameTestsBase
     public void RunningGameStateToEndShouldProduceGameEvents()
     {
         // Arrange
-        GameSetup gameSetup = new();
+        GameSetup gameSetup = new(new NonShuffler());
         AddMinimumRequiredPlayers(gameSetup);
         AddMinimumRequiredRoles(gameSetup);
-        GameState startState = gameSetup.StartGame(new NonShuffler());
+        GameState startState = gameSetup.StartGame();
         int originalEventCount = startState.Events.Count();
 
         // Act

@@ -32,8 +32,12 @@ try
         GameRole.Robber
     );
 
-    GameState gameState = gameSetup.StartGame(new NonShuffler());
-    gameState.RunToEndOfNight(GameVoteManager.OnEndOfNight);
+    GameManager game = new(gameSetup);
+    game.RunToEndOfNight();
+    GameVoteManager.OnEndOfNight(game.CurrentState);
+
+    game.RunToEnd();
+    GameSummarizer.OnGameEnded(game.CurrentState);
     
     return 0;
 }

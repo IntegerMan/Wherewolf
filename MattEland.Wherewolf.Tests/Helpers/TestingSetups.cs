@@ -8,7 +8,7 @@ public class TestingSetups
 {
     public static GameSetup VillagersOnlyGame(int playerCount = 3)
     {
-        GameSetup setup = new();
+        GameSetup setup = new(new NonShuffler());
         for (int i = 1; i <= playerCount; i++)
         {
             setup.AddPlayer(new Player($"Player {i}", new RandomController(new ClaimStartingRoleStrategy())));

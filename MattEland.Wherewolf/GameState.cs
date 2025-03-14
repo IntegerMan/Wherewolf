@@ -26,10 +26,6 @@ public class GameState
         foreach(var slot in AllSlots)
         {
             _slots[slot.Name] = slot;
-        }
-
-        foreach (var slot in AllSlots)
-        {
             AddEvent(EventPool.DealtCardEvent(slot.Name, slot.Role), broadcastToController: false);
         }
 
@@ -113,21 +109,7 @@ public class GameState
 
     public GameSlot[] CenterSlots { get; }
 
-    public IEnumerable<GameSlot> AllSlots
-    {
-        get
-        {
-            foreach (var slot in PlayerSlots)
-            {
-                yield return slot;
-            }
-
-            foreach (var slot in CenterSlots)
-            {
-                yield return slot;
-            }
-        }
-    }
+    public IEnumerable<GameSlot> AllSlots => [..PlayerSlots, ..CenterSlots];
 
     public IEnumerable<Player> Players => Setup.Players;
     public IEnumerable<GameRole> Roles => Setup.Roles;
@@ -142,10 +124,10 @@ public class GameState
                     yield return e;
                 }
             }
-            
-            foreach (var e in _events)
+
+            for (int i = 0; i < _events.Count; i++)
             {
-                yield return e;
+                yield return _events[i];
             }
         }
     }
@@ -162,10 +144,10 @@ public class GameState
                     yield return c;
                 }
             }
-            
-            foreach (var c in _claims)
+
+            for (int index = 0; index < _claims.Count; index++)
             {
-                yield return c;
+                yield return _claims[index];
             }
         }
     }

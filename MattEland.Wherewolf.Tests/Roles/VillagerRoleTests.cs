@@ -11,7 +11,7 @@ public class VillagerRoleTests : RoleTestBase
     public void VillagerShouldGetDealtVillagerEvent()
     {
         // Arrange
-        GameState gameState = TestingSetups.VillagersOnlyGame().StartGame(new NonShuffler());
+        GameState gameState = TestingSetups.VillagersOnlyGame().StartGame();
         Player player = gameState.Players.First();
 
         // Act
