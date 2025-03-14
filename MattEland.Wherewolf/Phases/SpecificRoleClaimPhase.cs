@@ -5,7 +5,7 @@ namespace MattEland.Wherewolf.Phases;
 
 public class SpecificRoleClaimPhase(Player player) : GamePhase
 {
-    public override void Run(GameState newState, Action<GameState> callback)
+    public override void Run(PhaseContext context)
     {
         // At this point they've already made a claim, so let's find it.
         GameRole initialClaim = newState.Claims.OfType<StartRoleClaimedEvent>()

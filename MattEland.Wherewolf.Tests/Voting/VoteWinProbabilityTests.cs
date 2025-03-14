@@ -18,7 +18,7 @@ public class VoteWinProbabilityTests
         Player c = new("C", controller); // Werewolf
         
         GameSetup setup = new(new NonShuffler());
-        setup.AddPlayers(a, b, c);
+        setup.SetPlayers(a, b, c);
         setup.AddRole(GameRole.Villager, 2);
         setup.AddRole(GameRole.Werewolf, 2);
         setup.AddRole(GameRole.Villager, 2);
@@ -43,7 +43,7 @@ public class VoteWinProbabilityTests
         Player c = new("C", new RandomController()); // Villager
         
         GameSetup setup = new(new NonShuffler());
-        setup.AddPlayers(a, b, c);
+        setup.SetPlayers(a, b, c);
         setup.AddRole(GameRole.Werewolf, 2);
         setup.AddRole(GameRole.Villager, 4);
         

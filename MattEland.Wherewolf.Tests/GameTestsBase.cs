@@ -8,7 +8,7 @@ public abstract class GameTestsBase
 {
     protected static void AddMinimumRequiredPlayers(GameSetup gameSetup)
     {
-        gameSetup.AddPlayers(
+        gameSetup.SetPlayers(
             new Player("A", new RandomController(new ClaimStartingRoleStrategy())), 
             new Player("B", new RandomController(new ClaimStartingRoleStrategy())), 
             new Player("C", new RandomController(new ClaimStartingRoleStrategy())));

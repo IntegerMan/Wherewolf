@@ -13,7 +13,7 @@ public class RoleSwapProbabilityTests
     {
         // Arrange
         GameSetup gameSetup = new(new NonShuffler());
-        gameSetup.AddPlayers(
+        gameSetup.SetPlayers(
             new Player("Matt", new FixedSelectionController(new ClaimFixedRoleStrategy(GameRole.Insomniac, (p,_) => new InsomniacWakeClaim(p, GameRole.Insomniac)),"Rufus")),
             new Player("Rufus", new RandomController()),
             new Player("Jimothy", new RandomController())
@@ -45,7 +45,7 @@ public class RoleSwapProbabilityTests
     {
         // Arrange
         GameSetup gameSetup = new(new NonShuffler());
-        gameSetup.AddPlayers(
+        gameSetup.SetPlayers(
             new Player("Matt", new FixedSelectionController(new ClaimFixedRoleStrategy(GameRole.Insomniac, (p, _) => new InsomniacWakeClaim(p, GameRole.Insomniac) ), "Rufus")),
             new Player("Rufus", new RandomController()),
             new Player("Jimothy", new RandomController())

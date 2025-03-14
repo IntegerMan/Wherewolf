@@ -8,23 +8,22 @@ public class WerewolfNightPhase : GamePhase
 {
     public override string Name => "Werewolves";
 
-    public override void Run(GameState newState, Action<GameState> callback)
+    public override void Run(PhaseContext context)
     {
-        newState.AddEvent(EventPool.Announcement(
-            "Werewolves, wake up and look for each other. If there is only one werewolf, you may look a card in the center.", GameRole.Werewolf));
+        context.AddEvent(EventPool.Announcement(
+            "Werewolves, wake up and look for each other. If there is only one werewolf, you may look a card in the center.", GameRole.Werewolf), broadcast: true);
 
-        GameSlot[] werewolves = newState.PlayerSlots.Where(p => newState.GetStartRole(p).GetTeam() == Team.Werewolf)
-            .ToArray();
+        Player[] werewolves = context.PlayersStartingInRole(GameRole.Werewolf).ToArray();
         
         if (werewolves.Length == 1)
         {
-            Player loneWolfPlayer = werewolves.First().Player!;
+            Player loneWolfPlayer = werewolves.First();
 
             // If the lone wolf is the only werewolf, let them pick which center card to look at
-            GameSlot[] slots = newState.CenterSlots.ToArray();
+            GameSlot[] slots = context.CenterSlots;
             loneWolfPlayer.Controller.SelectLoneWolfCenterCard(slots, choice =>
             {
-                newState.AddEvent(EventPool.LoneWolf(loneWolfPlayer.Name, choice));
+                context.AddEvent(EventPool.LoneWolf(loneWolfPlayer.Name, choice), broadcast: true);
                 callback(newState);
             });
         }
@@ -32,7 +31,7 @@ public class WerewolfNightPhase : GamePhase
         {
             if (werewolves.Length > 1)
             {
-                newState.AddEvent(EventPool.WolfTeam(werewolves.Select(w => w.Name)));
+                context.AddEvent(EventPool.WolfTeam(werewolves.Select(w => w.Name)), broadcast: true);
             }
 
             callback(newState);

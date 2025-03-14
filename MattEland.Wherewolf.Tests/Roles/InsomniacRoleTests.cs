@@ -103,7 +103,7 @@ public class InsomniacRoleTests : RoleTestBase
     private static GameState RunInsomniacGame(bool robPlayer)
     {
         GameSetup setup = new(new NonShuffler());
-        setup.AddPlayers(
+        setup.SetPlayers(
             new Player("Player", new RandomController()),
             new Player("Thief", new FixedSelectionController(new ClaimStartingRoleStrategy(), robPlayer ? "Player" : "Other", "Player")),
             new Player("Other", new RandomController()));

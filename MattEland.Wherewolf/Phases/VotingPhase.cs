@@ -8,13 +8,13 @@ public class VotingPhase : GamePhase
 {
     private readonly Lock _lock = new();
     
-    public override void Run(GameState newState, Action<GameState> callback)
+    public override void Run(PhaseContext context)
     {
-        newState.AddEvent(EventPool.Announcement("Everyone, vote for one other player."));
+        context.AddEvent(EventPool.Announcement("Everyone, vote for one other player."), broadcast: true);
 
-        List<VotedEvent> voteEvents = new(newState.Players.Count());
+        List<VotedEvent> voteEvents = new(context.Players.Length);
         Dictionary<Player, Player> votes = new();
-        foreach (var p in newState.Players)
+        foreach (var p in context.Players)
         {
             PlayerProbabilities probabilities = newState.CalculateProbabilities(p);
             Dictionary<Player, double> voteProbabilities = VotingHelper.GetVoteVictoryProbabilities(p, newState);

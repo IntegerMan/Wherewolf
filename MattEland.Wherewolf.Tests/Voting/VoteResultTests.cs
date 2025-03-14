@@ -15,7 +15,7 @@ public class VoteResultTests
         Player c = new("C", new RandomController());
         
         GameSetup setup = new(new NonShuffler());
-        setup.AddPlayers(a, b, c);
+        setup.SetPlayers(a, b, c);
         setup.AddRole(GameRole.Villager, 4);
         setup.AddRole(GameRole.Werewolf, 2);
 
@@ -53,7 +53,7 @@ public class VoteResultTests
         Player d = new("D", new RandomController());
         
         GameSetup setup = new(new NonShuffler());
-        setup.AddPlayers(a, b, c, d);
+        setup.SetPlayers(a, b, c, d);
         setup.AddRole(GameRole.Villager, 5);
         setup.AddRole(GameRole.Werewolf, 2);
 
@@ -84,7 +84,7 @@ public class VoteResultTests
         Player c = new("C", new RandomController());
         
         GameSetup setup = new(new NonShuffler());
-        setup.AddPlayers(a, b, c);
+        setup.SetPlayers(a, b, c);
         setup.AddRole(GameRole.Villager, 4);
         setup.AddRole(GameRole.Werewolf, 2);
 
@@ -112,7 +112,7 @@ public class VoteResultTests
         Player c = new("C", new RandomController());
         
         GameSetup setup = new(new NonShuffler());
-        setup.AddPlayers(a, b, c);
+        setup.SetPlayers(a, b, c);
         setup.AddRole(GameRole.Villager, 4);
         setup.AddRole(GameRole.Werewolf, 2);
 
@@ -140,7 +140,7 @@ public class VoteResultTests
         Player c = new("C", new RandomController());
         
         GameSetup setup = new(new NonShuffler());
-        setup.AddPlayers(a, b, c);
+        setup.SetPlayers(a, b, c);
         setup.AddRole(GameRole.Villager, 4);
         setup.AddRole(GameRole.Werewolf, 2);
 
@@ -170,7 +170,7 @@ public class VoteResultTests
         Player d = new("D", new RandomController()); // Villager
         
         GameSetup setup = new(new NonShuffler());
-        setup.AddPlayers(a, b, c, d);
+        setup.SetPlayers(a, b, c, d);
         setup.AddRole(GameRole.Werewolf, 2);
         setup.AddRole(GameRole.Villager, 5);
 
@@ -202,7 +202,7 @@ public class VoteResultTests
         Player d = new("D", new RandomController()); // Villager
         
         GameSetup setup = new(new NonShuffler());
-        setup.AddPlayers(a, b, c, d);
+        setup.SetPlayers(a, b, c, d);
         setup.AddRole(GameRole.Werewolf, 2);
         setup.AddRole(GameRole.Villager, 5);
 
@@ -235,7 +235,7 @@ public class VoteResultTests
         Player d = new("D", new RandomController()); // Villager
         
         GameSetup setup = new(new NonShuffler());
-        setup.AddPlayers(a, b, c, d);
+        setup.SetPlayers(a, b, c, d);
         setup.AddRole(GameRole.Werewolf, 2);
         setup.AddRole(GameRole.Villager, 5);
 
@@ -266,7 +266,7 @@ public class VoteResultTests
         Player d = new("D", new RandomController()); // Villager
         
         GameSetup setup = new(new NonShuffler());
-        setup.AddPlayers(a, b, c, d);
+        setup.SetPlayers(a, b, c, d);
         setup.AddRole(GameRole.Werewolf, 2);
         setup.AddRole(GameRole.Villager, 5);
 
@@ -296,7 +296,7 @@ public class VoteResultTests
         Player d = new("D", new RandomController()); // Villager
         
         GameSetup setup = new(new NonShuffler());
-        setup.AddPlayers(a, b, c, d);
+        setup.SetPlayers(a, b, c, d);
         setup.AddRole(GameRole.Werewolf, 2);
         setup.AddRole(GameRole.Villager, 5);
 
@@ -330,7 +330,7 @@ public class VoteResultTests
         Player d = new("D", new RandomController()); // Villager
         
         GameSetup setup = new(new NonShuffler());
-        setup.AddPlayers(a, b, c, d);
+        setup.SetPlayers(a, b, c, d);
         setup.AddRole(GameRole.Werewolf, 2);
         setup.AddRole(GameRole.Villager, 5);
 
@@ -364,7 +364,7 @@ public class VoteResultTests
         Player d = new("D", new RandomController()); // Villager
         
         GameSetup setup = new(new NonShuffler());
-        setup.AddPlayers(a, b, c, d);
+        setup.SetPlayers(a, b, c, d);
         setup.AddRole(GameRole.Villager, 5);
         setup.AddRole(GameRole.Werewolf, 2);
 
@@ -399,7 +399,7 @@ public class VoteResultTests
         Player d = new("D", new RandomController()); // Villager
         
         GameSetup setup = new(new NonShuffler());
-        setup.AddPlayers(a, b, c, d);
+        setup.SetPlayers(a, b, c, d);
         setup.AddRole(GameRole.Villager, 5);
         setup.AddRole(GameRole.Werewolf, 2);
 

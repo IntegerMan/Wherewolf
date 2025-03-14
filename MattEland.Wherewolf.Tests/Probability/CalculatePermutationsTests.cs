@@ -51,7 +51,7 @@ public class CalculatePermutationsTests
         setup.AddRole(GameRole.Villager, 3);
         setup.AddRole(GameRole.Werewolf);
         Player robberPlayer = new("A", new RandomController());
-        setup.AddPlayers(
+        setup.SetPlayers(
             robberPlayer,
             new Player("B", new RandomController()),
             new Player("C", new RandomController())

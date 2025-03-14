@@ -5,9 +5,9 @@ namespace MattEland.Wherewolf.Phases;
 
 public class WakeUpPhase : GamePhase
 {
-    public override void Run(GameState newState, Action<GameState> callback)
+    public override void Run(PhaseContext context)
     {
-        newState.AddEvent(EventPool.MakeSocialClaimsNow());
+        context.AddEvent(EventPool.MakeSocialClaimsNow(), broadcast: true);
         callback(newState);
     }
 

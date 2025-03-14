@@ -10,10 +10,10 @@ public class SetupNightPhase : GamePhase
 {
     public override string Name => "Setup";
     
-    public override void Run(GameState newState, Action<GameState> callback)
+    public override void Run(PhaseContext context)
     {
         newState.SendRolesToControllers();
-        newState.AddEvent(EventPool.Announcement("Everyone, go to sleep."));
+        context.AddEvent(EventPool.Announcement("Everyone, go to sleep."), broadcast: true);
 
         callback(newState);
     }

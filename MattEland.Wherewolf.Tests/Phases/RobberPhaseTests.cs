@@ -20,7 +20,7 @@ public class RobberPhaseTests
         ];
         
         GameSetup setup = new();
-        setup.AddPlayers(players.ToArray());
+        setup.SetPlayers(players.ToArray());
         setup.AddRoles(roles.ToArray());
         GameState state = new GameState(setup, roles, support: 1);
 
@@ -48,7 +48,7 @@ public class RobberPhaseTests
             GameRole.Werewolf
         ];
         GameSetup setup = new();
-        setup.AddPlayers(players.ToArray());
+        setup.SetPlayers(players.ToArray());
         setup.AddRoles(roles.ToArray());
         GameState state = new GameState(setup, roles, support: 1);
 

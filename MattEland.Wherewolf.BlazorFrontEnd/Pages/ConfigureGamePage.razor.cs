@@ -110,7 +110,7 @@ public partial class ConfigureGamePage : IRecipient<SetupRoleChangedMessage>
                 return new Player($"Player {n}", controller);
             })
             .ToArray();
-        setup.AddPlayers(players);
+        setup.SetPlayers(players);
         
         // Store the game in the services collection
         Guid gameId = _gameService.StartGame(setup);

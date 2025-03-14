@@ -5,11 +5,10 @@ namespace MattEland.Wherewolf.Phases;
 
 public class InsomniacNightPhase : GamePhase
 {
-    public override void Run(GameState newState, Action<GameState> callback)
+    public override void Run(PhaseContext context)
     {
-        newState.AddEvent(EventPool.Announcement("Insomniac, wake up and look at your card.", GameRole.Insomniac));
 
-        RunInsomniacPhase(newState, broadcast: true);
+        RunInsomniacPhase(context, broadcast: true);
         
         callback(newState);
     }
@@ -26,11 +25,12 @@ public class InsomniacNightPhase : GamePhase
         yield return newState;
     }
 
-    private static void RunInsomniacPhase(GameState state, bool broadcast)
-    {
-        foreach (var insomniac in state.PlayerSlots.Where(p => state.GetStartRole(p) == GameRole.Insomniac))
+    private static void RunInsomniacPhase(PhaseContext context, bool broadcast)
+    {        
+        context.AddEvent(EventPool.Announcement("Insomniac, wake up and look at your card.", GameRole.Insomniac), broadcast);
+        foreach (var player in context.PlayersStartingInRole(GameRole.Insomniac))
         {
-            state.AddEvent(EventPool.InsomniacSawCard(insomniac.Player!.Name, insomniac.Role), broadcast);
+            context.AddEvent(EventPool.InsomniacSawCard(player.Name, context.GetCurrentRole(player)), broadcast);
         }
     }
 }

@@ -18,7 +18,7 @@ try
     IRoleClaimStrategy roleClaimStrategy = new ClaimSafestRoleStrategy(rand);
     RandomOptimalVoteController aiController = new RandomOptimalVoteController(roleClaimStrategy);
     const bool controlPlayer1 = false;
-    gameSetup.AddPlayers(
+    gameSetup.SetPlayers(
         new Player("Rufus", aiController),
         new Player("Jimothy", aiController),
         new Player("Matt", controlPlayer1 ? new HumanConsoleController() : aiController)

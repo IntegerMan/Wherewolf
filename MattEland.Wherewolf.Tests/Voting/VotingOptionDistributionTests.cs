@@ -10,7 +10,7 @@ public class VotingOptionDistributionTests
     {
         // Arrange
         GameSetup setup = new();
-        setup.AddPlayers(new Player("A", new RandomController(new ClaimStartingRoleStrategy())), 
+        setup.SetPlayers(new Player("A", new RandomController(new ClaimStartingRoleStrategy())), 
             new Player("B", new RandomController(new ClaimStartingRoleStrategy())), 
             new Player("C", new RandomController(new ClaimStartingRoleStrategy())));
 
@@ -26,7 +26,7 @@ public class VotingOptionDistributionTests
     {
         // Arrange
         GameSetup setup = new();
-        setup.AddPlayers(new Player("A", new RandomController(new ClaimStartingRoleStrategy())), 
+        setup.SetPlayers(new Player("A", new RandomController(new ClaimStartingRoleStrategy())), 
             new Player("B", new RandomController(new ClaimStartingRoleStrategy())), 
             new Player("C", new RandomController(new ClaimStartingRoleStrategy())),
             new Player("D", new RandomController(new ClaimStartingRoleStrategy())));
@@ -43,7 +43,7 @@ public class VotingOptionDistributionTests
     {
         // Arrange
         GameSetup setup = new();
-        setup.AddPlayers(new Player("A", new RandomController(new ClaimStartingRoleStrategy())), 
+        setup.SetPlayers(new Player("A", new RandomController(new ClaimStartingRoleStrategy())), 
             new Player("B", new RandomController(new ClaimStartingRoleStrategy())), 
             new Player("C", new RandomController(new ClaimStartingRoleStrategy())),
             new Player("D", new RandomController(new ClaimStartingRoleStrategy())),

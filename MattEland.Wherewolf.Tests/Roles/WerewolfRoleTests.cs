@@ -49,7 +49,7 @@ public class WerewolfRoleTests : RoleTestBase
             GameRole.Villager,
             GameRole.Villager
         );
-        setup.AddPlayers(
+        setup.SetPlayers(
             new Player("A", new FixedSelectionController(new ClaimFixedRoleStrategy(GameRole.Villager, (p,_) => new VillagerNoActionClaim(p)), "Center 2", "B")),
             new Player("B", new RandomController()),
             new Player("C", new RandomController())

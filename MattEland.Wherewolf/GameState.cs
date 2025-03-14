@@ -13,7 +13,6 @@ public class GameState
 {
     private readonly Queue<GamePhase> _remainingPhases;
     private readonly List<GameEvent> _events = [];
-    private readonly List<SocialEvent> _claims = [];
     private readonly Dictionary<string, GameSlot> _slots = new();
     public double Support { get; internal set; }
     public GameSetup Setup { get; }
@@ -85,25 +84,6 @@ public class GameState
             return new GameSlot(p.Name, role, p);
         }).ToArray();
     }
-    
-    public IEnumerable<IGameEvent> EventsForPlayer(Player? player = null)
-    {
-        foreach (var evt in Events)
-        {
-            // If it's a standard event and the player saw it or if we're omniscient, show it
-            if (player is null || evt.IsObservedBy(player) || IsGameOver)
-                yield return evt;
-
-            // At this point we can marry in our social claims observed
-            if (evt is MakeSocialClaimsNowEvent)
-            {
-                foreach (var social in Claims)
-                {
-                    yield return social;
-                }
-            }
-        }
-    }
 
     public GameSlot[] PlayerSlots { get; }
 
@@ -130,65 +110,6 @@ public class GameState
                 yield return _events[i];
             }
         }
-    }
-    
-    
-    public IEnumerable<SocialEvent> Claims
-    {
-        get
-        {
-            if (Parent is not null)
-            {
-                foreach (var c in Parent.Claims)
-                {
-                    yield return c;
-                }
-            }
-
-            for (int index = 0; index < _claims.Count; index++)
-            {
-                yield return _claims[index];
-            }
-        }
-    }
-
-    public PlayerProbabilities CalculateProbabilities(Player player)
-    {
-        PlayerProbabilities probabilities = new();
-
-        // Start with all permutations
-        GameState[] validPermutations = VotingHelper.GetPossibleGameStatesForPlayer(player, this).ToArray();
-
-        double startPopulation = validPermutations.Sum(p => p.Support);
-        
-        StartRoleClaimedEvent[] claimedEvents = Claims.OfType<StartRoleClaimedEvent>().ToArray();
-
-        // Calculate starting role probabilities
-        foreach (var slot in AllSlots)
-        {
-            foreach (var role in Roles.Distinct())
-            {
-                // Figure out the number of possible worlds where the slot had the role at the start
-                double startRoleSupport = validPermutations.Where(p => p.Root[slot.Name].Role == role)
-                                              .Sum(p => p.Support);
-
-                IEnumerable<Player> startSupport = claimedEvents
-                    .Where(e => e.ClaimedRole == role && e.Player == slot.Player && e.IsClaimValidFor(this))
-                    .Select(e => e.Player)
-                    .Where(e => e != player)
-                    .Distinct();
-                
-                probabilities.RegisterStartRoleProbabilities(slot, role, startRoleSupport, startPopulation, startSupport);
-                
-                // Figure out the number of possible worlds where the slot currently has the role
-                IEnumerable<GameState> endGameStates = validPermutations.Where(p => p[slot.Name].Role == role);
-                double currentRoleSupport = endGameStates.Sum(p => p.Support);
-                
-                probabilities.RegisterCurrentRoleProbabilities(slot, role, currentRoleSupport, startPopulation, []);
-            }
-        }
-        
-        return probabilities;
     }
 
     public void RunToEnd(Action<GameState> callback)
@@ -273,11 +194,6 @@ public class GameState
                 }
             }
         }
-    }
-
-    internal void AddEvent(SocialEvent newEvent)
-    {
-        _claims.Add(newEvent);
     }
 
     public GameSlot GetSlot(Player player)

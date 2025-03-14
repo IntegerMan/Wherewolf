@@ -8,29 +8,20 @@ public class RobberNightPhase : GamePhase
 {
     public override string Name => "Robber";
 
-    private void AddRobberNightAnnouncement(GameState newState, bool broadcast)
+    public override void Run(PhaseContext context)
     {
-        newState.AddEvent(EventPool.Announcement("Robber, wake up and exchange cards with another player, then look at your new card.", GameRole.Robber), broadcast);
-    }
+        context.AddEvent(EventPool.Announcement("Robber, wake up and exchange cards with another player, then look at your new card.", GameRole.Robber), broadcast: true);
 
-    public override void Run(GameState newState, Action<GameState> callback)
-    {
-        GameSlot? robber = newState.PlayerSlots.SingleOrDefault(p => newState.GetStartRole(p) == GameRole.Robber);
-        if (robber is not null)
+        IEnumerable<Player> robbers = context.PlayersStartingInRole(GameRole.Robber);
+        foreach (Player player in robbers)
         {
             // Figure out who we're robbing
-            Player[] targets = newState.Players.Where(p => p != robber.Player)
-                                               .ToArray();
+            Player[] targets = context.OtherPlayers(player);
             robber.Player!.Controller.SelectRobberTarget(targets, newState, robber.Player, target =>
             {
                 newState = PerformRobbery(newState, newState.GetSlot(target), robber, broadcast: true);
                 callback(newState);
             });
-        }
-        else
-        {
-            AddRobberNightAnnouncement(newState, broadcast: true);
-            callback(newState);
         }
     }
 

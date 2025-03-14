@@ -70,7 +70,7 @@ public class RobberRoleTests : RoleTestBase
     private static GameState RunRobberGame()
     {
         GameSetup setup = new(new NonShuffler());
-        setup.AddPlayers(
+        setup.SetPlayers(
             new Player("Player", new FixedSelectionController(new ClaimStartingRoleStrategy(), "Target", "Other")),
             new Player("Target", new RandomController()),
             new Player("Other", new RandomController()));

@@ -16,7 +16,7 @@ public class ClaimVoteVictoryProbabilityTests
         Player pPerspective = new Player("A", new FixedSelectionController(new ClaimFixedRoleStrategy(GameRole.Villager, (p,_) => new VillagerNoActionClaim(p))));
         Player pClaimsWolf = new Player("B", new FixedSelectionController(new ClaimFixedRoleStrategy(GameRole.Werewolf, (p,s) => new LoneWerewolfClaim(p, s.CenterSlots.First(), GameRole.Werewolf))));
         Player pClaimsVillager = new Player("C", new FixedSelectionController(new ClaimFixedRoleStrategy(GameRole.Villager, (p,_) => new VillagerNoActionClaim(p))));
-        setup.AddPlayers(pPerspective, pClaimsWolf, pClaimsVillager);
+        setup.SetPlayers(pPerspective, pClaimsWolf, pClaimsVillager);
         
         // 4 villagers and 2 werewolves, but WWs will stay in the center. We just don't want any uncertainty on role movement so this stays simple
         setup.AddRoles(GameRole.Villager, GameRole.Villager, GameRole.Villager, GameRole.Villager, GameRole.Werewolf, GameRole.Werewolf);

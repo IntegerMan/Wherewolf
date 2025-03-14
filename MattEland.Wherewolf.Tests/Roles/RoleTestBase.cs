@@ -11,7 +11,7 @@ public abstract class RoleTestBase
         GameSetup gameSetup = new(new NonShuffler());
         RandomController controller = new(new ClaimStartingRoleStrategy());
         
-        gameSetup.AddPlayers(
+        gameSetup.SetPlayers(
             new Player("A", controller), 
             new Player("B", controller), 
             new Player("C", controller));

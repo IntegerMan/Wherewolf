@@ -4,7 +4,7 @@ namespace MattEland.Wherewolf.Phases;
 
 public class InitialRoleClaimPhase(Player player) : GamePhase
 {
-    public override void Run(GameState newState, Action<GameState> callback)
+    public override void Run(PhaseContext context)
     {
         player.Controller.GetInitialRoleClaim(player, newState.Parent!, role =>
         {

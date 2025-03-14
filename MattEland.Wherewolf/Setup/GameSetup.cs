@@ -30,21 +30,11 @@ public class GameSetup(ISlotShuffler? shuffler = null)
 
     public IDictionary<Player, Player>[] VotingPermutations => _votePermutations!.VotingPermutations;
 
-    public void AddPlayer(Player player)
+    public void SetPlayers(params Player[] players)
     {
-        if (_players.Contains(player))
-            throw new InvalidOperationException("Player has already been added");
-
-        _players.Add(player);
+        _players.Clear();
+        _players.AddRange(players);
         _votePermutations = new VotePermutationsProvider(_players);
-    }
-
-    public void AddPlayers(params Player[] players)
-    {
-        foreach (var player in players)
-        {
-            AddPlayer(player);
-        }
     }
 
     public void AddRole(GameRole role, int count = 1)
