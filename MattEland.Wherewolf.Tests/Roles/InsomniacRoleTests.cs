@@ -115,10 +115,9 @@ public class InsomniacRoleTests : RoleTestBase
             GameRole.Villager,
             GameRole.Villager,
             GameRole.Werewolf
-        ); 
-        
-        GameState? finalState = null;
-        setup.StartGame().RunToEnd(s => finalState = s);
+        );
+
+        GameState? finalState = setup.RunGame();
 
         return finalState!;
     }

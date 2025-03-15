@@ -10,7 +10,7 @@ namespace MattEland.Wherewolf.BlazorFrontEnd.Components;
 
 public partial class EventTimeline : ComponentBase
 {
-    [Parameter] public required GameState Game { get; set; }
+    [Parameter] public required GameManager Game { get; set; }
     [Parameter] public Player? Perspective { get; set; }
     
     public IEnumerable<IGameEvent> VisibleEvents 

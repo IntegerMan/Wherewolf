@@ -7,8 +7,8 @@ public class GameService(IGameStateRepository stateRepository)
 {
     public Guid StartGame(GameSetup setup)
     {
-        GameState state = setup.StartGame();
+        GameManager game = new(setup);
         
-        return stateRepository.StoreNewGame(state);
+        return stateRepository.StoreNewGame(game);
     }
 }

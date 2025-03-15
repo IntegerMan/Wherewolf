@@ -1,7 +1,3 @@
-using MattEland.Wherewolf.Controllers;
-using MattEland.Wherewolf.Roles;
-using MattEland.Wherewolf.Setup;
-
 namespace MattEland.Wherewolf.Tests.Voting;
 
 public class VoteResultTests
@@ -19,7 +15,7 @@ public class VoteResultTests
         setup.AddRole(GameRole.Villager, 4);
         setup.AddRole(GameRole.Werewolf, 2);
 
-        GameState state = RunGame(setup);
+        GameState state = setup.RunGame();
         Dictionary<Player, int> votes = new()
         {
             [a] = 1,
@@ -33,14 +29,6 @@ public class VoteResultTests
         // Assert
         results.DeadPlayers.Count().ShouldBe(1);
         results.DeadPlayers.ShouldContain(b);
-    }
-
-    private static GameState RunGame(GameSetup setup)
-    {
-        GameState? state = null;
-        setup.StartGame().RunToEnd(s => state = s);
-        
-        return state!;
     }
 
     [Fact]
@@ -57,7 +45,7 @@ public class VoteResultTests
         setup.AddRole(GameRole.Villager, 5);
         setup.AddRole(GameRole.Werewolf, 2);
 
-        GameState state = RunGame(setup);
+        GameState state = setup.RunGame();
         Dictionary<Player, int> votes = new()
         {
             [a] = 0,
@@ -88,7 +76,7 @@ public class VoteResultTests
         setup.AddRole(GameRole.Villager, 4);
         setup.AddRole(GameRole.Werewolf, 2);
 
-        GameState state = RunGame(setup);
+        GameState state = setup.RunGame();
         Dictionary<Player, int> votes = new()
         {
             [a] = 0,
@@ -116,7 +104,7 @@ public class VoteResultTests
         setup.AddRole(GameRole.Villager, 4);
         setup.AddRole(GameRole.Werewolf, 2);
 
-        GameState state = RunGame(setup);
+        GameState state = setup.RunGame();
         Dictionary<Player, int> votes = new()
         {
             [a] = 1,
@@ -144,7 +132,7 @@ public class VoteResultTests
         setup.AddRole(GameRole.Villager, 4);
         setup.AddRole(GameRole.Werewolf, 2);
 
-        GameState state = RunGame(setup);
+        GameState state = setup.RunGame();
         Dictionary<Player, int> votes = new()
         {
             [a] = 0,
@@ -174,7 +162,7 @@ public class VoteResultTests
         setup.AddRole(GameRole.Werewolf, 2);
         setup.AddRole(GameRole.Villager, 5);
 
-        GameState state = RunGame(setup);
+        GameState state = setup.RunGame();
         Dictionary<Player, int> votes = new()
         {
             [a] = 0,
@@ -206,7 +194,7 @@ public class VoteResultTests
         setup.AddRole(GameRole.Werewolf, 2);
         setup.AddRole(GameRole.Villager, 5);
 
-        GameState state = RunGame(setup);
+        GameState state = setup.RunGame();
         Dictionary<Player, int> votes = new()
         {
             [a] = 0,
@@ -239,7 +227,7 @@ public class VoteResultTests
         setup.AddRole(GameRole.Werewolf, 2);
         setup.AddRole(GameRole.Villager, 5);
 
-        GameState state = RunGame(setup);
+        GameState state = setup.RunGame();
         Dictionary<Player, int> votes = new()
         {
             [a] = 0,
@@ -270,7 +258,7 @@ public class VoteResultTests
         setup.AddRole(GameRole.Werewolf, 2);
         setup.AddRole(GameRole.Villager, 5);
 
-        GameState state = RunGame(setup);
+        GameState state = setup.RunGame();
         Dictionary<Player, int> votes = new()
         {
             [a] = 0,
@@ -300,7 +288,7 @@ public class VoteResultTests
         setup.AddRole(GameRole.Werewolf, 2);
         setup.AddRole(GameRole.Villager, 5);
 
-        GameState state = RunGame(setup);
+        GameState state = setup.RunGame();
         Dictionary<Player, int> votes = new()
         {
             [a] = 0,
@@ -334,7 +322,7 @@ public class VoteResultTests
         setup.AddRole(GameRole.Werewolf, 2);
         setup.AddRole(GameRole.Villager, 5);
 
-        GameState state = RunGame(setup);
+        GameState state = setup.RunGame();
         Dictionary<Player, int> votes = new()
         {
             [a] = 2, 
@@ -368,7 +356,7 @@ public class VoteResultTests
         setup.AddRole(GameRole.Villager, 5);
         setup.AddRole(GameRole.Werewolf, 2);
 
-        GameState state = RunGame(setup);
+        GameState state = setup.RunGame();
         Dictionary<Player, int> votes = new()
         {
             [a] = 0,
@@ -403,7 +391,7 @@ public class VoteResultTests
         setup.AddRole(GameRole.Villager, 5);
         setup.AddRole(GameRole.Werewolf, 2);
 
-        GameState state = RunGame(setup);
+        GameState state = setup.RunGame();
         Dictionary<Player, int> votes = new()
         {
             [a] = 3,

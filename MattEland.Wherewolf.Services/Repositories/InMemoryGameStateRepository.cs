@@ -2,14 +2,14 @@ namespace MattEland.Wherewolf.Services.Repositories;
 
 public class InMemoryGameStateRepository : IGameStateRepository
 {
-    private readonly Dictionary<Guid, GameState> _states = new();
+    private readonly Dictionary<Guid, GameManager> _games = new();
     
-    public Guid StoreNewGame(GameState state)
+    public Guid StoreNewGame(GameManager game)
     {
         Guid id = Guid.CreateVersion7();
-        _states[id] = state;
+        _games[id] = game;
         return id;
     }
     
-    public GameState? FindGame(Guid id) => _states.GetValueOrDefault(id);
+    public GameManager? FindGame(Guid id) => _games.GetValueOrDefault(id);
 }

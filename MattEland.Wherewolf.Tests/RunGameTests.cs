@@ -11,14 +11,15 @@ public class RunGameTests : GameTestsBase
         GameSetup gameSetup = new(new NonShuffler());
         AddMinimumRequiredPlayers(gameSetup);
         AddMinimumRequiredRoles(gameSetup);
-        GameState startState = gameSetup.StartGame();
-        int originalEventCount = startState.Events.Count();
+        GameManager game = new(gameSetup);
+        GameState startState = game.CurrentState;
+        int originalEventCount = game.Events.Count();
 
         // Act
-        GameState? finalState = null;
-        startState.RunToEnd(s => finalState = s);
+        game.RunToEnd();
         
         // Assert
+        GameState finalState = game.CurrentState;
         finalState.ShouldNotBeNull();
         finalState.IsGameOver.ShouldBeTrue();
         finalState.ShouldNotBe(startState);

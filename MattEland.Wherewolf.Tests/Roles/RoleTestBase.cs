@@ -6,7 +6,7 @@ namespace MattEland.Wherewolf.Tests.Roles;
 
 public abstract class RoleTestBase
 {
-    protected GameState CreateTestGameState(params GameRole[] roles)
+    protected GameManager CreateTestGameManager(params GameRole[] roles)
     {
         GameSetup gameSetup = new(new NonShuffler());
         RandomController controller = new(new ClaimStartingRoleStrategy());
@@ -18,6 +18,6 @@ public abstract class RoleTestBase
         
         gameSetup.AddRoles(roles);
 
-        return gameSetup.StartGame();
+        return new GameManager(gameSetup);
     }
 }

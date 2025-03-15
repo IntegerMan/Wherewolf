@@ -1,4 +1,5 @@
 using MattEland.Wherewolf.Controllers;
+using MattEland.Wherewolf.Events;
 using MattEland.Wherewolf.Events.Game;
 using MattEland.Wherewolf.Events.Social;
 using MattEland.Wherewolf.Probability;
@@ -13,7 +14,7 @@ public class WerewolfRoleTests : RoleTestBase
     public void LoneWerewolfShouldHaveLookedAtCardInCenterEvent()
     {
         // Arrange
-        GameState gameState = CreateTestGameState(            
+        GameManager game = CreateTestGameManager(            
             GameRole.Werewolf, // This will go to our player
             GameRole.Villager,
             GameRole.Villager,
@@ -22,11 +23,11 @@ public class WerewolfRoleTests : RoleTestBase
             GameRole.Werewolf,
             GameRole.Villager
         );
-        gameState.RunToEnd(s => gameState = s);
-        Player player = gameState.Players.First();
+        game.RunToEnd();
+        Player player = game.Players.First();
 
         // Act
-        List<GameEvent> observedEvents = gameState.Events.Where(e => e.IsObservedBy(player)).ToList();
+        IEnumerable<IGameEvent> observedEvents = game.EventsForPlayer(player);
 
         // Assert
         observedEvents.ShouldNotBeEmpty();
@@ -54,17 +55,17 @@ public class WerewolfRoleTests : RoleTestBase
             new Player("B", new RandomController()),
             new Player("C", new RandomController())
         );
-        GameState? gameState = null;
-        setup.StartGame().RunToEnd(s => gameState = s);
-        Player player = gameState!.Players.Single(p => p.Name == "A");
+        GameManager game = new GameManager(setup);
+        game.RunToEnd();
+        Player player = game.Players.Single(p => p.Name == "A");
+        GameState gameState = game.CurrentState;
         
         // Act
         SlotRoleProbabilities slotProbabilities = gameState.CalculateProbabilities(player)
             .GetCurrentProbabilities(gameState["Center 2"]);
 
         // Assert
-        List<GameEvent> observedEvents = gameState.Events.Where(e => e.IsObservedBy(player)).ToList();
-        // TODO: Something about running parallel tests seems to get this particular event to be skipped from callbacks
+        IEnumerable<IGameEvent> observedEvents = game.EventsForPlayer(player);
         observedEvents.OfType<LoneWolfLookedAtSlotEvent>().Single().SlotName.ShouldBe("Center 2");
         slotProbabilities.Role[GameRole.Werewolf].Probability.ShouldBe(0);
         slotProbabilities.Role[GameRole.Villager].Probability.ShouldBe(1);
@@ -74,7 +75,7 @@ public class WerewolfRoleTests : RoleTestBase
     public void DualWerewolfShouldHaveSawOtherWerewolvesEvent()
     {
         // Arrange
-        GameState gameState = CreateTestGameState(            
+        GameManager game = CreateTestGameManager(            
             GameRole.Werewolf, // This will go to player1
             GameRole.Werewolf, // This will go to player2
             GameRole.Villager,
@@ -83,17 +84,17 @@ public class WerewolfRoleTests : RoleTestBase
             GameRole.Villager,
             GameRole.Villager
         );
-        gameState.RunToEnd(s => gameState = s);
-        Player player1 = gameState.Players.First();
-        Player player2 = gameState.Players.Skip(1).First();
+        game.RunToEnd();
+        Player player1 = game.Players.First();
+        Player player2 = game.Players.Skip(1).First();
 
         // Act
-        List<GameEvent> p1ObservedEvents = gameState.Events.Where(e => e.IsObservedBy(player1)).ToList();
-        List<GameEvent> p2ObservedEvents = gameState.Events.Where(e => e.IsObservedBy(player2)).ToList();
+        IEnumerable<IGameEvent> p1ObservedEvents = game.EventsForPlayer(player1);
+        IEnumerable<IGameEvent> p2ObservedEvents = game.EventsForPlayer(player2);
 
         // Assert
         p1ObservedEvents.OfType<SawOtherWolvesEvent>().Count().ShouldBe(1);
         p2ObservedEvents.OfType<SawOtherWolvesEvent>().Count().ShouldBe(1);
-        gameState.Events.OfType<SawOtherWolvesEvent>().Count().ShouldBe(1); // 1 shared event
+        game.Events.OfType<SawOtherWolvesEvent>().Count().ShouldBe(1); // 1 shared event
     }    
 }

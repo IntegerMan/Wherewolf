@@ -4,7 +4,7 @@ using MattEland.Wherewolf.Setup;
 
 namespace MattEland.Wherewolf.Tests.Helpers;
 
-public class TestingSetups
+public static class TestingSetups
 {
     public static GameSetup VillagersOnlyGame(int playerCount = 3)
     {
@@ -20,5 +20,12 @@ public class TestingSetups
         setup.AddRole(GameRole.Werewolf);
 
         return setup;
+    }
+    
+    public static GameState RunGame(this GameSetup setup)
+    {
+        GameManager game = new(setup);
+        game.RunToEnd();
+        return game.CurrentState;
     }
 }

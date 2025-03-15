@@ -85,25 +85,7 @@ public class GameState
             return new GameSlot(p.Name, role, p);
         }).ToArray();
     }
-    
-    public IEnumerable<IGameEvent> EventsForPlayer(Player? player = null)
-    {
-        foreach (var evt in Events)
-        {
-            // If it's a standard event and the player saw it or if we're omniscient, show it
-            if (player is null || evt.IsObservedBy(player) || IsGameOver)
-                yield return evt;
 
-            // At this point we can marry in our social claims observed
-            if (evt is MakeSocialClaimsNowEvent)
-            {
-                foreach (var social in Claims)
-                {
-                    yield return social;
-                }
-            }
-        }
-    }
 
     public GameSlot[] PlayerSlots { get; }
 
@@ -190,43 +172,6 @@ public class GameState
         
         return probabilities;
     }
-
-    public void RunToEnd(Action<GameState> callback)
-    {
-        if (IsGameOver)
-        {
-            callback(this);
-        }
-        else
-        {
-            RunNext(state => state.RunToEnd(callback));
-        }
-    }
-    
-
-    public void RunToEndOfNight(Action<GameState> callback)
-    {
-        if (CurrentPhase is WakeUpPhase)
-        {
-            callback(this);
-        }
-        else
-        {
-            RunNext(state => state.RunToEndOfNight(callback));
-        }
-    }    
-    
-    public void RunToVoting(Action<GameState> callback)
-    {
-        if (CurrentPhase is VotingPhase)
-        {
-            callback(this);
-        }
-        else
-        {
-            RunNext(state => state.RunToVoting(callback));
-        }
-    }  
 
     public void RunNext(Action<GameState> callback)
     {

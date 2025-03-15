@@ -1,8 +1,5 @@
-using MattEland.Wherewolf.Controllers;
 using MattEland.Wherewolf.Events.Social;
 using MattEland.Wherewolf.Probability;
-using MattEland.Wherewolf.Roles;
-using MattEland.Wherewolf.Setup;
 
 namespace MattEland.Wherewolf.Tests.Probability;
 
@@ -20,8 +17,9 @@ public class ClaimVoteVictoryProbabilityTests
         
         // 4 villagers and 2 werewolves, but WWs will stay in the center. We just don't want any uncertainty on role movement so this stays simple
         setup.AddRoles(GameRole.Villager, GameRole.Villager, GameRole.Villager, GameRole.Villager, GameRole.Werewolf, GameRole.Werewolf);
-        GameState state = setup.StartGame();
-        state.RunToVoting(s => state = s);
+        GameManager game = new(setup);
+        game.RunToVoting();
+        GameState state = game.CurrentState;
 
         // Act
         Dictionary<Player, double> probs = VotingHelper.GetVoteVictoryProbabilities(pPerspective, state);

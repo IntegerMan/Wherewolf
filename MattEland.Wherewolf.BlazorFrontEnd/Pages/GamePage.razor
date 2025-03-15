@@ -26,12 +26,12 @@ else
             <MudCardContent Style="flex-grow: 1;">
                 <MudText Typo="Typo.h4" Class="my-4">Center Cards</MudText>
                 <MudGrid>
-                    @foreach (var slot in Game.CenterSlots)
+                    @foreach (var slot in Game.CurrentState.CenterSlots)
                     {
                         <MudItem>
                             <SlotCardDisplay Slot="@slot"
                                              IsPlayer="false"
-                                             Game="@Game"
+                                             Game="@Game.CurrentState"
                                              PlayerProbabilities="@PlayerProbabilities"
                                              PerspectivePlayer="@PerspectivePlayer"/>
                         </MudItem>
@@ -42,12 +42,12 @@ else
 
                 <MudText Typo="Typo.h4" Class="my-4">Players</MudText>
                 <MudGrid>
-                    @foreach (var slot in Game.PlayerSlots)
+                    @foreach (var slot in Game.CurrentState.PlayerSlots)
                     {
                         <MudItem>
                             <SlotCardDisplay Slot="@slot" 
                                              IsPlayer="true" 
-                                             Game="@Game"
+                                             Game="@Game.CurrentState"
                                              PlayerProbabilities="@PlayerProbabilities"
                                              PerspectivePlayer="@PerspectivePlayer"/>
                         </MudItem>
@@ -79,19 +79,19 @@ else
                             </MudButton>
                             break;
                         case ClientMode.InitialRoleClaim:
-                            <RoleClaimSelection Game="@Game" PerspectivePlayer="@PerspectivePlayer" />
+                            <RoleClaimSelection Game="@Game.CurrentState" PerspectivePlayer="@PerspectivePlayer" />
                             break;
                         case ClientMode.SpecificRoleClaim:
-                            <SpecificRoleClaimSelection Game="@Game" PerspectivePlayer="@PerspectivePlayer" DataSource="@SpecificRoleClaimNeededMessage" />
+                            <SpecificRoleClaimSelection Game="@Game.CurrentState" PerspectivePlayer="@PerspectivePlayer" DataSource="@SpecificRoleClaimNeededMessage" />
                             break;
                         case ClientMode.Vote:
-                            <VoteSelection Game="@Game" PerspectivePlayer="@PerspectivePlayer" Probabilities="@PlayerProbabilities" />
+                            <VoteSelection Game="@Game.CurrentState" PerspectivePlayer="@PerspectivePlayer" Probabilities="@PlayerProbabilities" />
                             break;
                         case ClientMode.SelectRobberVictim:
-                            <RobberSelection Game="@Game" PerspectivePlayer="@PerspectivePlayer" />
+                            <RobberSelection Game="@Game.CurrentState" PerspectivePlayer="@PerspectivePlayer" />
                             break;
                         case ClientMode.SelectLoneWolfPeekCard:
-                            <LoneWolfSelection Game="@Game" PerspectivePlayer="@PerspectivePlayer" />
+                            <LoneWolfSelection Game="@Game.CurrentState" PerspectivePlayer="@PerspectivePlayer" />
                             break;
                         default:
                             <MudAlert Severity="Severity.Error" Variant="Variant.Filled">Unexpected Mode: @Mode</MudAlert>

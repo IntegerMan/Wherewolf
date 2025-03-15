@@ -25,7 +25,7 @@ public partial class GamePage : ComponentBase,
     
     public ClientMode Mode { get; set; } = ClientMode.Normal;
     
-    public GameState? Game { get; set; }
+    public GameManager? Game { get; set; }
     
     public Player? PerspectivePlayer { get; set; }
 
@@ -44,7 +44,7 @@ public partial class GamePage : ComponentBase,
     {
         if (Game is not null && PerspectivePlayer is not null)
         {
-            PlayerProbabilities = Game?.CalculateProbabilities(PerspectivePlayer);
+            PlayerProbabilities = Game?.CurrentState.CalculateProbabilities(PerspectivePlayer);
         }
     }
 
@@ -52,11 +52,9 @@ public partial class GamePage : ComponentBase,
 
     private void AdvanceToNextPhase()
     {
-        Game?.RunNext(game => InvokeAsync(() => { 
-            Game = game;
-            UpdateProbabilities();
-            StateHasChanged();
-        }));
+        Game!.RunNext();
+        UpdateProbabilities();
+        StateHasChanged();
     }
 
     public PlayerProbabilities? PlayerProbabilities { get; set; }

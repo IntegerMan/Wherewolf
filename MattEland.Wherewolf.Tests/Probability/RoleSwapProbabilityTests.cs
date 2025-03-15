@@ -1,8 +1,5 @@
-using MattEland.Wherewolf.Controllers;
 using MattEland.Wherewolf.Events.Social;
 using MattEland.Wherewolf.Probability;
-using MattEland.Wherewolf.Roles;
-using MattEland.Wherewolf.Setup;
 
 namespace MattEland.Wherewolf.Tests.Probability;
 
@@ -24,12 +21,13 @@ public class RoleSwapProbabilityTests
             GameRole.Villager, GameRole.Villager, 
             GameRole.Werewolf, GameRole.Werewolf
         );
-        GameState gameState = gameSetup.StartGame();
+        GameManager game = new GameManager(gameSetup);
         
         // Act
-        gameState.RunToEndOfNight(s => gameState = s);
+        game.RunToEndOfNight();
         
         // Assert
+        GameState gameState = game.CurrentState;
         Player matt = gameState.Players.Single(p => p.Name == "Matt");
         PlayerProbabilities playerProbs = gameState.CalculateProbabilities(matt);
         
@@ -56,12 +54,13 @@ public class RoleSwapProbabilityTests
             GameRole.Villager, GameRole.Villager, 
             GameRole.Werewolf, GameRole.Werewolf
         );
-        GameState gameState = gameSetup.StartGame();
+        GameManager game = new GameManager(gameSetup);
         
         // Act
-        gameState.RunToEndOfNight(s => gameState = s);
+        game.RunToEndOfNight();
         
         // Assert
+        GameState gameState = game.CurrentState;
         Player matt = gameState.Players.Single(p => p.Name == "Matt");
         PlayerProbabilities playerProbs = gameState.CalculateProbabilities(matt);
         SlotRoleProbabilities startProbs = playerProbs.GetStartProbabilities(gameState.GetSlot(matt));
