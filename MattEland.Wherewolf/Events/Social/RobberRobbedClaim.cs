@@ -19,4 +19,10 @@ public class RobberRobbedClaim(Player player, Player target, GameRole stolenRole
         && (StolenRole != GameRole.Robber
             ? state.GetRoleCount(StolenRole) >= 1
             : state.GetRoleCount(GameRole.Robber) >= 2);
+
+    public override bool? SelfVerify(GameState state, Player perspective)
+    {
+        if (perspective != Target) return null;
+        return state.GetStartRole(perspective) == StolenRole;
+    }
 }

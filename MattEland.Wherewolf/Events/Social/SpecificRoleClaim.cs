@@ -29,4 +29,18 @@ public abstract class SpecificRoleClaim(Player player, GameRole role) : SocialEv
 
         return null;
     }
+
+    /// <summary>
+    /// Returns true when the perspective player's own certain knowledge confirms this claim,
+    /// false when their knowledge contradicts it, or null when this claim says nothing
+    /// self-verifiable about that player.
+    /// </summary>
+    public virtual bool? SelfVerify(GameState state, Player perspective) => null;
+
+    /// <summary>
+    /// Returns true when at least one other player can independently confirm this claim
+    /// based solely on their own certain start-role knowledge.
+    /// </summary>
+    public bool IsConfirmableByOtherPlayer(GameState state)
+        => state.Players.Any(p => p.Name != Player.Name && SelfVerify(state, p) == true);
 }

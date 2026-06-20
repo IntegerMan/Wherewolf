@@ -14,6 +14,37 @@ public static class VotingHelper
         IEnumerable<GameState> possiblyTrueStates = state.Setup.GetPermutationsAtPhase(votingPhase)
             .Where(p => p.IsPossibleGivenEvents(observedEvents));
 
+        // Hard-filter based on self-verifiable specific claims from other players.
+        // Each verdict is computed once against the real state; true keeps worlds where the
+        // claim holds, false keeps worlds where it does not.
+        SpecificRoleClaim[] otherSpecificClaims = state.Claims
+            .OfType<SpecificRoleClaim>()
+            .Where(c => c.Player != player)
+            .ToArray();
+
+        if (otherSpecificClaims.Length > 0)
+        {
+            var verifiedClaims = otherSpecificClaims
+                .Select(c => (claim: c, verdict: c.SelfVerify(state, player)))
+                .Where(x => x.verdict.HasValue)
+                .ToArray();
+
+            if (verifiedClaims.Length > 0)
+            {
+                IEnumerable<GameState> filtered = possiblyTrueStates;
+                foreach (var (claim, verdict) in verifiedClaims)
+                {
+                    filtered = verdict == true
+                        ? filtered.Where(world => claim.IsClaimValidFor(world))
+                        : filtered.Where(world => !claim.IsClaimValidFor(world));
+                }
+
+                GameState[] filteredArray = filtered.ToArray();
+                if (filteredArray.Length > 0)
+                    possiblyTrueStates = filteredArray;
+            }
+        }
+
         SocialEvent[] otherClaims = state.Claims.Where(c => c.Player != player).ToArray();
         
         // Set up our results
