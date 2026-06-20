@@ -13,4 +13,10 @@ public class RobberRobbedClaim(Player player, Player target, GameRole stolenRole
     public override bool IsClaimValidFor(GameState state) 
         => state.Events.OfType<RobbedPlayerEvent>()
             .Any(e => e.PlayerName == Player.Name && e.TargetName == Target.Name && e.NewRole == StolenRole);
+
+    public override bool IsCombinatoriallyPossible(GameState state)
+        => state.GetRoleCount(GameRole.Robber) >= 1
+        && (StolenRole != GameRole.Robber
+            ? state.GetRoleCount(StolenRole) >= 1
+            : state.GetRoleCount(GameRole.Robber) >= 2);
 }

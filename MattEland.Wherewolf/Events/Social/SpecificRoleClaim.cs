@@ -10,6 +10,15 @@ public abstract class SpecificRoleClaim(Player player, GameRole role) : SocialEv
 {
     public GameRole Role => role;
     public override Team? AssociatedTeam => Role.GetTeam();
+
+    /// <summary>
+    /// Cheap combinatorial pre-check based on role-card counts alone. Returns <c>false</c> only
+    /// when the claim is provably impossible regardless of role assignments (e.g. claiming to
+    /// have stolen the Robber role when only one Robber card exists). A return of <c>true</c>
+    /// means the claim is potentially valid — the rigorous <see cref="IsClaimValidFor"/> sweep
+    /// across all permutations confirms whether it actually holds in at least one game state.
+    /// </summary>
+    public virtual bool IsCombinatoriallyPossible(GameState state) => true;
     
     public bool? EvaluateTruthfulness(GameState game, Player? perspective)
     {

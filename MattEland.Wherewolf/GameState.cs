@@ -95,6 +95,7 @@ public class GameState
 
     public IEnumerable<Player> Players => Setup.Players;
     public IEnumerable<GameRole> Roles => Setup.Roles;
+    public int GetRoleCount(GameRole role) => Roles.Count(r => r == role);
     public IEnumerable<GameEvent> Events
     {
         get
@@ -351,14 +352,28 @@ public class GameState
         // TODO: It might make more sense and keep scope narrower to restrict to specific claims along their prior claim
         // This way they couldn't claim role 1 and then role 2 with more specifics - though changing minds in some cases
         // can be cool - like a WW outing as a WW if they think they've been robbed.
-        
-        List<SpecificRoleClaim> claims = new();
+
+        List<SpecificRoleClaim> candidates = new();
         foreach (var role in Roles.Distinct())
         {
-            claims.AddRange(role.GetPossibleSpecificRoleClaims(player, this));
+            candidates.AddRange(role.GetPossibleSpecificRoleClaims(player, this));
         }
 
-        return claims.ToArray();
+        // Cheap combinatorial gate: drop claims that are provably impossible based on role-card counts alone
+        // (e.g. Robber claiming to have stolen the Robber role when only one Robber card exists).
+        // TODO: This will need to be modified / removed when role swapping roles like troublemaker come in        
+        List<SpecificRoleClaim> survivors = candidates
+            .Where(c => c.IsCombinatoriallyPossible(this))
+            .ToList();
+
+        if (survivors.Count == 0) return [];
+
+        // Rigorous check: keep only claims that hold true in at least one permutation of
+        // the game's role assignments, confirming the claim is possible in some game state.
+        GameState[] permutations = Setup.GetPermutationsAtPhase(CurrentPhase).ToArray();
+        return survivors
+            .Where(c => permutations.Any(p => c.IsClaimValidFor(p)))
+            .ToArray();
     }
 
     public bool ContainsEvent(GameEvent e) => Events.Contains(e);

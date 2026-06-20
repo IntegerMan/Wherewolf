@@ -17,4 +17,10 @@ public class LoneWerewolfClaim(Player player, GameSlot centerSlot, GameRole obse
         state.GetStartRole(Player) == GameRole.Werewolf
         && state.Events.OfType<LoneWolfLookedAtSlotEvent>()
             .Any(e => e.PlayerName == Player.Name && e.SlotName == CenterSlot.Name && e.ObservedRole == ObservedRole);
+
+    public override bool IsCombinatoriallyPossible(GameState state)
+        => state.GetRoleCount(GameRole.Werewolf) >= 1
+        && (ObservedRole != GameRole.Werewolf
+            ? state.GetRoleCount(ObservedRole) >= 1
+            : state.GetRoleCount(GameRole.Werewolf) >= 2);
 }
