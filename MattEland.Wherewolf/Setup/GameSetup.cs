@@ -1,5 +1,4 @@
-﻿using MattEland.Wherewolf.Events.Social;
-using MattEland.Wherewolf.Phases;
+﻿using MattEland.Wherewolf.Phases;
 using MattEland.Wherewolf.Roles;
 using MoreLinq;
 

@@ -1,6 +1,3 @@
-using MattEland.Wherewolf.Roles;
-using MattEland.Wherewolf.Setup;
-
 namespace MattEland.Wherewolf.Tests;
 
 public class GameRoleTests

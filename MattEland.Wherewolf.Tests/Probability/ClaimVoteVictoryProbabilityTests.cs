@@ -1,5 +1,4 @@
 using MattEland.Wherewolf.Events.Social;
-using MattEland.Wherewolf.Probability;
 
 namespace MattEland.Wherewolf.Tests.Probability;
 

@@ -1,5 +1,3 @@
-using MattEland.Wherewolf.Setup;
-
 namespace MattEland.Wherewolf.Tests;
 
 public class RunGameTests : GameTestsBase

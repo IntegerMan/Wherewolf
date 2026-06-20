@@ -1,10 +1,6 @@
-using MattEland.Wherewolf.Controllers;
 using MattEland.Wherewolf.Events;
 using MattEland.Wherewolf.Events.Game;
 using MattEland.Wherewolf.Events.Social;
-using MattEland.Wherewolf.Probability;
-using MattEland.Wherewolf.Roles;
-using MattEland.Wherewolf.Setup;
 
 namespace MattEland.Wherewolf.Tests.Roles;
 
