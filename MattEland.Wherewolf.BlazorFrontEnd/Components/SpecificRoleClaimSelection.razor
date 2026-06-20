@@ -18,7 +18,13 @@
                     <RoleIndicator Role="@role.Key" CenterAlign="true" />
                     @foreach (var claim in role.OrderBy(c => c.Description))
                     {
-                        <MudListItem Text="@claim.Description" Value="@claim" Dense="true"/>
+                        <MudListItem Value="@claim" Dense="true">
+                            @claim.Description
+                            @if (claim.IsClaimValidFor(Game))
+                            {
+                                <MudText Inline="true" Color="Color.Success" Class="ml-1"><strong>(Truth)</strong></MudText>
+                            }
+                        </MudListItem>
                     }
                 </MudListSubheader>
                 <MudDivider />
