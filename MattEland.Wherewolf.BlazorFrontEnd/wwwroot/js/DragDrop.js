@@ -25,5 +25,10 @@ window.dragDropInterop = {
         } else {
             console.error("No data found in event.dataTransfer", event);
         }
+    },
+    scrollIntoView: function(element) {
+        if (element) {
+            element.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        }
     }
-};
+}
