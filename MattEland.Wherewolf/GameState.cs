@@ -142,34 +142,51 @@ public class GameState
         GameState[] validPermutations = VotingHelper.GetPossibleGameStatesForPlayer(player, this).ToArray();
 
         double startPopulation = validPermutations.Sum(p => p.Support);
-        
+
         StartRoleClaimedEvent[] claimedEvents = Claims.OfType<StartRoleClaimedEvent>().ToArray();
 
-        // Calculate starting role probabilities
-        foreach (var slot in AllSlots)
+        // Materialise once to avoid re-allocating the combined array per iteration.
+        GameSlot[] allSlots = AllSlots.ToArray();
+        GameRole[] distinctRoles = Roles.Distinct().ToArray();
+
+        // Build per-(slot, role) support totals in a single pass over validPermutations
+        // instead of re-scanning for every (slot × role) pair in the nested loop below.
+        Dictionary<(string slotName, GameRole role), double> startSupportTotals = new();
+        Dictionary<(string slotName, GameRole role), double> currentSupportTotals = new();
+
+        foreach (GameState perm in validPermutations)
         {
-            foreach (var role in Roles.Distinct())
+            foreach (GameSlot slot in allSlots)
             {
-                // Figure out the number of possible worlds where the slot had the role at the start
-                double startRoleSupport = validPermutations.Where(p => p.Root[slot.Name].Role == role)
-                                              .Sum(p => p.Support);
+                (string, GameRole) startKey = (slot.Name, perm.Root[slot.Name].Role);
+                startSupportTotals[startKey] = startSupportTotals.GetValueOrDefault(startKey) + perm.Support;
+
+                (string, GameRole) currentKey = (slot.Name, perm[slot.Name].Role);
+                currentSupportTotals[currentKey] = currentSupportTotals.GetValueOrDefault(currentKey) + perm.Support;
+            }
+        }
+
+        // Calculate role probabilities using O(1) dictionary lookups per (slot, role) pair.
+        foreach (GameSlot slot in allSlots)
+        {
+            foreach (GameRole role in distinctRoles)
+            {
+                double startRoleSupport = startSupportTotals.GetValueOrDefault((slot.Name, role));
 
                 IEnumerable<Player> startSupport = claimedEvents
                     .Where(e => e.ClaimedRole == role && e.Player == slot.Player && e.IsClaimValidFor(this))
                     .Select(e => e.Player)
                     .Where(e => e != player)
                     .Distinct();
-                
+
                 probabilities.RegisterStartRoleProbabilities(slot, role, startRoleSupport, startPopulation, startSupport);
-                
-                // Figure out the number of possible worlds where the slot currently has the role
-                IEnumerable<GameState> endGameStates = validPermutations.Where(p => p[slot.Name].Role == role);
-                double currentRoleSupport = endGameStates.Sum(p => p.Support);
-                
+
+                double currentRoleSupport = currentSupportTotals.GetValueOrDefault((slot.Name, role));
+
                 probabilities.RegisterCurrentRoleProbabilities(slot, role, currentRoleSupport, startPopulation, []);
             }
         }
-        
+
         return probabilities;
     }
 

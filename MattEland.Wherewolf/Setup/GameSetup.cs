@@ -12,6 +12,8 @@ public class GameSetup(ISlotShuffler? shuffler = null)
     private VotePermutationsProvider? _votePermutations;
     private GameState? _root;
     private GameState[] _possibleRoots = [];
+    private readonly Dictionary<GamePhase, List<GameState>> _permutationCache = new();
+    private List<GameState>? _nullPhasePermutations;
     public IEnumerable<Player> Players => _players.AsReadOnly();
     public IEnumerable<GameRole> Roles => _roles.AsReadOnly();
     public GamePhase[] Phases
@@ -163,26 +165,47 @@ public class GameSetup(ISlotShuffler? shuffler = null)
     
     public IEnumerable<GameState> GetPermutationsAtPhase(GamePhase? currentPhase)
     {
-        if (!_possibleRoots.Any()) throw new InvalidOperationException("Game has not been started yet");
+        if (_possibleRoots.Length == 0) throw new InvalidOperationException("Game has not been started yet");
 
-        // Walk down the tree of permutations to find the current phase
-        List<GameState> currentBand = _possibleRoots.ToList();
+        if (currentPhase is null)
+        {
+            if (_nullPhasePermutations is not null)
+                return _nullPhasePermutations;
+        }
+        else if (_permutationCache.TryGetValue(currentPhase, out List<GameState>? cached))
+        {
+            return cached;
+        }
+
+        // BFS from roots; stop as soon as we find the band at the target phase —
+        // all permutations share the same phase depth, so the entire matching band
+        // is found in one pass and there is no need to expand further.
+        List<GameState> currentBand = [.._possibleRoots];
         List<GameState> nextBand = [];
-        
+        List<GameState> result = [];
+
         while (currentBand.Count > 0)
         {
-            foreach (var state in currentBand)
+            foreach (GameState state in currentBand)
             {
                 if (state.CurrentPhase == currentPhase)
-                {
-                    yield return state;
-                }
-                
-                nextBand.AddRange(state.PossibleNextStates);
+                    result.Add(state);
+                else
+                    nextBand.AddRange(state.PossibleNextStates);
             }
-            
+
+            if (result.Count > 0)
+                break;
+
             currentBand = nextBand;
             nextBand = [];
         }
+
+        if (currentPhase is null)
+            _nullPhasePermutations = result;
+        else
+            _permutationCache[currentPhase] = result;
+
+        return result;
     }
 }

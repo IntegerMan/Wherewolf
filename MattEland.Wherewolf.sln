@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 17
-VisualStudioVersion = 17.12.35527.113 d17.12
+# Visual Studio Version 18
+VisualStudioVersion = 18.8.11912.234 insiders
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MattEland.Wherewolf", "MattEland.Wherewolf\MattEland.Wherewolf.csproj", "{0B81E48B-BDCE-4F35-B5F9-61893FB8680E}"
 EndProject
@@ -14,6 +14,8 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MattEland.Werewolf.BlazorTests", "MattEland.Werewolf.BlazorTests\MattEland.Werewolf.BlazorTests.csproj", "{1AD6A6A8-24AD-462E-B818-79608B1A8735}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MattEland.Wherewolf.Services", "MattEland.Wherewolf.Services\MattEland.Wherewolf.Services.csproj", "{AC9D50AE-3CAA-4409-8EB2-6930EF1EEA94}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BenchmarkSuite", "BenchmarkSuite\BenchmarkSuite.csproj", "{FF431CE1-8DAA-F2E0-6083-541E879F0B56}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -45,8 +47,15 @@ Global
 		{AC9D50AE-3CAA-4409-8EB2-6930EF1EEA94}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{AC9D50AE-3CAA-4409-8EB2-6930EF1EEA94}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{AC9D50AE-3CAA-4409-8EB2-6930EF1EEA94}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FF431CE1-8DAA-F2E0-6083-541E879F0B56}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FF431CE1-8DAA-F2E0-6083-541E879F0B56}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FF431CE1-8DAA-F2E0-6083-541E879F0B56}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FF431CE1-8DAA-F2E0-6083-541E879F0B56}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {9A1954DF-4CE8-45AC-B4FA-28638CCB1216}
 	EndGlobalSection
 EndGlobal
