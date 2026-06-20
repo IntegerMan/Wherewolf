@@ -4,6 +4,7 @@ using MattEland.Wherewolf.BlazorFrontEnd.Messages;
 using MattEland.Wherewolf.Probability;
 using MattEland.Wherewolf.Services.Repositories;
 using Microsoft.AspNetCore.Components;
+using Microsoft.JSInterop;
 
 namespace MattEland.Wherewolf.BlazorFrontEnd.Pages;
 
@@ -59,6 +60,22 @@ public partial class GamePage : ComponentBase,
 
     public PlayerProbabilities? PlayerProbabilities { get; set; }
     public SpecificRoleClaimNeededMessage? SpecificRoleClaimNeededMessage { get; set; }
+
+    [Inject] private IJSRuntime JSRuntime { get; set; } = default!;
+    private ElementReference _actionsRef;
+    private ClientMode _lastMode = ClientMode.Normal;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (Mode != _lastMode)
+        {
+            _lastMode = Mode;
+            if (Mode != ClientMode.Normal)
+            {
+                await JSRuntime.InvokeVoidAsync("dragDropInterop.scrollIntoView", _actionsRef);
+            }
+        }
+    }
 
     public void Receive(ChangeClientModeMessage message)
     {

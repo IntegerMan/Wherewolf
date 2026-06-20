@@ -55,6 +55,7 @@ else
                 </MudGrid>
             </MudCardContent>
             <MudCardActions Style="flex-grow: 0;">
+                <div @ref="_actionsRef" />
                 @if (IsGameOver)
                 {
                     <MudButton Variant="Variant.Filled" Color="Color.Primary"
