@@ -1,6 +1,3 @@
-using MattEland.Wherewolf.Controllers;
-using MattEland.Wherewolf.Probability;
-
 namespace MattEland.Wherewolf.Tests.Voting;
 
 public class VoteTabulationTests

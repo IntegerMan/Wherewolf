@@ -62,17 +62,17 @@ public class GameManager
 
     public void RunToEndOfNight()
     {
-        if (CurrentPhase is not WakeUpPhase)
+        while (!IsGameOver && CurrentPhase is not WakeUpPhase)
         {
             RunNext();
         }
-    }    
+    }
     
     public void RunToVoting()
     {
-        if (CurrentPhase is not VotingPhase)
+        while (!IsGameOver && CurrentPhase is not VotingPhase)
         {
             RunNext();
         }
-    }  
+    }
 }
