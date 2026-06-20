@@ -10,5 +10,5 @@ public class ConfigurePage(IPage page) : WerewolfPageBase(page)
     public ILocator PageSubtitle => _page.GetByTestId("PageSubtitle");
     public ILocator PlayGameButton => _page.GetByTestId("PlayGameButton");
 
-    public override string Url => $"{BaseUrl}Configure";
+    public override string Url => $"{BaseUrl}setup";
 }
