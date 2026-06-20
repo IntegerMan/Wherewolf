@@ -1,0 +1,21 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Launch Blazor (Wherewolf)",
+            "type": "blazorwasm",
+            "request": "launch",
+            "cwd": "${workspaceFolder}/MattEland.Wherewolf.BlazorFrontEnd",
+            "preLaunchTask": "build",
+            "browser": "edge"
+        },
+        {
+            "name": "Watch Blazor (Wherewolf)",
+            "type": "blazorwasm",
+            "request": "launch",
+            "cwd": "${workspaceFolder}/MattEland.Wherewolf.BlazorFrontEnd",
+            "hosted": false,
+            "preLaunchTask": "watch"
+        }
+    ]
+}
